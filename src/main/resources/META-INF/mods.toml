@@ -14,7 +14,7 @@ showAsResourcePack=false
 	displayTest = "MATCH_VERSION"
 	authors="1whohears"
 	credits="My Lizard"
-	description="Adds a bunch of mini game modes that can be started with the /game command."
+	description="Adds a bunch of mini game modes that can be started with the /minigame command."
 
 [[dependencies.minigames]]
     modId="forge"
