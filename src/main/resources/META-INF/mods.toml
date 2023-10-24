@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="[43,)"
+license="MIT License"
+issueTrackerURL=""
+showAsResourcePack=false
+
+[[mods]]
+	modId="minigames"
+	version="${file.jarVersion}"
+	displayName="Custom Mini Games"
+	logoFile="dscombat.png"
+	displayURL=""
+	updateJSONURL=""
+	displayTest = "MATCH_VERSION"
+	authors="1whohears"
+	credits="My Lizard"
+	description="Adds a bunch of mini game modes that can be started with the /game command."
+
+[[dependencies.minigames]]
+    modId="forge"
+    mandatory=true
+    versionRange="[43,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.minigames]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.19.2,1.20)"
+    ordering="NONE"
+    side="BOTH"
