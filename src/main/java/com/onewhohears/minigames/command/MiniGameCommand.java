@@ -2,6 +2,7 @@ package com.onewhohears.minigames.command;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -46,7 +47,7 @@ public class MiniGameCommand {
 	private ArgumentBuilder<CommandSourceStack,?> setup() {
 		return Commands.literal("setup")
 			.then(Commands.argument("instance_id", StringArgumentType.word())
-			.suggests(suggestStrings(MiniGameManager.get().getRunningeGameIds()))
+			.suggests(suggestStrings(() -> MiniGameManager.get().getRunningeGameIds()))
 				.then(Commands.literal("start")
 				.executes(commandStartGame()))
 				.then(Commands.literal("add_team")
@@ -304,7 +305,7 @@ public class MiniGameCommand {
 	private ArgumentBuilder<CommandSourceStack,?> reset() {
 		return Commands.literal("reset")
 			.then(Commands.argument("instance_id", StringArgumentType.word())
-			.suggests(suggestStrings(MiniGameManager.get().getRunningeGameIds()))
+			.suggests(suggestStrings(() -> MiniGameManager.get().getRunningeGameIds()))
 				.then(Commands.literal("confirm_reset")
 				.executes(commandReset()))
 			);
@@ -322,7 +323,7 @@ public class MiniGameCommand {
 	private ArgumentBuilder<CommandSourceStack,?> remove() {
 		return Commands.literal("remove")
 			.then(Commands.argument("instance_id", StringArgumentType.word())
-			.suggests(suggestStrings(MiniGameManager.get().getRunningeGameIds()))
+			.suggests(suggestStrings(() -> MiniGameManager.get().getRunningeGameIds()))
 				.then(Commands.literal("confirm_remove")
 				.executes(commandRemove()))
 			);
@@ -352,6 +353,12 @@ public class MiniGameCommand {
 	public static SuggestionProvider<CommandSourceStack> suggestStrings(String[] strings) {
 		return (context, builder) -> {
 			return SharedSuggestionProvider.suggest(strings, builder);
+		};
+	}
+	
+	public static SuggestionProvider<CommandSourceStack> suggestStrings(Supplier<String[]> strings) {
+		return (context, builder) -> {
+			return SharedSuggestionProvider.suggest(strings.get(), builder);
 		};
 	}
 	
