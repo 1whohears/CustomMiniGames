@@ -3,7 +3,9 @@ package com.onewhohears.minigames.minigame.agent;
 import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.minigame.data.MiniGameData;
+import com.onewhohears.minigames.util.UtilParse;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.phys.Vec3;
@@ -21,6 +23,27 @@ public abstract class GameAgent<D extends MiniGameData> {
 	protected GameAgent(String id, D gameData) {
 		this.id = id;
 		this.gameData = gameData;
+	}
+	
+	public CompoundTag save() {
+		CompoundTag nbt = new CompoundTag();
+		nbt.putBoolean("isPlayer", isPlayer());
+		nbt.putBoolean("isTeam", isTeam());
+		nbt.putString("id", id);
+		nbt.putInt("age", age);
+		nbt.putInt("score", score);
+		nbt.putInt("lives", lives);
+		nbt.putInt("money", money);
+		UtilParse.writeVec3(nbt, respawnPoint, "respawnPoint");
+		return nbt;
+	}
+	
+	public void load(CompoundTag tag) {
+		age = tag.getInt("age");
+		score = tag.getInt("score");
+		lives = tag.getInt("lives");
+		money = tag.getInt("money");
+		respawnPoint = UtilParse.readVec3(tag, "respawnPoint");
 	}
 	
 	public void tickAgent(MinecraftServer server) {

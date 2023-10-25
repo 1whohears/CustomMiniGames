@@ -40,7 +40,7 @@ public class DeathMatchPlayPhase<T extends DeathMatchData> extends GamePhase<T> 
 	
 	@Override
 	public boolean hasWorldBorder() {
-		return true;
+		return getGameData().useWorldBorderDuringGame();
 	}
 	
 	@Override

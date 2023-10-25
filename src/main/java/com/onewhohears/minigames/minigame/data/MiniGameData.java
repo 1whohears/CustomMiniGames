@@ -12,7 +12,11 @@ import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 import com.onewhohears.minigames.minigame.phase.GamePhase;
 import com.onewhohears.minigames.minigame.phase.SetupPhase;
+import com.onewhohears.minigames.util.UtilParse;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -21,7 +25,8 @@ import net.minecraft.world.scores.Team;
 
 public abstract class MiniGameData {
 	
-	private final String id;
+	private final String gameTypeId;
+	private final String instanceId;
 	private final Map<String, GameAgent<?>> agents = new HashMap<>();
 	private final Map<String, GamePhase<?>> phases = new HashMap<>();
 	private SetupPhase<?> setupPhase;
@@ -30,15 +35,91 @@ public abstract class MiniGameData {
 	private int age;
 	private boolean isStarted, isStopped;
 	
-	protected Vec3 gameCenter = Vec3.ZERO;
-	protected boolean canAddIndividualPlayers, canAddTeams, requiresSetRespawnPos;
+	protected boolean canAddIndividualPlayers, canAddTeams;
+	protected boolean requiresSetRespawnPos, worldBorderDuringGame;
 	protected int initialLives = 3;
 	protected double gameBorderSize = 1000;
+	protected Vec3 gameCenter = Vec3.ZERO;
 	
-	protected MiniGameData(String id) {
-		this.id = id;
+	protected MiniGameData(String instanceId, String gameTypeId) {
+		this.instanceId = instanceId;
+		this.gameTypeId = gameTypeId;
 	}
 	
+	public CompoundTag save() {
+		CompoundTag nbt = new CompoundTag();
+		nbt.putString("gameTypeId", gameTypeId);
+		nbt.putString("instanceId", instanceId);
+		nbt.putInt("age", age);
+		nbt.putBoolean("isStarted", isStarted);
+		nbt.putBoolean("isStopped", isStopped);
+		nbt.putBoolean("canAddIndividualPlayers", canAddIndividualPlayers);
+		nbt.putBoolean("canAddTeams", canAddTeams);
+		nbt.putBoolean("requiresSetRespawnPos", requiresSetRespawnPos);
+		nbt.putBoolean("worldBorderDuringGame", worldBorderDuringGame);
+		nbt.putInt("initialLives", initialLives);
+		nbt.putDouble("gameBorderSize", gameBorderSize);
+		UtilParse.writeVec3(nbt, gameCenter, "gameCenter");
+		saveAgents(nbt);
+		savePhases(nbt);
+		return nbt;
+	}
+	
+	public void load(CompoundTag nbt) {
+		age = nbt.getInt("age");
+		isStarted = nbt.getBoolean("isStarted");
+		isStopped = nbt.getBoolean("isStopped");
+		canAddIndividualPlayers = nbt.getBoolean("canAddIndividualPlayers");
+		canAddTeams = nbt.getBoolean("canAddTeams");
+		requiresSetRespawnPos = nbt.getBoolean("requiresSetRespawnPos");
+		worldBorderDuringGame = nbt.getBoolean("worldBorderDuringGame");
+		initialLives = nbt.getInt("initialLives");
+		gameBorderSize = nbt.getDouble("gameBorderSize");
+		gameCenter = UtilParse.readVec3(nbt, "gameCenter");
+		loadAgents(nbt);
+		loadPhases(nbt);
+	}
+	
+	protected void saveAgents(CompoundTag nbt) {
+		ListTag agentList = new ListTag();
+		agents.forEach((id, agent) -> agentList.add(agent.save()));
+		nbt.put("agentList", agentList);
+	}
+	
+	protected void loadAgents(CompoundTag nbt) {
+		ListTag agentList = nbt.getList("agentList", 10);
+		for (int i = 0; i < agentList.size(); ++i) {
+			CompoundTag tag = agentList.getCompound(i);
+			String id = tag.getString("id");
+			GameAgent<?> agent;
+			if (tag.getBoolean("isPlayer")) agent = createPlayerAgent(id);	
+			else if (tag.getBoolean("isTeam")) agent = createTeamAgent(id);
+			else continue;
+			agent.load(tag);
+			agents.put(id, agent);
+		}
+	}
+	
+	protected void savePhases(CompoundTag nbt) {
+		ListTag phaseList = new ListTag();
+		phases.forEach((id, phase) -> phaseList.add(phase.save()));
+		nbt.put("phaseList", phaseList);
+	}
+	
+	protected void loadPhases(CompoundTag nbt) {
+		ListTag phaseList = nbt.getList("phaseList", 10);
+		for (int i = 0; i < phaseList.size(); ++i) {
+			CompoundTag tag = phaseList.getCompound(i);
+			String id = tag.getString("id");
+			GamePhase<?> phase = phases.get(id);
+			if (phase == null) continue;
+			phase.load(tag);
+		}
+	}
+	
+	/**
+	 * must be called inside a {@link com.onewhohears.minigames.minigame.MiniGameManager.GameGenerator}
+	 */
 	protected void setPhases(SetupPhase<?> setupPhase, GamePhase<?> nextPhase, GamePhase<?>...otherPhases) {
 		this.setupPhase = setupPhase;
 		this.nextPhase = nextPhase;
@@ -71,7 +152,7 @@ public abstract class MiniGameData {
 	
 	public boolean changePhase(MinecraftServer server, String phaseId) {
 		if (!phases.containsKey(phaseId)) return false;
-		System.out.println("GAME CHANGE PHASE "+id+" to "+phaseId);
+		System.out.println("GAME CHANGE PHASE "+instanceId+" to "+phaseId);
 		currentPhase = phases.get(phaseId);
 		currentPhase.onReset(server);
 		currentPhase.onStart(server);
@@ -91,7 +172,7 @@ public abstract class MiniGameData {
 	}
 	
 	public void reset(MinecraftServer server) {
-		System.out.println("GAME RESET "+id);
+		System.out.println("GAME RESET "+instanceId);
 		isStarted = false;
 		isStopped = false;
 		age = 0;
@@ -100,7 +181,7 @@ public abstract class MiniGameData {
 	}
 	
 	public void start(MinecraftServer server) {
-		System.out.println("GAME START "+id);
+		System.out.println("GAME START "+instanceId);
 		isStarted = true;
 		isStopped = false;
 		resetAllAgents();
@@ -108,7 +189,7 @@ public abstract class MiniGameData {
 	}
 	
 	public void stop(MinecraftServer server) {
-		System.out.println("GAME STOP "+id);
+		System.out.println("GAME STOP "+instanceId);
 		isStarted = true;
 		isStopped = true;
 	}
@@ -137,8 +218,12 @@ public abstract class MiniGameData {
 		return isStopped;
 	}
 	
-	public String getId() {
-		return id;
+	public String getInstanceId() {
+		return instanceId;
+	}
+	
+	public String getGameTypeId() {
+		return gameTypeId;
 	}
 	
 	public int getAge() {
@@ -190,6 +275,14 @@ public abstract class MiniGameData {
 		return requiresSetRespawnPos;
 	}
 	
+	public boolean useWorldBorderDuringGame() {
+		return worldBorderDuringGame;
+	}
+	
+	public void setUseWorldBorderDuringGame(boolean use) {
+		this.worldBorderDuringGame = use;
+	}
+	
 	public boolean areAgentRespawnPosSet() {
 		if (!requiresSetRespawnPos()) return true;
 		for (GameAgent<?> agent : agents.values()) 
@@ -199,24 +292,32 @@ public abstract class MiniGameData {
 	}
 	
 	public String getSetupInfo() {
-		String info = "";
-		if (canAddIndividualPlayers()) info += "use add_player to add players to the game. ";
-		if (canAddTeams()) info += "use add_team to add teams to the game. ";
-		info += "use set_center to set the middle of the game. ";
-		info += "use set_size to set the game world border size and random start position distance. ";
-		if (requiresSetRespawnPos()) info += "use set_spawn to set a player or team spawnpoint. ";
-		info += "use set_lives to set the number of initial lives. ";
+		String info = "use set_center to set the middle of the game. ";
+		info += "\nuse set_use_border to set if the world border is used during gameplay phase. ";
+		info += "\nuse set_size to set the game world border size and random start position distance. ";
+		info += "\nuse set_lives to set the number of initial lives. ";
+		if (canAddIndividualPlayers()) info += "\nuse add_player to add players to the game. ";
+		if (canAddTeams()) info += "\nuse add_team to add teams to the game. ";
+		if (requiresSetRespawnPos()) info += "\nuse set_spawn to set a player or team spawnpoint. ";
 		return info;
 	}
 	
 	@SuppressWarnings("unchecked")
+	public <D extends MiniGameData> PlayerAgent<D> createPlayerAgent(String uuid) {
+		return new PlayerAgent<D>(uuid, (D) this);
+	}
+	
 	public <D extends MiniGameData> PlayerAgent<D> createPlayerAgent(ServerPlayer player) {
-		return new PlayerAgent<D>(player, (D) this);
+		return createPlayerAgent(player.getStringUUID());
 	}
 	
 	@SuppressWarnings("unchecked")
+	public <D extends MiniGameData> TeamAgent<D> createTeamAgent(String teamName) {
+		return new TeamAgent<D>(teamName, (D)this);
+	}
+	
 	public <D extends MiniGameData> TeamAgent<D> createTeamAgent(PlayerTeam team) {
-		return new TeamAgent<D>(team, (D)this);
+		return createTeamAgent(team.getName());
 	}
 	
 	@Nullable
@@ -346,6 +447,14 @@ public abstract class MiniGameData {
 		if (winners.size() != 1) return;
 		GameAgent<?> winner = winners.get(0);
 		winner.onWin(server);
+	}
+	
+	public void chatToAllPlayers(MinecraftServer server, Component message) {
+		for (PlayerAgent<?> agent : getAllPlayerAgents()) {
+			ServerPlayer player = agent.getPlayer(server);
+			if (player == null) continue;
+			player.displayClientMessage(message, false);
+		}
 	}
 	
 }

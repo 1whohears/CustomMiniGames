@@ -10,20 +10,20 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 
-public class MiniGameKitsManager extends SimpleJsonResourceReloadListener {
+public class MiniGameShopsManager extends SimpleJsonResourceReloadListener {
 	
-	public static String KIND = "minigamekits";
+	public static String KIND = "minigameshops";
 	
-	private static MiniGameKitsManager instance;
+	private static MiniGameShopsManager instance;
 	
-	public static MiniGameKitsManager get() {
-		if (instance == null) instance = new MiniGameKitsManager();
+	public static MiniGameShopsManager get() {
+		if (instance == null) instance = new MiniGameShopsManager();
 		return instance;
 	}
 	
-	// TODO 3.6 kit system
+	// TODO 3.4 shop system
 	
-	protected MiniGameKitsManager() {
+	protected MiniGameShopsManager() {
 		super(UtilParse.GSON, KIND);
 	}
 

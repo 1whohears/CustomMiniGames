@@ -10,6 +10,9 @@ import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
@@ -18,8 +21,38 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 	
 	private final Map<String, PlayerAgent<D>> playerAgents = new HashMap<>();
 	
-	public TeamAgent(PlayerTeam team, D gameData) {
-		super(team.getName(), gameData);
+	public TeamAgent(String teamName, D gameData) {
+		super(teamName, gameData);
+	}
+	
+	@Override
+	public CompoundTag save() {
+		CompoundTag nbt = super.save();
+		savePlayers(nbt);
+		return nbt;
+	}
+	
+	@Override
+	public void load(CompoundTag tag) {
+		super.load(tag);
+		loadPlayers(tag);
+	}
+	
+	protected void savePlayers(CompoundTag nbt) {
+		ListTag playerList = new ListTag();
+		playerAgents.forEach((id, agent) -> playerList.add(agent.save()));
+		nbt.put("playerList", playerList);
+	}
+	
+	protected void loadPlayers(CompoundTag nbt) {
+		ListTag playerList = nbt.getList("playerList", 10);
+		for (int i = 0; i < playerList.size(); ++i) {
+			CompoundTag tag = playerList.getCompound(i);
+			String id = tag.getString("id");
+			PlayerAgent<D> agent = getGameData().createPlayerAgent(id);
+			agent.load(tag);
+			playerAgents.put(id, agent);
+		}
 	}
 	
 	@Override
@@ -43,10 +76,12 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 	
 	protected void updatePlayerAgentMap(MinecraftServer server) {
 		PlayerTeam team = getTeam(server);
+		if (team == null) return;
 		Collection<String> usernames = team.getPlayers();
-		playerAgents.forEach((username, player) -> {
+		// TODO 3.7.2 use team join/leave event to update team players agent map
+		/*playerAgents.forEach((username, player) -> {
 			if (!usernames.contains(username)) playerAgents.remove(username);
-		});
+		});*/
 		for (String username : usernames) {
 			if (playerAgents.containsKey(username)) continue;
 			ServerPlayer player = server.getPlayerList().getPlayerByName(username);
@@ -136,7 +171,10 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 	
 	@Override
 	public void onWin(MinecraftServer server) {
-		// TODO 3.8.2 announce winning team
+		PlayerTeam team = getTeam(server);
+		if (team == null) return;
+		Component message = Component.empty().append(team.getFormattedDisplayName()).append(" is the winning team!");
+		getGameData().chatToAllPlayers(server, message);
 	}
 
 }

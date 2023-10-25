@@ -4,6 +4,7 @@ import com.onewhohears.minigames.minigame.condition.NeverExitCondition;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 
 public abstract class SetupPhase<T extends MiniGameData> extends GamePhase<T> {
@@ -13,6 +14,21 @@ public abstract class SetupPhase<T extends MiniGameData> extends GamePhase<T> {
 	
 	protected SetupPhase(String id, T gameData) {
 		super(id, gameData, new NeverExitCondition<>());
+	}
+	
+	@Override
+	public CompoundTag save() {
+		CompoundTag nbt = super.save();
+		nbt.putBoolean("smallWorldBorderStartArea", smallWorldBorderStartArea);
+		nbt.putBoolean("forceAdventureMode", forceAdventureMode);
+		return nbt;
+	}
+	
+	@Override
+	public void load(CompoundTag tag) {
+		super.load(tag);
+		smallWorldBorderStartArea = tag.getBoolean("smallWorldBorderStartArea");
+		forceAdventureMode = tag.getBoolean("forceAdventureMode");
 	}
 	
 	@Override

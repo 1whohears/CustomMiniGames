@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -45,7 +46,7 @@ public class MiniGameCommand {
 	private ArgumentBuilder<CommandSourceStack,?> setup() {
 		return Commands.literal("setup")
 			.then(Commands.argument("instance_id", StringArgumentType.word())
-			.suggests(suggestStrings(MiniGameManager.getRunningeGameIds()))
+			.suggests(suggestStrings(MiniGameManager.get().getRunningeGameIds()))
 				.then(Commands.literal("start")
 				.executes(commandStartGame()))
 				.then(Commands.literal("add_team")
@@ -76,14 +77,29 @@ public class MiniGameCommand {
 				.then(Commands.literal("set_lives")
 					.then(Commands.argument("lives", IntegerArgumentType.integer(1))
 					.executes(commandSetLives())))
+				.then(Commands.literal("set_use_border")
+					.then(Commands.argument("use", BoolArgumentType.bool())
+					.executes(commandSetUseWorldBorder())))
 			);
+	}
+	
+	private GameSetupCommand commandSetUseWorldBorder() {
+		return (context, gameData) -> {
+			boolean use = BoolArgumentType.getBool(context, "use");
+			gameData.setUseWorldBorderDuringGame(use);
+			Component message; 
+			if (use) message = Component.literal(gameData.getInstanceId()+" will have a world border during game play phase.");
+			else message = Component.literal(gameData.getInstanceId()+" will NOT have a world border during game play phase.");
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
 	}
 	
 	private GameSetupCommand commandSetLives() {
 		return (context, gameData) -> {
 			int lives = IntegerArgumentType.getInteger(context, "lives");
 			gameData.setInitialLives(lives);
-			Component message = Component.literal("Set "+gameData.getId()+" initial lives to "+lives);
+			Component message = Component.literal("Set "+gameData.getInstanceId()+" initial lives to "+lives);
 			context.getSource().sendSuccess(message, true);
 			return 1;
 		};
@@ -102,7 +118,7 @@ public class MiniGameCommand {
 				PlayerAgent<?> agent = gameData.getPlayerAgentByUUID(player.getStringUUID());
 				if (agent == null) {
 					Component message = Component.literal("The player ").append(player.getDisplayName())
-							.append(" is not in the game "+gameData.getId());
+							.append(" is not in the game "+gameData.getInstanceId());
 					context.getSource().sendFailure(message);
 					continue;
 				}
@@ -122,7 +138,7 @@ public class MiniGameCommand {
 			TeamAgent<?> agent = gameData.getTeamAgentByName(team.getName());
 			if (agent == null) {
 				Component message = Component.literal("The team ").append(team.getDisplayName())
-						.append(" is not in the game "+gameData.getId());
+						.append(" is not in the game "+gameData.getInstanceId());
 				context.getSource().sendFailure(message);
 				return 0;
 			}
@@ -138,7 +154,7 @@ public class MiniGameCommand {
 		return (context, gameData) -> {
 			double size = DoubleArgumentType.getDouble(context, "game_size");
 			gameData.setGameBorderSize(size);
-			Component message = Component.literal("Changed "+gameData.getId()+" game size to "+size);
+			Component message = Component.literal("Changed "+gameData.getInstanceId()+" game size to "+size);
 			context.getSource().sendSuccess(message, true);
 			return 1;
 		};
@@ -148,7 +164,7 @@ public class MiniGameCommand {
 		return (context, gameData) -> {
 			BlockPos pos = BlockPosArgument.getSpawnablePos(context, "game_center");
 			gameData.setGameCenter(UtilConvert.toVec3(pos), context.getSource().getServer());
-			Component message = Component.literal("Changed "+gameData.getId()+" center pos!");
+			Component message = Component.literal("Changed "+gameData.getInstanceId()+" center pos!");
 			context.getSource().sendSuccess(message, true);
 			return 1;
 		};
@@ -157,13 +173,13 @@ public class MiniGameCommand {
 	private GameSetupCommand commandStartGame() {
 		return (context, gameData) -> {
 			if (!gameData.finishSetupPhase(context.getSource().getServer())) {
-				MutableComponent message = Component.literal(gameData.getId()+" is currently unable to finish setup!");
-				message.append("\nUse /game setup "+gameData.getId()+" to finish settig up the game.");
+				MutableComponent message = Component.literal(gameData.getInstanceId()+" is currently unable to finish setup!");
+				message.append("\nUse /game setup "+gameData.getInstanceId()+" to finish settig up the game.");
 				message.append("\n"+gameData.getSetupInfo());
 				context.getSource().sendFailure(message);
 				return 0;
 			}
-			Component message = Component.literal("Starting "+gameData.getId()+"!");
+			Component message = Component.literal("Starting "+gameData.getInstanceId()+"!");
 			context.getSource().sendSuccess(message, true);
 			return 1;
 		};
@@ -178,10 +194,10 @@ public class MiniGameCommand {
 			}
 			for (ServerPlayer player : players) {
 				if (gameData.removeAgentById(player.getStringUUID())) {
-					Component message = Component.literal("Failed to remove ").append(player.getDisplayName()).append(" from "+gameData.getId()+"!");
+					Component message = Component.literal("Failed to remove ").append(player.getDisplayName()).append(" from "+gameData.getInstanceId()+"!");
 					context.getSource().sendFailure(message);
 				} else {
-					Component message = Component.literal("Removed player ").append(player.getDisplayName()).append(" from "+gameData.getId()+"!");
+					Component message = Component.literal("Removed player ").append(player.getDisplayName()).append(" from "+gameData.getInstanceId()+"!");
 					context.getSource().sendSuccess(message, true);
 				}
 			}
@@ -192,7 +208,7 @@ public class MiniGameCommand {
 	private GameSetupCommand commandAddPlayers() {
 		return (context, gameData) -> {
 			if (!gameData.canAddIndividualPlayers()) {
-				Component message = Component.literal("The game instance "+gameData.getId()+" does not allow individual players!");
+				Component message = Component.literal("The game instance "+gameData.getInstanceId()+" does not allow individual players!");
 				context.getSource().sendFailure(message);
 				return 0;
 			}
@@ -203,10 +219,10 @@ public class MiniGameCommand {
 			}
 			for (ServerPlayer player : players) {
 				if (gameData.getAddIndividualPlayer(player) == null) {
-					Component message = Component.literal("Failed to add ").append(player.getDisplayName()).append(" to "+gameData.getId()+"!");
+					Component message = Component.literal("Failed to add ").append(player.getDisplayName()).append(" to "+gameData.getInstanceId()+"!");
 					context.getSource().sendFailure(message);
 				} else {
-					Component message = Component.literal("Added player ").append(player.getDisplayName()).append(" to "+gameData.getId()+"!");
+					Component message = Component.literal("Added player ").append(player.getDisplayName()).append(" to "+gameData.getInstanceId()+"!");
 					context.getSource().sendSuccess(message, true);
 				}
 			}
@@ -218,11 +234,11 @@ public class MiniGameCommand {
 		return (context, gameData) -> {
 			PlayerTeam team = TeamArgument.getTeam(context, "team");
 			if (!gameData.removeAgentById(team.getName())) {
-				Component message = Component.literal("Already removed "+team.getName()+" from "+gameData.getId()+"!");
+				Component message = Component.literal("Already removed "+team.getName()+" from "+gameData.getInstanceId()+"!");
 				context.getSource().sendSuccess(message, true);
 				return 1;
 			}
-			MutableComponent message = Component.literal("Removed "+team.getName()+" from "+gameData.getId()+"!");
+			MutableComponent message = Component.literal("Removed "+team.getName()+" from "+gameData.getInstanceId()+"!");
 			context.getSource().sendSuccess(message, true);
 			return 1;
 		};
@@ -231,17 +247,17 @@ public class MiniGameCommand {
 	private GameSetupCommand commandAddTeam() {
 		return (context, gameData) -> {
 			if (!gameData.canAddTeams()) {
-				Component message = Component.literal("The game instance "+gameData.getId()+" does not allow teams!");
+				Component message = Component.literal("The game instance "+gameData.getInstanceId()+" does not allow teams!");
 				context.getSource().sendFailure(message);
 				return 0;
 			}
 			PlayerTeam team = TeamArgument.getTeam(context, "team");
 			if (gameData.getAddTeam(team) == null) {
-				Component message = Component.literal("Failed to add "+team.getName()+" to "+gameData.getId()+"!");
+				Component message = Component.literal("Failed to add "+team.getName()+" to "+gameData.getInstanceId()+"!");
 				context.getSource().sendFailure(message);
 				return 0;
 			}
-			MutableComponent message = Component.literal("Added team "+team.getName()+" to "+gameData.getId()+"!");
+			MutableComponent message = Component.literal("Added team "+team.getName()+" to "+gameData.getInstanceId()+"!");
 			context.getSource().sendSuccess(message, true);
 			return 1;
 		};
@@ -265,12 +281,12 @@ public class MiniGameCommand {
 				return 0;
 			}
 			String gameInstanceId = StringArgumentType.getString(context, "instance_id");
-			if (MiniGameManager.isGameRunning(gameInstanceId)) {
+			if (MiniGameManager.get().isGameRunning(gameInstanceId)) {
 				Component message = Component.literal(gameInstanceId+" already exists! You may want to reset or remove it.");
 				context.getSource().sendFailure(message);
 				return 0;
 			}
-			MiniGameData gameData = MiniGameManager.startNewGame(gameTypeId, gameInstanceId);
+			MiniGameData gameData = MiniGameManager.get().startNewGame(gameTypeId, gameInstanceId);
 			if (gameData == null) {
 				Component message = Component.literal("Unable to start new game "+gameInstanceId+" of type "+gameTypeId);
 				context.getSource().sendFailure(message);
@@ -288,7 +304,7 @@ public class MiniGameCommand {
 	private ArgumentBuilder<CommandSourceStack,?> reset() {
 		return Commands.literal("reset")
 			.then(Commands.argument("instance_id", StringArgumentType.word())
-			.suggests(suggestStrings(MiniGameManager.getRunningeGameIds()))
+			.suggests(suggestStrings(MiniGameManager.get().getRunningeGameIds()))
 				.then(Commands.literal("confirm_reset")
 				.executes(commandReset()))
 			);
@@ -297,7 +313,7 @@ public class MiniGameCommand {
 	private GameDataCommand commandReset() {
 		return (context, gameData) -> {
 			gameData.reset(context.getSource().getServer());
-			Component message = Component.literal(gameData.getId()+" was reset!");
+			Component message = Component.literal(gameData.getInstanceId()+" was reset!");
 			context.getSource().sendSuccess(message, true);
 			return 1;
 		};
@@ -306,7 +322,7 @@ public class MiniGameCommand {
 	private ArgumentBuilder<CommandSourceStack,?> remove() {
 		return Commands.literal("remove")
 			.then(Commands.argument("instance_id", StringArgumentType.word())
-			.suggests(suggestStrings(MiniGameManager.getRunningeGameIds()))
+			.suggests(suggestStrings(MiniGameManager.get().getRunningeGameIds()))
 				.then(Commands.literal("confirm_remove")
 				.executes(commandRemove()))
 			);
@@ -315,8 +331,8 @@ public class MiniGameCommand {
 	private GameDataCommand commandRemove() {
 		return (context, gameData) -> {
 			gameData.reset(context.getSource().getServer());
-			MiniGameManager.removeGame(gameData.getId());
-			Component message = Component.literal(gameData.getId()+" was removed!");
+			MiniGameManager.get().removeGame(gameData.getInstanceId());
+			Component message = Component.literal(gameData.getInstanceId()+" was removed!");
 			context.getSource().sendSuccess(message, true);
 			return 1;
 		};
@@ -324,7 +340,7 @@ public class MiniGameCommand {
 	
 	private ArgumentBuilder<CommandSourceStack,?> listRunning() {
 		return Commands.literal("list_running").executes((context) -> {
-			String[] ids = MiniGameManager.getRunningeGameIds();
+			String[] ids = MiniGameManager.get().getRunningeGameIds();
 			Component message;
 			if (ids.length == 0) message = Component.literal("There are currently no games running.");
 			else message = Component.literal(Arrays.deepToString(ids));
@@ -342,12 +358,12 @@ public class MiniGameCommand {
 	public interface GameDataCommand extends Command<CommandSourceStack> {
 		default int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 			String gameInstanceId = StringArgumentType.getString(context, "instance_id");
-			if (!MiniGameManager.isGameRunning(gameInstanceId)) {
+			if (!MiniGameManager.get().isGameRunning(gameInstanceId)) {
 				Component message = Component.literal("The game instance "+gameInstanceId+" does not exist!");
 				context.getSource().sendFailure(message);
 				return 0;
 			}
-			return runGameData(context, MiniGameManager.getRunningGame(gameInstanceId));
+			return runGameData(context, MiniGameManager.get().getRunningGame(gameInstanceId));
 		}
 		int runGameData(CommandContext<CommandSourceStack> context, MiniGameData gameData) throws CommandSyntaxException;
 	}
@@ -355,7 +371,7 @@ public class MiniGameCommand {
 	public interface GameSetupCommand extends GameDataCommand {
 		default int runGameData(CommandContext<CommandSourceStack> context, MiniGameData gameData) throws CommandSyntaxException {
 			if (!gameData.isSetupPhase()) {
-				Component message = Component.literal("The game instance "+gameData.getId()+" is not in the setup phase! You must reset (Dangerous!)");
+				Component message = Component.literal("The game instance "+gameData.getInstanceId()+" is not in the setup phase! You must reset (Dangerous!)");
 				context.getSource().sendFailure(message);
 				return 0;
 			}

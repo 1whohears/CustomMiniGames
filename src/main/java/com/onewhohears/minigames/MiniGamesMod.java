@@ -1,6 +1,7 @@
 package com.onewhohears.minigames;
 
 import com.onewhohears.minigames.data.MiniGameKitsGenerator;
+import com.onewhohears.minigames.data.MiniGameShopsGenerator;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 
 import net.minecraft.data.DataGenerator;
@@ -35,6 +36,7 @@ public class MiniGamesMod {
     	DataGenerator generator = event.getGenerator();
     	if (event.includeServer()) {
     		MiniGameKitsGenerator.register(generator);
+    		MiniGameShopsGenerator.register(generator);
     	}
     }
 	

@@ -7,6 +7,8 @@ import javax.annotation.Nullable;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -20,10 +22,19 @@ public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
 	private ServerPlayer player;
 	private TeamAgent<D> teamAgent;
 	
-	public PlayerAgent(ServerPlayer player, D gameData) {
-		super(player.getStringUUID(), gameData);
-		this.playerId = player.getUUID();
-		this.player = player;
+	public PlayerAgent(String uuid, D gameData) {
+		super(uuid, gameData);
+	}
+	
+	@Override
+	public CompoundTag save() {
+		CompoundTag nbt = super.save();
+		return nbt;
+	}
+	
+	@Override
+	public void load(CompoundTag tag) {
+		super.load(tag);
 	}
 	
 	@Override
@@ -108,7 +119,10 @@ public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
 
 	@Override
 	public void onWin(MinecraftServer server) {
-		// TODO 3.8.1 announce winning player
+		ServerPlayer player = getPlayer(server);
+		if (player == null) return;
+		Component message = Component.empty().append(player.getDisplayName()).append(" is the winner!");
+		getGameData().chatToAllPlayers(server, message);
 	}
 
 }

@@ -5,6 +5,7 @@ import com.onewhohears.minigames.minigame.agent.TeamAgent;
 import com.onewhohears.minigames.minigame.condition.PhaseExitCondition;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
@@ -23,6 +24,16 @@ public abstract class GamePhase<T extends MiniGameData> {
 		this.id = id;
 		this.gameData = gameData;
 		this.exitConditions = exitConditions;
+	}
+	
+	public CompoundTag save() {
+		CompoundTag nbt = new CompoundTag();
+		nbt.putInt("age", age);
+		return nbt;
+	}
+	
+	public void load(CompoundTag tag) {
+		age = tag.getInt("age");
 	}
 	
 	public void tickPhase(MinecraftServer server) {

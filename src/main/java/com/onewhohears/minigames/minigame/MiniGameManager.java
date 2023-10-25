@@ -7,38 +7,54 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+
+import com.mojang.logging.LogUtils;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.data.DeathMatchData;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.saveddata.SavedData;
 
-public class MiniGameManager {
+public class MiniGameManager extends SavedData {
+	
+	private static final Logger LOGGER = LogUtils.getLogger();
+	private static MiniGameManager instance;
 	private static Map<String, GameGenerator> gameGenerators = new HashMap<>();
-	private static Map<String, MiniGameData> runningGames = new HashMap<>();
+	
+	/**
+	 * @return null if before Server Started!
+	 */
+	@Nullable
+	public static MiniGameManager get() {
+		return instance;
+	}
 	
 	/**
 	 * called in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
 	 * register all games here
 	 */
 	public static void registerGames() {
-		registerGame("simple_team_deathmatch", (id) -> {
-			return DeathMatchData.createSimpleTeamDeathMatch(id, 3);
+		registerGame("simple_team_deathmatch", (instanceId, gameTypeId) -> {
+			return DeathMatchData.createSimpleTeamDeathMatch(instanceId, gameTypeId, 3);
 		});
-		registerGame("simple_ffa_deathmatch", (id) -> {
-			return DeathMatchData.createSimpleFFADeathMatch(id, 3);
+		registerGame("simple_ffa_deathmatch", (instanceId, gameTypeId) -> {
+			return DeathMatchData.createSimpleFFADeathMatch(instanceId, gameTypeId, 3);
 		});
-		// TODO 3.1 create and register the following minigame modes
-		// team/ffa death match (1 or multiple lives)
-		// easy/fair dog fight resets (both players tp to runway when an aircraft is destroyed)
-		// bomb the flag/s
-		// team/ffa territory control
-		// one volunteer runs away from everyone else
-		// zombie apocalypse
-		// TODO 3.4 shop system
+		/*
+		 * TODO 3.1 create and register the following minigame modes
+		 * team/ffa death match (1 or multiple lives)
+		 * team/ffa territory control
+		 * one volunteer runs away from everyone else
+		 * zombie apocalypse
+		 * bomb defuse
+		 * hostage rescue
+		 */
 		// TODO 3.5 load custom game presets from data packs
-		// TODO 3.6 this game system should probably be a separate mod as an optional dependency...
 	}
 	
 	/**
@@ -53,6 +69,49 @@ public class MiniGameManager {
 		return true;
 	}
 	
+	public static boolean hasGameType(String gameTypeId) {
+		return gameGenerators.containsKey(gameTypeId);
+	}
+	
+	public static String[] getNewGameTypeIds() {
+		return gameGenerators.keySet().toArray(new String[gameGenerators.size()]);
+	}
+	
+	public static void serverStarted(MinecraftServer server) {
+		instance = server.overworld().getDataStorage().computeIfAbsent(
+				MiniGameManager::load, 
+				() -> new MiniGameManager(), 
+				"minigames");
+	}
+	
+	public static MiniGameManager load(CompoundTag nbt) {
+		MiniGameManager savedData = new MiniGameManager();
+		ListTag list = nbt.getList("runningGames", 10);
+		for (int i = 0; i < list.size(); ++i) {
+			CompoundTag tag = list.getCompound(i);
+			String gameTypeId = tag.getString("gameTypeId");
+			if (!hasGameType(gameTypeId)) {
+				LOGGER.error("The game type "+gameTypeId+" is not registered. Mini Game Data will be lost.");
+				continue;
+			}
+			String gameInstanceId = tag.getString("instanceId");
+			MiniGameData game = gameGenerators.get(gameTypeId).create(gameInstanceId, gameTypeId);
+			game.load(tag);
+			savedData.runningGames.put(gameInstanceId, game);
+		}
+		return savedData;
+	}
+
+	@Override
+	public CompoundTag save(CompoundTag nbt) {
+		ListTag list = new ListTag();
+		runningGames.forEach((id, game) -> list.add(game.save()));
+		nbt.put("runningGames", list);
+		return nbt;
+	}
+	
+	private Map<String, MiniGameData> runningGames = new HashMap<>();
+	
 	/**
 	 * add a new game to the list of running games
 	 * @param gameTypeId the type of game
@@ -60,63 +119,48 @@ public class MiniGameManager {
 	 * @return null if gameInstanceId already exists or gameTypeId doesn't exist
 	 */
 	@Nullable
-	public static MiniGameData startNewGame(String gameTypeId, String gameInstanceId) {
+	public MiniGameData startNewGame(String gameTypeId, String gameInstanceId) {
 		if (runningGames.containsKey(gameInstanceId)) return null;
 		GameGenerator gen = gameGenerators.get(gameTypeId);
 		if (gen == null) return null;
-		MiniGameData game = gen.create(gameInstanceId);
+		MiniGameData game = gen.create(gameInstanceId, gameTypeId);
 		runningGames.put(gameInstanceId, game);
 		return game;
 	}
 	
-	public static boolean resetGame(String gameInstanceId, MinecraftServer server) {
+	public boolean resetGame(String gameInstanceId, MinecraftServer server) {
 		if (!runningGames.containsKey(gameInstanceId)) return false;
 		runningGames.get(gameInstanceId).reset(server);
 		return true;
 	}
 	
-	public static void serverTick(MinecraftServer server) {
+	public void serverTick(MinecraftServer server) {
 		runningGames.forEach((id, game) -> game.serverTick(server));
+		setDirty();
 	}
 	
-	public static void serverStarted(MinecraftServer server) {
-		// TODO 3.3 load games from global saved data
-	}
-
-	public static void serverStopping(MinecraftServer server) {
-		// TODO 3.2 write games to global saved data
-	}
-	
-	public static String[] getNewGameTypeIds() {
-		return gameGenerators.keySet().toArray(new String[gameGenerators.size()]);
-	}
-	
-	public static String[] getRunningeGameIds() {
+	public String[] getRunningeGameIds() {
 		return runningGames.keySet().toArray(new String[runningGames.size()]);
 	}
 	
-	public static boolean hasGameType(String gameTypeId) {
-		return gameGenerators.containsKey(gameTypeId);
-	}
-	
-	public static boolean isGameRunning(String gameInstanceId) {
+	public boolean isGameRunning(String gameInstanceId) {
 		return runningGames.containsKey(gameInstanceId);
 	}
 	
 	@Nullable
-	public static MiniGameData getRunningGame(String gameInstanceId) {
+	public MiniGameData getRunningGame(String gameInstanceId) {
 		return runningGames.get(gameInstanceId);
 	}
 	
-	public static boolean removeGame(String gameInstanceId) {
+	public boolean removeGame(String gameInstanceId) {
 		return runningGames.remove(gameInstanceId) != null;
 	}
 	
 	public interface GameGenerator {
-		MiniGameData create(String gameInstanceId);
+		MiniGameData create(String gameInstanceId, String gameTypeId);
 	}
 	
-	public static List<PlayerAgent<?>> getPlayerAgents(ServerPlayer player) {
+	public List<PlayerAgent<?>> getPlayerAgents(ServerPlayer player) {
 		List<PlayerAgent<?>> agents = new ArrayList<>();
 		for (MiniGameData game : runningGames.values()) {
 			PlayerAgent<?> agent = game.getPlayerAgentByUUID(player.getStringUUID());
