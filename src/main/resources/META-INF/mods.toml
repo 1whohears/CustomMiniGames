@@ -1,7 +1,7 @@
 modLoader="javafml"
 loaderVersion="[43,)"
 license="MIT License"
-issueTrackerURL=""
+#issueTrackerURL=""
 showAsResourcePack=false
 
 [[mods]]
@@ -9,8 +9,8 @@ showAsResourcePack=false
 	version="${file.jarVersion}"
 	displayName="Custom Mini Games"
 	logoFile="dscombat.png"
-	displayURL=""
-	updateJSONURL=""
+	#displayURL=""
+	#updateJSONURL=""
 	displayTest = "MATCH_VERSION"
 	authors="1whohears"
 	credits="My Lizard"

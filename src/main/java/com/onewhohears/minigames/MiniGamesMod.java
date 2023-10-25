@@ -1,5 +1,8 @@
 package com.onewhohears.minigames;
 
+import com.onewhohears.minigames.data.MiniGameKitsGenerator;
+import com.onewhohears.minigames.minigame.MiniGameManager;
+
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -21,7 +24,7 @@ public class MiniGamesMod {
 	}
 	
 	private void commonSetup(FMLCommonSetupEvent event) {
-		
+		MiniGameManager.registerGames();
 	}
 	
 	private void clientSetup(FMLClientSetupEvent event) {
@@ -30,7 +33,9 @@ public class MiniGamesMod {
 	
 	private void onGatherData(GatherDataEvent event) {
     	DataGenerator generator = event.getGenerator();
-    	
+    	if (event.includeServer()) {
+    		MiniGameKitsGenerator.register(generator);
+    	}
     }
 	
 }
