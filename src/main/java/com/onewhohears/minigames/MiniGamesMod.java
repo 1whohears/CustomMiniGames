@@ -1,7 +1,7 @@
 package com.onewhohears.minigames;
 
-import com.onewhohears.minigames.data.MiniGameKitsGenerator;
-import com.onewhohears.minigames.data.MiniGameShopsGenerator;
+import com.onewhohears.minigames.data.kits.MiniGameKitsGenerator;
+import com.onewhohears.minigames.data.shops.MiniGameShopsGenerator;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 
 import net.minecraft.data.DataGenerator;

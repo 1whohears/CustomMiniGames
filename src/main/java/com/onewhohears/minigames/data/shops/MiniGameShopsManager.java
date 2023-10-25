@@ -1,8 +1,13 @@
-package com.onewhohears.minigames.data;
+package com.onewhohears.minigames.data.shops;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.mojang.logging.LogUtils;
 import com.onewhohears.minigames.util.UtilParse;
 
 import net.minecraft.resources.ResourceLocation;
@@ -12,8 +17,8 @@ import net.minecraft.util.profiling.ProfilerFiller;
 
 public class MiniGameShopsManager extends SimpleJsonResourceReloadListener {
 	
-	public static String KIND = "minigameshops";
-	
+	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final String KIND = "minigameshops";
 	private static MiniGameShopsManager instance;
 	
 	public static MiniGameShopsManager get() {
@@ -23,13 +28,23 @@ public class MiniGameShopsManager extends SimpleJsonResourceReloadListener {
 	
 	// TODO 3.4 shop system
 	
+	private Map<String, GameShop> shops = new HashMap<>();
+	
 	protected MiniGameShopsManager() {
 		super(UtilParse.GSON, KIND);
 	}
 
 	@Override
 	protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager manager, ProfilerFiller profiler) {
-		
+		map.forEach((key, je) -> { try {
+			JsonObject json = UtilParse.GSON.fromJson(je, JsonObject.class);
+			GameShop shop = new GameShop(key, json);
+			shops.put(shop.getId(), shop);
+			LOGGER.debug("ADDING SHOP: "+key.toString());
+		} catch (Exception e) {
+			LOGGER.error("PARSE SHOP FAILED "+key.toString());
+			e.printStackTrace();
+		}});
 	}
 
 }

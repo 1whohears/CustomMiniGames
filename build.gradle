@@ -5,7 +5,7 @@ plugins {
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
-version = '0.0.1-alpha'
+version = '0.0.1'
 group = 'com.1whohears.minigames'
 archivesBaseName = 'minigames'
 

@@ -1,4 +1,4 @@
-package com.onewhohears.minigames.data;
+package com.onewhohears.minigames.data.kits;
 
 import java.io.IOException;
 
@@ -8,16 +8,16 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 
-public class MiniGameShopsGenerator implements DataProvider {
+public class MiniGameKitsGenerator implements DataProvider {
 	
 	public static void register(DataGenerator generator) {
-		generator.addProvider(true, new MiniGameShopsGenerator(generator));
+		generator.addProvider(true, new MiniGameKitsGenerator(generator));
 	}
 	
 	protected final DataGenerator.PathProvider pathProvider;
 	
-	protected MiniGameShopsGenerator(DataGenerator generator) {
-        this.pathProvider = generator.createPathProvider(DataGenerator.Target.DATA_PACK, MiniGameShopsManager.KIND);
+	protected MiniGameKitsGenerator(DataGenerator generator) {
+        this.pathProvider = generator.createPathProvider(DataGenerator.Target.DATA_PACK, MiniGameKitsManager.KIND);
     }
 	
 	@Override
@@ -27,7 +27,7 @@ public class MiniGameShopsGenerator implements DataProvider {
 
 	@Override
 	public String getName() {
-		return MiniGamesMod.MODID+":"+MiniGameShopsManager.KIND;
+		return MiniGamesMod.MODID+":"+MiniGameKitsManager.KIND;
 	}
 
 }

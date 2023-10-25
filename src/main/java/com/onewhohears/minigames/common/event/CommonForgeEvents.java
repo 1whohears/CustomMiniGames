@@ -1,8 +1,8 @@
 package com.onewhohears.minigames.common.event;
 
 import com.onewhohears.minigames.MiniGamesMod;
-import com.onewhohears.minigames.data.MiniGameKitsManager;
-import com.onewhohears.minigames.data.MiniGameShopsManager;
+import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
+import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 
