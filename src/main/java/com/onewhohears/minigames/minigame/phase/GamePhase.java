@@ -28,6 +28,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 	
 	public CompoundTag save() {
 		CompoundTag nbt = new CompoundTag();
+		nbt.putString("id", id);
 		nbt.putInt("age", age);
 		return nbt;
 	}
