@@ -2,6 +2,7 @@ package com.onewhohears.minigames.command;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.mojang.brigadier.Command;
@@ -41,15 +42,43 @@ public class MiniGameCommand {
 			.then(reset())
 			.then(remove())
 			.then(listRunning())
+			.then(info())
 		);
+	}
+	
+	private ArgumentBuilder<CommandSourceStack,?> info() {
+		return Commands.literal("info")
+			.then(Commands.argument("instance_id", StringArgumentType.word())
+			.suggests(suggestStrings(() -> MiniGameManager.get().getRunningeGameIds()))
+				.then(Commands.literal("list_players").executes(commandPlayerList()))
+			);
+	}
+	
+	private GameDataCommand commandPlayerList() {
+		return (context, gameData) -> {
+			List<PlayerAgent<?>> players = gameData.getAllPlayerAgents();
+			if (players.size() == 0) {
+				Component message = Component.literal("There are zero players in the game "+gameData.getInstanceId());
+				context.getSource().sendSuccess(message, true);
+				return 1;
+			}
+			MutableComponent message = Component.empty();
+			for (PlayerAgent<?> agent : players) {
+				ServerPlayer sp = agent.getPlayer(context.getSource().getServer());
+				if (sp == null) message.append(agent.getId());
+				else message.append(sp.getDisplayName());
+				message.append(", ");
+			}
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
 	}
 	
 	private ArgumentBuilder<CommandSourceStack,?> setup() {
 		return Commands.literal("setup")
 			.then(Commands.argument("instance_id", StringArgumentType.word())
 			.suggests(suggestStrings(() -> MiniGameManager.get().getRunningeGameIds()))
-				.then(Commands.literal("start")
-				.executes(commandStartGame()))
+				.then(Commands.literal("start").executes(commandStartGame()))
 				.then(Commands.literal("add_team")
 					.then(Commands.argument("team", TeamArgument.team())
 					.executes(commandAddTeam())))

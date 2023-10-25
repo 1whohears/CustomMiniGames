@@ -104,6 +104,7 @@ public abstract class MiniGameData {
 		ListTag phaseList = new ListTag();
 		phases.forEach((id, phase) -> phaseList.add(phase.save()));
 		nbt.put("phaseList", phaseList);
+		nbt.putString("currentPhase", currentPhase.getId());
 	}
 	
 	protected void loadPhases(CompoundTag nbt) {
@@ -115,6 +116,9 @@ public abstract class MiniGameData {
 			if (phase == null) continue;
 			phase.load(tag);
 		}
+		String currentPhaseId = nbt.getString("currentPhase");
+		GamePhase<?> phase = phases.get(currentPhaseId);
+		if (phase != null) currentPhase = phase;
 	}
 	
 	/**
@@ -324,7 +328,10 @@ public abstract class MiniGameData {
 	public PlayerAgent<?> getAddIndividualPlayer(ServerPlayer player) {
 		if (!canAddIndividualPlayers()) return null;
 		PlayerAgent<?> agent = getPlayerAgentByUUID(player.getStringUUID());
-		if (agent == null) agent = createPlayerAgent(player);
+		if (agent == null) {
+			agent = createPlayerAgent(player);
+			agents.put(agent.getId(), agent);
+		}
 		return agent;
 	}
 	
@@ -332,7 +339,10 @@ public abstract class MiniGameData {
 	public TeamAgent<?> getAddTeam(PlayerTeam team) {
 		if (!canAddTeams()) return null;
 		TeamAgent<?> agent = getTeamAgentByName(team.getName());
-		if (agent == null) agent = createTeamAgent(team);
+		if (agent == null) {
+			agent = createTeamAgent(team);
+			agents.put(agent.getId(), agent);
+		}
 		return agent;
 	}
 	

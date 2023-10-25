@@ -59,7 +59,7 @@ public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
 	
 	@Nullable
 	public ServerPlayer getPlayer(MinecraftServer server) {
-		if (player.isAddedToWorld()) return player;
+		if (player != null && player.isAddedToWorld()) return player;
 		player = server.getPlayerList().getPlayer(getPlayerId());
 		return player;
 	}

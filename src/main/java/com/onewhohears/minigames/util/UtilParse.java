@@ -79,12 +79,14 @@ public class UtilParse {
 	}
 	
 	public static void writeVec3(CompoundTag tag, Vec3 v, String name) {
+		if (v == null) return;
 		tag.putDouble(name+"x", v.x);
 		tag.putDouble(name+"y", v.y);
 		tag.putDouble(name+"z", v.z);
 	}
 	
 	public static Vec3 readVec3(CompoundTag tag, String name) {
+		if (!tag.contains(name+"x") || !tag.contains(name+"y") || !tag.contains(name+"z")) return null;
 		double x, y, z;
 		x = tag.getDouble(name+"x");
 		y = tag.getDouble(name+"y");
