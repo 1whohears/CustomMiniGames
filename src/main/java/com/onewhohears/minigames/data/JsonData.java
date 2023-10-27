@@ -9,6 +9,30 @@ import net.minecraft.resources.ResourceLocation;
 
 public abstract class JsonData {
 	
+	public static abstract class Builder<T extends Builder<T>> {
+		protected final String namespace;
+		protected final String id;
+		protected final JsonObject jsonData = new JsonObject();
+		protected final JsonDataBuilder<?> builder;
+		protected Builder(String namespace, String id, JsonDataBuilder<?> builder) {
+			this.namespace = namespace;
+			this.id = id;
+			this.builder = builder;
+			jsonData.addProperty("id", id);
+		}
+		@SuppressWarnings("unchecked")
+		public T setDisplayName(String name) {
+			jsonData.addProperty("displayName", name);
+			return (T) this;
+		}
+		public JsonData build() {
+			return builder.create(new ResourceLocation(namespace, id), jsonData);
+		}
+	}
+	public interface JsonDataBuilder<T extends JsonData> {
+		T create(ResourceLocation key, JsonObject json);
+	}
+	
 	private final ResourceLocation key;
 	private final JsonObject jsonData;
 	private final String id;
