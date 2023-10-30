@@ -39,12 +39,10 @@ public class MiniGameManager extends SavedData {
 	 * register all games here
 	 */
 	public static void registerGames() {
-		registerGame("simple_team_deathmatch", (instanceId, gameTypeId) -> {
-			return DeathMatchData.createSimpleTeamDeathMatch(instanceId, gameTypeId, 3);
-		});
-		registerGame("simple_ffa_deathmatch", (instanceId, gameTypeId) -> {
-			return DeathMatchData.createSimpleFFADeathMatch(instanceId, gameTypeId, 3);
-		});
+		registerGame("simple_team_deathmatch", (instanceId, gameTypeId) ->
+			DeathMatchData.createSimpleTeamDeathMatch(instanceId, gameTypeId, 3));
+		registerGame("simple_ffa_deathmatch", (instanceId, gameTypeId) -> 
+			DeathMatchData.createSimpleFFADeathMatch(instanceId, gameTypeId, 3));
 		/*
 		 * TODO 3.1 create and register the following minigame modes
 		 * team/ffa death match (1 or multiple lives)
@@ -64,8 +62,10 @@ public class MiniGameManager extends SavedData {
 	 * @return false if gameTypeId already exists
 	 */
 	public static boolean registerGame(String gameTypeId, GameGenerator generator) {
+		if (generator == null) return false;
 		if (gameGenerators.containsKey(gameTypeId)) return false;
 		gameGenerators.put(gameTypeId, generator);
+		LOGGER.debug("Registered Game "+gameTypeId);
 		return true;
 	}
 	
