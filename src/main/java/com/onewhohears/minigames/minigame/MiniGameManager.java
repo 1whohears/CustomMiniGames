@@ -46,6 +46,7 @@ public class MiniGameManager extends SavedData {
 		/*
 		 * TODO 3.1 create and register the following minigame modes
 		 * team/ffa death match (1 or multiple lives)
+		 * team capture the flag
 		 * team/ffa territory control
 		 * one volunteer runs away from everyone else
 		 * zombie apocalypse
