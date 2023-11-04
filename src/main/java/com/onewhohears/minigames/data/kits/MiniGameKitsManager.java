@@ -3,6 +3,8 @@ package com.onewhohears.minigames.data.kits;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import com.google.gson.JsonElement;
@@ -30,6 +32,11 @@ public class MiniGameKitsManager extends SimpleJsonResourceReloadListener {
 	
 	private Map<String, GameKit> kits = new HashMap<>();
 	
+	@Nullable
+	public GameKit getKit(String kit_name) {
+		return kits.get(kit_name);
+	}
+	
 	protected MiniGameKitsManager() {
 		super(UtilParse.GSON, KIND);
 	}
@@ -46,6 +53,10 @@ public class MiniGameKitsManager extends SimpleJsonResourceReloadListener {
 			LOGGER.error("PARSE KIT FAILED "+key.toString());
 			e.printStackTrace();
 		}});
+	}
+	
+	public String[] getKitNames() {
+		return kits.keySet().toArray(new String[kits.size()]);
 	}
 
 }

@@ -15,6 +15,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.onewhohears.minigames.data.kits.GameKit;
+import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
@@ -36,14 +38,41 @@ import net.minecraft.world.scores.PlayerTeam;
 public class MiniGameCommand {
 	
 	public MiniGameCommand(CommandDispatcher<CommandSourceStack> d) {
-		d.register(Commands.literal("minigame").requires((stack) -> { return stack.hasPermission(2);})
+		d.register(Commands.literal("minigame").requires((stack) -> stack.hasPermission(2))
 			.then(createNew())
 			.then(setup())
 			.then(reset())
 			.then(remove())
 			.then(listRunning())
 			.then(info())
+			.then(kit())
 		);
+	}
+	
+	private ArgumentBuilder<CommandSourceStack,?> kit() {
+		return Commands.literal("kit")
+			.then(giveKit());
+	}
+	
+	private ArgumentBuilder<CommandSourceStack,?> giveKit() {
+		return Commands.literal("give")
+			.then(Commands.argument("kit_name", StringArgumentType.word())
+			.suggests(suggestStrings(() -> MiniGameKitsManager.get().getKitNames()))
+				.then(Commands.argument("players", EntityArgument.players())
+				.executes((context) -> {
+					String kit_name = StringArgumentType.getString(context, "kit_name");
+					GameKit kit = MiniGameKitsManager.get().getKit(kit_name);
+					if (kit == null) {
+						Component message = Component.literal("There are no kits with the id "+kit_name);
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+					for (ServerPlayer player : players) kit.giveItems(player);
+					Component message = Component.literal("Gave "+players.size()+" players kit "+kit_name);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				})));
 	}
 	
 	private ArgumentBuilder<CommandSourceStack,?> info() {
