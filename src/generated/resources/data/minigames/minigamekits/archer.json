@@ -31,10 +31,7 @@
     },
     {
       "item": "minecraft:bread",
-      "nbt": {
-        "Unbreakable": true
-      },
-      "num": 1
+      "num": 64
     },
     {
       "item": "minecraft:water_bucket",
