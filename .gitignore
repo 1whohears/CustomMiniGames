@@ -21,7 +21,8 @@ build
 eclipse
 run
 *.bak
+local.properties
 
 # Files from Forge MDK
 forge*changelog.txt
-local.properties
+**/src/generated/resources/.cache

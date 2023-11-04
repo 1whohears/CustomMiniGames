@@ -1,0 +1,87 @@
+{
+  "id": "standard",
+  "kitItems": [
+    {
+      "item": "minecraft:iron_sword",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:iron_axe",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:iron_pickaxe",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:iron_shovel",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:bread",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:water_bucket",
+      "num": 1
+    },
+    {
+      "item": "minecraft:cobblestone",
+      "num": 64
+    },
+    {
+      "item": "minecraft:cobblestone",
+      "num": 64
+    },
+    {
+      "item": "minecraft:shield",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:iron_helmet",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:iron_chestplate",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:iron_leggings",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:iron_boots",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    }
+  ]
+}

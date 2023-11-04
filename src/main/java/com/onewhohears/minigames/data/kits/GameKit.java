@@ -24,22 +24,32 @@ public class GameKit extends JsonData {
 		public static Builder create(String namespace, String id) {
 			return new Builder(namespace, id);
 		}
-		public Builder addItem(String itemkey, int num, JsonObject nbt) {
+		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt) {
 			if (num < 1) num = 1;
 			else if (num > 64) num = 64;
 			JsonObject json = new JsonObject();
 			json.addProperty("item", itemkey);
 			json.addProperty("num", num);
-			json.add("nbt", nbt);
+			if (unbreakable) {
+				if (nbt == null) nbt = new JsonObject();
+				nbt.addProperty("Unbreakable", true);
+			}
+			if (nbt != null) json.add("nbt", nbt);
 			jsonData.get("kitItems").getAsJsonArray().add(json);
 			return this;
+		}
+		public Builder addItem(String itemkey, boolean unbreakable) {
+			return addItem(itemkey, 1, unbreakable, null);
+		}
+		public Builder addItem(String itemkey, int num, JsonObject nbt) {
+			return addItem(itemkey, num, false, nbt);
 		}
 		public Builder addItem(String itemkey, int num) {
 			return addItem(itemkey, num, null);
 		}
 		public Builder addItem(String itemkey, JsonObject nbt) {
 			return addItem(itemkey, 1, nbt);
-		}
+		}		
 		public Builder addItem(String itemkey) {
 			return addItem(itemkey, 1, null);
 		}

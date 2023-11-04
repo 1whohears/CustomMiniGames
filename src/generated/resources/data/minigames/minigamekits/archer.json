@@ -1,0 +1,95 @@
+{
+  "id": "archer",
+  "kitItems": [
+    {
+      "item": "minecraft:bow",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:iron_axe",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:iron_pickaxe",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:iron_shovel",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:bread",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:water_bucket",
+      "num": 1
+    },
+    {
+      "item": "minecraft:cobblestone",
+      "num": 64
+    },
+    {
+      "item": "minecraft:cobblestone",
+      "num": 64
+    },
+    {
+      "item": "minecraft:shield",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:chainmail_helmet",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:chainmail_chestplate",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:chainmail_leggings",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:chainmail_boots",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "item": "minecraft:arrow",
+      "num": 64
+    },
+    {
+      "item": "minecraft:arrow",
+      "num": 64
+    }
+  ]
+}

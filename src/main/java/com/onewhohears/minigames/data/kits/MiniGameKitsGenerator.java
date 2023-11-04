@@ -29,8 +29,37 @@ public class MiniGameKitsGenerator implements DataProvider {
     }
 	
 	protected void registerKits() {
-		registerKit(GameKit.Builder.create(MiniGamesMod.MODID, "warrior")
-				.addItem("minecraft:iron_sword")
+		registerKit(GameKit.Builder.create(MiniGamesMod.MODID, "standard")
+				.addItem("minecraft:iron_sword", true)
+				.addItem("minecraft:iron_axe", true)
+				.addItem("minecraft:iron_pickaxe", true)
+				.addItem("minecraft:iron_shovel", true)
+				.addItem("minecraft:bread", true)
+				.addItem("minecraft:water_bucket")
+				.addItem("minecraft:cobblestone", 64)
+				.addItem("minecraft:cobblestone", 64)
+				.addItem("minecraft:shield", true)
+				.addItem("minecraft:iron_helmet", true)
+				.addItem("minecraft:iron_chestplate", true)
+				.addItem("minecraft:iron_leggings", true)
+				.addItem("minecraft:iron_boots", true)
+				.build());
+		registerKit(GameKit.Builder.create(MiniGamesMod.MODID, "archer")
+				.addItem("minecraft:bow", true)
+				.addItem("minecraft:iron_axe", true)
+				.addItem("minecraft:iron_pickaxe", true)
+				.addItem("minecraft:iron_shovel", true)
+				.addItem("minecraft:bread", true)
+				.addItem("minecraft:water_bucket")
+				.addItem("minecraft:cobblestone", 64)
+				.addItem("minecraft:cobblestone", 64)
+				.addItem("minecraft:shield", true)
+				.addItem("minecraft:chainmail_helmet", true)
+				.addItem("minecraft:chainmail_chestplate", true)
+				.addItem("minecraft:chainmail_leggings", true)
+				.addItem("minecraft:chainmail_boots", true)
+				.addItem("minecraft:arrow", 64)
+				.addItem("minecraft:arrow", 64)
 				.build());
 	}
 	
