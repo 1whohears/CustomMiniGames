@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.google.gson.JsonObject;
 import com.onewhohears.minigames.MiniGamesMod;
 import com.onewhohears.minigames.data.JsonData;
 
@@ -29,14 +30,16 @@ public class MiniGameKitsGenerator implements DataProvider {
     }
 	
 	protected void registerKits() {
+		JsonObject healthPotionNbt = new JsonObject();
+		healthPotionNbt.addProperty("Potion", "minecraft:strong_healing");
 		registerKit(GameKit.Builder.create(MiniGamesMod.MODID, "standard")
-				.addItem("minecraft:iron_sword", true)
+				.addItem("minecraft:diamond_sword", true)
 				.addItem("minecraft:iron_axe", true)
 				.addItem("minecraft:iron_pickaxe", true)
 				.addItem("minecraft:iron_shovel", true)
-				.addItem("minecraft:bread", 64)
-				.addItem("minecraft:water_bucket")
-				.addItem("minecraft:cobblestone", 64)
+				.addItem("minecraft:cooked_beef", 64)
+				.addItem("minecraft:splash_potion", healthPotionNbt)
+				.addItem("minecraft:splash_potion", healthPotionNbt)
 				.addItem("minecraft:cobblestone", 64)
 				.addItem("minecraft:shield", true)
 				.addItem("minecraft:iron_helmet", true)
@@ -50,8 +53,8 @@ public class MiniGameKitsGenerator implements DataProvider {
 				.addItem("minecraft:iron_pickaxe", true)
 				.addItem("minecraft:iron_shovel", true)
 				.addItem("minecraft:bread", 64)
-				.addItem("minecraft:water_bucket")
-				.addItem("minecraft:cobblestone", 64)
+				.addItem("minecraft:crossbow", true)
+				.addItem("minecraft:splash_potion", healthPotionNbt)
 				.addItem("minecraft:cobblestone", 64)
 				.addItem("minecraft:shield", true)
 				.addItem("minecraft:chainmail_helmet", true)
@@ -60,6 +63,22 @@ public class MiniGameKitsGenerator implements DataProvider {
 				.addItem("minecraft:chainmail_boots", true)
 				.addItem("minecraft:arrow", 64)
 				.addItem("minecraft:arrow", 64)
+				.addItem("minecraft:arrow", 64)
+				.build());
+		registerKit(GameKit.Builder.create(MiniGamesMod.MODID, "builder")
+				.addItem("minecraft:diamond_axe", true)
+				.addItem("minecraft:diamond_pickaxe", true)
+				.addItem("minecraft:diamond_shovel", true)
+				.addItem("minecraft:bread", 64)
+				.addItem("minecraft:water_bucket")
+				.addItem("minecraft:bricks", 64)
+				.addItem("minecraft:bricks", 64)
+				.addItem("minecraft:cobblestone", 64)
+				.addItem("minecraft:shield", true)
+				.addItem("minecraft:leather_helmet", true)
+				.addItem("minecraft:leather_chestplate", true)
+				.addItem("minecraft:leather_leggings", true)
+				.addItem("minecraft:leather_boots", true)
 				.build());
 	}
 	

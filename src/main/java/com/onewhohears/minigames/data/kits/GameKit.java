@@ -41,6 +41,9 @@ public class GameKit extends JsonData {
 		public Builder addItem(String itemkey, boolean unbreakable) {
 			return addItem(itemkey, 1, unbreakable, null);
 		}
+		public Builder addItem(String itemkey, boolean unbreakable, JsonObject nbt) {
+			return addItem(itemkey, 1, unbreakable, nbt);
+		}
 		public Builder addItem(String itemkey, int num, JsonObject nbt) {
 			return addItem(itemkey, num, false, nbt);
 		}

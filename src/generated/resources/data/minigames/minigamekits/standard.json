@@ -2,7 +2,7 @@
   "id": "standard",
   "kitItems": [
     {
-      "item": "minecraft:iron_sword",
+      "item": "minecraft:diamond_sword",
       "nbt": {
         "Unbreakable": true
       },
@@ -30,16 +30,22 @@
       "num": 1
     },
     {
-      "item": "minecraft:bread",
+      "item": "minecraft:cooked_beef",
       "num": 64
     },
     {
-      "item": "minecraft:water_bucket",
+      "item": "minecraft:splash_potion",
+      "nbt": {
+        "Potion": "minecraft:strong_healing"
+      },
       "num": 1
     },
     {
-      "item": "minecraft:cobblestone",
-      "num": 64
+      "item": "minecraft:splash_potion",
+      "nbt": {
+        "Potion": "minecraft:strong_healing"
+      },
+      "num": 1
     },
     {
       "item": "minecraft:cobblestone",

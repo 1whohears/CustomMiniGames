@@ -1,29 +1,22 @@
 {
-  "id": "archer",
+  "id": "builder",
   "kitItems": [
     {
-      "item": "minecraft:bow",
+      "item": "minecraft:diamond_axe",
       "nbt": {
         "Unbreakable": true
       },
       "num": 1
     },
     {
-      "item": "minecraft:iron_axe",
+      "item": "minecraft:diamond_pickaxe",
       "nbt": {
         "Unbreakable": true
       },
       "num": 1
     },
     {
-      "item": "minecraft:iron_pickaxe",
-      "nbt": {
-        "Unbreakable": true
-      },
-      "num": 1
-    },
-    {
-      "item": "minecraft:iron_shovel",
+      "item": "minecraft:diamond_shovel",
       "nbt": {
         "Unbreakable": true
       },
@@ -34,18 +27,16 @@
       "num": 64
     },
     {
-      "item": "minecraft:crossbow",
-      "nbt": {
-        "Unbreakable": true
-      },
+      "item": "minecraft:water_bucket",
       "num": 1
     },
     {
-      "item": "minecraft:splash_potion",
-      "nbt": {
-        "Potion": "minecraft:strong_healing"
-      },
-      "num": 1
+      "item": "minecraft:bricks",
+      "num": 64
+    },
+    {
+      "item": "minecraft:bricks",
+      "num": 64
     },
     {
       "item": "minecraft:cobblestone",
@@ -59,44 +50,32 @@
       "num": 1
     },
     {
-      "item": "minecraft:chainmail_helmet",
+      "item": "minecraft:leather_helmet",
       "nbt": {
         "Unbreakable": true
       },
       "num": 1
     },
     {
-      "item": "minecraft:chainmail_chestplate",
+      "item": "minecraft:leather_chestplate",
       "nbt": {
         "Unbreakable": true
       },
       "num": 1
     },
     {
-      "item": "minecraft:chainmail_leggings",
+      "item": "minecraft:leather_leggings",
       "nbt": {
         "Unbreakable": true
       },
       "num": 1
     },
     {
-      "item": "minecraft:chainmail_boots",
+      "item": "minecraft:leather_boots",
       "nbt": {
         "Unbreakable": true
       },
       "num": 1
-    },
-    {
-      "item": "minecraft:arrow",
-      "num": 64
-    },
-    {
-      "item": "minecraft:arrow",
-      "num": 64
-    },
-    {
-      "item": "minecraft:arrow",
-      "num": 64
     }
   ]
 }
