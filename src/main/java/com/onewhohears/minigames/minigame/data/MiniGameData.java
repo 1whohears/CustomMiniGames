@@ -430,10 +430,15 @@ public abstract class MiniGameData {
 		return players;
 	}
 	
+	public List<TeamAgent<?>> getTeamAgents() {
+		List<TeamAgent<?>> teams = new ArrayList<>();
+		for (GameAgent<?> agent : agents.values()) 
+			if (agent.isTeam()) teams.add((TeamAgent<?>) agent);
+		return teams;
+	}
+	
 	public void resetAllAgents() {
-		agents.forEach((id, agent) -> {
-			agent.resetAgent();
-		});
+		agents.forEach((id, agent) -> agent.resetAgent());
 	}
 	
 	public void applyAllAgentRespawnPoints(MinecraftServer server) {

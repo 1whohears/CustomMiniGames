@@ -6,12 +6,14 @@ import java.util.List;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
+import com.onewhohears.minigames.minigame.agent.TeamAgent;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.scores.PlayerTeam;
 
 public class SubComInfo {
 	
@@ -20,6 +22,7 @@ public class SubComInfo {
 			.then(listRunning())
 			.then(GameDataCom.runningGameIdArgument()
 				.then(Commands.literal("list_players").executes(commandPlayerList()))
+				.then(Commands.literal("list_teams").executes(commandTeamList()))
 			);
 	}
 	
@@ -32,11 +35,33 @@ public class SubComInfo {
 				return 1;
 			}
 			MutableComponent message = Component.empty();
-			for (PlayerAgent<?> agent : players) {
+			for (int i = 0; i < players.size(); ++i) {
+				PlayerAgent<?> agent = players.get(i);
+				if (i != 0) message.append(", ");
 				ServerPlayer sp = agent.getPlayer(context.getSource().getServer());
 				if (sp == null) message.append(agent.getId());
 				else message.append(sp.getDisplayName());
-				message.append(", ");
+			}
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
+	}
+	
+	private GameDataCom commandTeamList() {
+		return (context, gameData) -> {
+			List<TeamAgent<?>> teams = gameData.getTeamAgents();
+			if (teams.size() == 0) {
+				Component message = Component.literal("There are zero teams in the game "+gameData.getInstanceId());
+				context.getSource().sendSuccess(message, true);
+				return 1;
+			}
+			MutableComponent message = Component.empty();
+			for (int i = 0; i < teams.size(); ++i) {
+				TeamAgent<?> agent = teams.get(i);
+				if (i != 0) message.append(", ");
+				PlayerTeam pt = agent.getTeam(context.getSource().getServer());
+				if (pt == null) message.append(agent.getId());
+				else message.append(pt.getDisplayName());
 			}
 			context.getSource().sendSuccess(message, true);
 			return 1;
