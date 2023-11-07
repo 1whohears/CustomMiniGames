@@ -3,6 +3,8 @@ package com.onewhohears.minigames.data.shops;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import com.google.gson.JsonElement;
@@ -26,9 +28,18 @@ public class MiniGameShopsManager extends SimpleJsonResourceReloadListener {
 		return instance;
 	}
 	
-	// TODO 3.4 shop system
+	// TODO 3.4.1 shop system
 	
 	private Map<String, GameShop> shops = new HashMap<>();
+	
+	@Nullable
+	public GameShop getShop(String shop_name) {
+		return shops.get(shop_name);
+	}
+	
+	public String[] getShopNames() {
+		return shops.keySet().toArray(new String[shops.size()]);
+	}
 	
 	protected MiniGameShopsManager() {
 		super(UtilParse.GSON, KIND);

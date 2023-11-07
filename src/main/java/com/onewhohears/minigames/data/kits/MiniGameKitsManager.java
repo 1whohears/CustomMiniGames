@@ -37,6 +37,10 @@ public class MiniGameKitsManager extends SimpleJsonResourceReloadListener {
 		return kits.get(kit_name);
 	}
 	
+	public String[] getKitNames() {
+		return kits.keySet().toArray(new String[kits.size()]);
+	}
+	
 	protected MiniGameKitsManager() {
 		super(UtilParse.GSON, KIND);
 	}
@@ -53,10 +57,6 @@ public class MiniGameKitsManager extends SimpleJsonResourceReloadListener {
 			LOGGER.error("PARSE KIT FAILED "+key.toString());
 			e.printStackTrace();
 		}});
-	}
-	
-	public String[] getKitNames() {
-		return kits.keySet().toArray(new String[kits.size()]);
 	}
 
 }
