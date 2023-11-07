@@ -78,10 +78,9 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 		PlayerTeam team = getTeam(server);
 		if (team == null) return;
 		Collection<String> usernames = team.getPlayers();
-		// TODO 3.7.2 use team join/leave event to update team players agent map
-		/*playerAgents.forEach((username, player) -> {
-			if (!usernames.contains(username)) playerAgents.remove(username);
-		});*/
+		playerAgents.forEach((username, player) -> {
+			if (!usernames.contains(username) && player.canTickAgent(server)) playerAgents.remove(username);
+		});
 		for (String username : usernames) {
 			if (playerAgents.containsKey(username)) continue;
 			ServerPlayer player = server.getPlayerList().getPlayerByName(username);

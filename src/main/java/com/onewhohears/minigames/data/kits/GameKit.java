@@ -2,6 +2,7 @@ package com.onewhohears.minigames.data.kits;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +25,8 @@ public class GameKit extends JsonData {
 		public static Builder create(String namespace, String id) {
 			return new Builder(namespace, id);
 		}
-		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt) {
+		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt, 
+				boolean keep, boolean refill, boolean ignoreNbt) {
 			if (num < 1) num = 1;
 			else if (num > 64) num = 64;
 			JsonObject json = new JsonObject();
@@ -35,8 +37,14 @@ public class GameKit extends JsonData {
 				nbt.addProperty("Unbreakable", true);
 			}
 			if (nbt != null) json.add("nbt", nbt);
+			if (keep) json.addProperty("keep", keep);
+			if (refill) json.addProperty("refill", refill);
+			if (ignoreNbt) json.addProperty("ignoreNbt", ignoreNbt);
 			jsonData.get("kitItems").getAsJsonArray().add(json);
 			return this;
+		}
+		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt) {
+			return addItem(itemkey, num, unbreakable, nbt, false, false, false);
 		}
 		public Builder addItem(String itemkey, boolean unbreakable) {
 			return addItem(itemkey, 1, unbreakable, null);
@@ -63,7 +71,6 @@ public class GameKit extends JsonData {
 	}
 	
 	private List<KitItem> items = new ArrayList<>();
-	
 	public GameKit(ResourceLocation key, JsonObject json) {
 		super(key, json);
 		JsonArray list = json.get("kitItems").getAsJsonArray();
@@ -73,9 +80,44 @@ public class GameKit extends JsonData {
 			if (kitItem != null) items.add(kitItem);
 		}
 	}
-	
 	public void giveItems(ServerPlayer player) {
 		for (KitItem item : items) player.addItem(item.getItem());
+	}
+	public void giveItemsClearAll(ServerPlayer player) {
+		player.getInventory().clearContent();
+		giveItems(player);
+	}
+	public void giveItemsClearOther(ServerPlayer player) {
+		giveItemsRefill(player, true);
+	}
+	public void giveItemsRefill(ServerPlayer player) {
+		giveItemsRefill(player, false);
+	}
+	public void giveItemsRefill(ServerPlayer player, boolean clearOther) {
+		for (KitItem item : items) {
+			if (item.canRefill()) 
+				player.addItem(item.getItem());
+			else if (item.canKeep() && !player.getInventory().hasAnyMatching(item.sameChecker())) 
+				player.addItem(item.getItem());
+		}
+		if (clearOther) for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
+			 ItemStack stack = player.getInventory().getItem(i);
+			 if (stack.isEmpty()) continue;
+			 KitItem kititem = getKitItemData(stack);
+			 if (kititem == null || !kititem.canKeep()) 
+				 player.getInventory().removeItem(stack);
+		}
+	}
+	public boolean hasKitItem(ItemStack stack) {
+		if (stack.isEmpty()) return false;
+		for (KitItem item : items) if (item.isSameItem(stack)) return true;
+		return false;
+	}
+	@Nullable
+	public KitItem getKitItemData(ItemStack stack) {
+		if (stack.isEmpty()) return null;
+		for (KitItem item : items) if (item.isSameItem(stack)) return item;
+		return null;
 	}
 	
 	public static class KitItem {
@@ -92,20 +134,44 @@ public class GameKit extends JsonData {
 				JsonObject nbtJson = json.get("nbt").getAsJsonObject();
 				nbt = JsonToNBTUtil.getTagFromJson(nbtJson);
 			}
-			return new KitItem(item, num, nbt);
+			boolean keep = UtilParse.getBooleanSafe(json, "keep", false);
+			boolean refill = UtilParse.getBooleanSafe(json, "refill", false);
+			boolean ignoreNbt = UtilParse.getBooleanSafe(json, "ignoreNbt", false);
+			return new KitItem(item, num, nbt, keep, refill, ignoreNbt);
 		}
 		private final Item item;
 		private final int num;
 		private final CompoundTag nbt;
-		private KitItem(Item item, int num, CompoundTag nbt) {
+		private final boolean keep, refill, ignoreNbt;
+		private KitItem(Item item, int num, CompoundTag nbt, boolean keep, boolean refill, boolean ignoreNbt) {
 			this.item = item;
 			this.num = num;
 			this.nbt = nbt;
+			this.keep = keep;
+			this.refill = refill;
+			this.ignoreNbt = ignoreNbt;
 		}
 		public ItemStack getItem() {
 			ItemStack stack = new ItemStack(item, num);
 			if (nbt != null) stack.setTag(nbt);
 			return stack;
+		}
+		public boolean canKeep() {
+			return keep;
+		}
+		public boolean canRefill() {
+			return refill;
+		}
+		public boolean sameCheckIgnoreNbt() {
+			return ignoreNbt;
+		}
+		public boolean isSameItem(ItemStack stack) {
+			if (stack.isEmpty()) return false;
+			if (sameCheckIgnoreNbt()) return ItemStack.isSameIgnoreDurability(getItem(), stack);
+			return ItemStack.isSameItemSameTags(getItem(), stack);
+		}
+		public Predicate<ItemStack> sameChecker() {
+			return (stack) -> isSameItem(stack);
 		}
 	}
 	

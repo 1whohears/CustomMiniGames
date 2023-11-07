@@ -1,4 +1,4 @@
-package com.onewhohears.minigames.command;
+package com.onewhohears.minigames.command.admin;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,9 +35,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
 
-public class MiniGameCommand {
+public class MiniGameAdminCommands {
 	
-	public MiniGameCommand(CommandDispatcher<CommandSourceStack> d) {
+	public MiniGameAdminCommands(CommandDispatcher<CommandSourceStack> d) {
 		d.register(Commands.literal("minigame").requires((stack) -> stack.hasPermission(2))
 			.then(createNew())
 			.then(setup())
@@ -59,20 +59,47 @@ public class MiniGameCommand {
 			.then(Commands.argument("kit_name", StringArgumentType.word())
 			.suggests(suggestStrings(() -> MiniGameKitsManager.get().getKitNames()))
 				.then(Commands.argument("players", EntityArgument.players())
-				.executes((context) -> {
-					String kit_name = StringArgumentType.getString(context, "kit_name");
-					GameKit kit = MiniGameKitsManager.get().getKit(kit_name);
-					if (kit == null) {
-						Component message = Component.literal("There are no kits with the id "+kit_name);
-						context.getSource().sendFailure(message);
-						return 0;
-					}
-					Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
-					for (ServerPlayer player : players) kit.giveItems(player);
-					Component message = Component.literal("Gave "+players.size()+" players kit "+kit_name);
-					context.getSource().sendSuccess(message, true);
-					return 1;
-				})));
+				.executes(commandGiveKit(false, false, false))
+					.then(Commands.literal("give_all")
+					.executes(commandGiveKit(false, false, false)))
+					.then(Commands.literal("refill")
+					.executes(commandGiveKit(false, false, true)))
+					.then(Commands.literal("clear_other")
+					.executes(commandGiveKit(false, true, false)))
+					.then(Commands.literal("clear_all")
+					.executes(commandGiveKit(true, false, false)))
+				)	
+			);
+	}
+	
+	private Command<CommandSourceStack> commandGiveKit(boolean clearAll, boolean clearOther, boolean refill) {
+		return (context) -> {
+			String kit_name = StringArgumentType.getString(context, "kit_name");
+			GameKit kit = MiniGameKitsManager.get().getKit(kit_name);
+			if (kit == null) {
+				Component message = Component.literal("There are no kits with the id "+kit_name);
+				context.getSource().sendFailure(message);
+				return 0;
+			}
+			Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+			for (ServerPlayer player : players) {
+				if (refill) kit.giveItemsRefill(player);
+				else if (clearOther) kit.giveItemsClearOther(player);
+				else if (clearAll) kit.giveItemsClearAll(player);
+				else kit.giveItems(player);
+				Component message = Component.literal("You recieved kit "+kit_name);
+				player.displayClientMessage(message, false);
+			}
+			Component message;
+			if (players.size() > 1) 
+				message = Component.literal("Gave "+players.size()+" players the kit "+kit_name);
+			else if (players.size() == 1) 
+				message = Component.literal("Gave "+players.iterator().next().getDisplayName()+" the kit "+kit_name);
+			else 
+				message = Component.literal("No matching players found to give kit "+kit_name);
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
 	}
 	
 	private ArgumentBuilder<CommandSourceStack,?> info() {

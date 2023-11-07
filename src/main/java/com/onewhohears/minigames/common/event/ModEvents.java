@@ -1,7 +1,7 @@
 package com.onewhohears.minigames.common.event;
 
 import com.onewhohears.minigames.MiniGamesMod;
-import com.onewhohears.minigames.command.MiniGameCommand;
+import com.onewhohears.minigames.command.admin.MiniGameAdminCommands;
 
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -12,7 +12,7 @@ public final class ModEvents {
 	
 	@SubscribeEvent
 	public static void registerCommands(RegisterCommandsEvent event) {
-		new MiniGameCommand(event.getDispatcher());
+		new MiniGameAdminCommands(event.getDispatcher());
 	}
 	
 }
