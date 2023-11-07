@@ -27,10 +27,10 @@ public class SubComKit {
 	
 	public ArgumentBuilder<CommandSourceStack,?> kit() {
 		return Commands.literal("kit")
-			.then(giveKit());
+			.then(giveKitArg());
 	}
 	
-	private ArgumentBuilder<CommandSourceStack,?> giveKit() {
+	private ArgumentBuilder<CommandSourceStack,?> giveKitArg() {
 		return Commands.literal("give")
 			.then(kitNameArgument()
 				.then(Commands.argument("players", EntityArgument.players())

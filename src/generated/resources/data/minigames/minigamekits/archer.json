@@ -3,6 +3,7 @@
   "kitItems": [
     {
       "item": "minecraft:bow",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -10,6 +11,7 @@
     },
     {
       "item": "minecraft:iron_axe",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -17,6 +19,7 @@
     },
     {
       "item": "minecraft:iron_pickaxe",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -24,6 +27,7 @@
     },
     {
       "item": "minecraft:iron_shovel",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -31,10 +35,13 @@
     },
     {
       "item": "minecraft:bread",
-      "num": 64
+      "keep": true,
+      "num": 32,
+      "refill": true
     },
     {
       "item": "minecraft:crossbow",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -42,10 +49,12 @@
     },
     {
       "item": "minecraft:splash_potion",
+      "keep": true,
       "nbt": {
         "Potion": "minecraft:strong_healing"
       },
-      "num": 1
+      "num": 1,
+      "refill": true
     },
     {
       "item": "minecraft:cobblestone",
@@ -53,6 +62,7 @@
     },
     {
       "item": "minecraft:shield",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -60,6 +70,7 @@
     },
     {
       "item": "minecraft:chainmail_helmet",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -67,6 +78,7 @@
     },
     {
       "item": "minecraft:chainmail_chestplate",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -74,6 +86,7 @@
     },
     {
       "item": "minecraft:chainmail_leggings",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -81,6 +94,7 @@
     },
     {
       "item": "minecraft:chainmail_boots",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -88,14 +102,18 @@
     },
     {
       "item": "minecraft:arrow",
+      "keep": true,
+      "num": 64,
+      "refill": true
+    },
+    {
+      "item": "minecraft:arrow",
+      "keep": true,
       "num": 64
     },
     {
       "item": "minecraft:arrow",
-      "num": 64
-    },
-    {
-      "item": "minecraft:arrow",
+      "keep": true,
       "num": 64
     }
   ]

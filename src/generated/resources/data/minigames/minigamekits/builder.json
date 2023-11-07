@@ -3,6 +3,7 @@
   "kitItems": [
     {
       "item": "minecraft:diamond_axe",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -10,6 +11,7 @@
     },
     {
       "item": "minecraft:diamond_pickaxe",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -17,6 +19,7 @@
     },
     {
       "item": "minecraft:diamond_shovel",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -24,10 +27,13 @@
     },
     {
       "item": "minecraft:bread",
-      "num": 64
+      "keep": true,
+      "num": 32,
+      "refill": true
     },
     {
       "item": "minecraft:water_bucket",
+      "keep": true,
       "num": 1
     },
     {
@@ -44,6 +50,7 @@
     },
     {
       "item": "minecraft:shield",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -51,6 +58,7 @@
     },
     {
       "item": "minecraft:leather_helmet",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -58,6 +66,7 @@
     },
     {
       "item": "minecraft:leather_chestplate",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -65,6 +74,7 @@
     },
     {
       "item": "minecraft:leather_leggings",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -72,6 +82,7 @@
     },
     {
       "item": "minecraft:leather_boots",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },

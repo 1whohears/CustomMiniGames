@@ -3,6 +3,7 @@
   "kitItems": [
     {
       "item": "minecraft:diamond_sword",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -10,6 +11,7 @@
     },
     {
       "item": "minecraft:iron_axe",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -17,6 +19,7 @@
     },
     {
       "item": "minecraft:iron_pickaxe",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -24,6 +27,7 @@
     },
     {
       "item": "minecraft:iron_shovel",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -31,21 +35,27 @@
     },
     {
       "item": "minecraft:cooked_beef",
-      "num": 64
+      "keep": true,
+      "num": 32,
+      "refill": true
     },
     {
       "item": "minecraft:splash_potion",
+      "keep": true,
       "nbt": {
         "Potion": "minecraft:strong_healing"
       },
-      "num": 1
+      "num": 1,
+      "refill": true
     },
     {
       "item": "minecraft:splash_potion",
+      "keep": true,
       "nbt": {
         "Potion": "minecraft:strong_healing"
       },
-      "num": 1
+      "num": 1,
+      "refill": true
     },
     {
       "item": "minecraft:cobblestone",
@@ -53,6 +63,7 @@
     },
     {
       "item": "minecraft:shield",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -60,6 +71,7 @@
     },
     {
       "item": "minecraft:iron_helmet",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -67,6 +79,7 @@
     },
     {
       "item": "minecraft:iron_chestplate",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -74,6 +87,7 @@
     },
     {
       "item": "minecraft:iron_leggings",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
@@ -81,6 +95,7 @@
     },
     {
       "item": "minecraft:iron_boots",
+      "keep": true,
       "nbt": {
         "Unbreakable": true
       },
