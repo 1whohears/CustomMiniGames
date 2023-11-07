@@ -10,15 +10,11 @@ import net.minecraft.commands.SharedSuggestionProvider;
 public class CommandUtil {
 	
 	public static SuggestionProvider<CommandSourceStack> suggestStrings(String[] strings) {
-		return (context, builder) -> {
-			return SharedSuggestionProvider.suggest(strings, builder);
-		};
+		return (context, builder) -> SharedSuggestionProvider.suggest(strings, builder);
 	}
 	
 	public static SuggestionProvider<CommandSourceStack> suggestStrings(Supplier<String[]> strings) {
-		return (context, builder) -> {
-			return SharedSuggestionProvider.suggest(strings.get(), builder);
-		};
+		return (context, builder) -> SharedSuggestionProvider.suggest(strings.get(), builder);
 	}
 	
 }
