@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 import com.onewhohears.minigames.util.UtilConvert;
@@ -28,7 +29,7 @@ public class SubComSetup {
 	
 	public ArgumentBuilder<CommandSourceStack,?> setup() {
 		return Commands.literal("setup")
-			.then(GameDataCom.runningGameIdArgument()
+			.then(GameComArgs.runningGameIdArgument()
 				.then(Commands.literal("start").executes(commandStartGame()))
 				.then(addTeamArg())
 				.then(removeTeamArg())

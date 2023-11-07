@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.command.admin;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.onewhohears.minigames.command.GameComArgs;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -13,7 +14,7 @@ public class SubComReset {
 	
 	public ArgumentBuilder<CommandSourceStack,?> reset() {
 		return Commands.literal("reset")
-			.then(GameDataCom.runningGameIdArgument()
+			.then(GameComArgs.runningGameIdArgument()
 				.then(Commands.literal("confirm_reset")
 				.executes(commandReset()))
 			);

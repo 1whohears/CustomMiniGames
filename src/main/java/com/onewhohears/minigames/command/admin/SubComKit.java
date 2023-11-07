@@ -5,9 +5,9 @@ import java.util.Collection;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.data.kits.GameKit;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
-import com.onewhohears.minigames.util.CommandUtil;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -16,11 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 public class SubComKit {
-	
-	public static ArgumentBuilder<CommandSourceStack,?> kitNameArgument() {
-		return Commands.argument("kit_name", StringArgumentType.word())
-				.suggests(CommandUtil.suggestStrings(() -> MiniGameKitsManager.get().getKitNames()));
-	}
 	
 	public SubComKit() {
 	}
@@ -32,7 +27,7 @@ public class SubComKit {
 	
 	private ArgumentBuilder<CommandSourceStack,?> giveKitArg() {
 		return Commands.literal("give")
-			.then(kitNameArgument()
+			.then(GameComArgs.kitNameArgument()
 				.then(Commands.argument("players", EntityArgument.players())
 				.executes(commandGiveKit(false, false, false))
 					.then(Commands.literal("give_all")

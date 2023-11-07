@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.command.admin;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 
 import net.minecraft.commands.CommandSourceStack;
@@ -14,7 +15,7 @@ public class SubComRemove {
 	
 	public ArgumentBuilder<CommandSourceStack,?> remove() {
 		return Commands.literal("remove")
-			.then(GameDataCom.runningGameIdArgument()
+			.then(GameComArgs.runningGameIdArgument()
 				.then(Commands.literal("confirm_remove")
 				.executes(commandRemove()))
 			);

@@ -3,6 +3,7 @@ package com.onewhohears.minigames.command.admin;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
@@ -18,7 +19,7 @@ public class SubComCreateNew {
 	
 	public ArgumentBuilder<CommandSourceStack,?> createNew() {
 		return Commands.literal("create_new")
-			.then(GameDataCom.gameTypeIdArgument()
+			.then(GameComArgs.gameTypeIdArgument()
 				.then(Commands.argument("instance_id", StringArgumentType.word())
 				.executes(commandCreateNew()))
 			);

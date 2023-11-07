@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
@@ -20,7 +21,7 @@ public class SubComInfo {
 	public ArgumentBuilder<CommandSourceStack,?> info() {
 		return Commands.literal("info")
 			.then(listRunning())
-			.then(GameDataCom.runningGameIdArgument()
+			.then(GameComArgs.runningGameIdArgument()
 				.then(Commands.literal("list_players").executes(commandPlayerList()))
 				.then(Commands.literal("list_teams").executes(commandTeamList()))
 			);
