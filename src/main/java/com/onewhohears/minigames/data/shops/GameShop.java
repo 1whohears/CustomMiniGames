@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.onewhohears.minigames.data.JsonData;
-import com.onewhohears.minigames.data.kits.GameKit.KitItem;
 import com.onewhohears.minigames.util.JsonToNBTUtil;
 import com.onewhohears.minigames.util.UtilParse;
 
@@ -49,43 +48,61 @@ public class GameShop extends JsonData {
 		return products.get(index);
 	}
 	
-	public static class Product extends KitItem {
+	public static class Product {
 		@Nullable
 		public static Product create(JsonObject json) {
 			if (!verifySafe(json)) return null;
 			return new Product(json);
 		}
 		public static boolean verifySafe(JsonObject json) {
-			if (!KitItem.verifySafe(json)) return false;
-			String costItemKey = UtilParse.getStringSafe(json, "costItem", "");
+			JsonObject productJson = json.get("product").getAsJsonObject();
+			String productItemKey = UtilParse.getStringSafe(productJson, "item", "");
+			if (productItemKey.isEmpty()) return false;
+			ResourceLocation prl = new ResourceLocation(productItemKey);
+			if (!ForgeRegistries.ITEMS.containsKey(prl)) return false;
+			JsonObject costJson = json.get("cost").getAsJsonObject();
+			String costItemKey = UtilParse.getStringSafe(costJson, "item", "");
 			if (costItemKey.isEmpty()) return false;
-			ResourceLocation rl = new ResourceLocation(costItemKey);
-			if (!ForgeRegistries.ITEMS.containsKey(rl)) return false;
+			ResourceLocation crl = new ResourceLocation(costItemKey);
+			if (!ForgeRegistries.ITEMS.containsKey(crl)) return false;
 			return true;
 		}
-		private final Item costItem;
-		private final int costNum;
-		private final CompoundTag costNbt;
+		private final Item productItem, costItem;
+		private final int productNum, costNum;
+		private final CompoundTag productNbt, costNbt;
 		protected Product(Item productItem, int productNum, CompoundTag productNbt,
 				Item costItem, int costNum, CompoundTag costNbt) {
-			super(productItem, productNum, productNbt, false, false, false);
+			this.productItem = productItem;
+			this.productNum = productNum;
+			this.productNbt = productNbt;
 			this.costItem = costItem;
 			this.costNum = costNum;
 			this.costNbt = costNbt;
 		}
 		protected Product(JsonObject json) {
-			super(json);
-			String costItemKey = UtilParse.getStringSafe(json, "costItem", "");
-			ResourceLocation rl = new ResourceLocation(costItemKey);
-			costItem = ForgeRegistries.ITEMS.getDelegate(rl).get().get();
-			costNum = UtilParse.getIntSafe(json, "costNum", 1);
-			if (json.has("costNbt")) {
-				JsonObject nbtJson = json.get("costNbt").getAsJsonObject();
+			JsonObject productJson = json.get("product").getAsJsonObject();
+			String productItemKey = UtilParse.getStringSafe(productJson, "item", "");
+			ResourceLocation prl = new ResourceLocation(productItemKey);
+			productItem = ForgeRegistries.ITEMS.getDelegate(prl).get().get();
+			productNum = UtilParse.getIntSafe(productJson, "num", 1);
+			if (productJson.has("nbt")) {
+				JsonObject nbtJson = productJson.get("nbt").getAsJsonObject();
+				productNbt = JsonToNBTUtil.getTagFromJson(nbtJson);
+			} else productNbt = null;
+			JsonObject costJson = json.get("cost").getAsJsonObject();
+			String costItemKey = UtilParse.getStringSafe(costJson, "item", "");
+			ResourceLocation crl = new ResourceLocation(costItemKey);
+			costItem = ForgeRegistries.ITEMS.getDelegate(crl).get().get();
+			costNum = UtilParse.getIntSafe(costJson, "num", 1);
+			if (costJson.has("nbt")) {
+				JsonObject nbtJson = costJson.get("nbt").getAsJsonObject();
 				costNbt = JsonToNBTUtil.getTagFromJson(nbtJson);
 			} else costNbt = null;
 		}
 		public ItemStack getProductItem() {
-			return getItem();
+			ItemStack stack = new ItemStack(productItem, productNum);
+			if (productNbt != null) stack.setTag(productNbt);
+			return stack;
 		}
 		public ItemStack getCostItem() {
 			ItemStack stack = new ItemStack(costItem, costNum);
@@ -139,17 +156,21 @@ public class GameShop extends JsonData {
 		}
 		public Builder addProduct(String productItem, int productNum, boolean productUnbreakable, 
 				JsonObject productNbt, String costItem, int costNum, JsonObject costNbt) {
-			JsonObject json = new JsonObject();
-			json.addProperty("item", productItem);
-			json.addProperty("num", productNum);
+			JsonObject productJson = new JsonObject();
+			productJson.addProperty("item", productItem);
+			productJson.addProperty("num", productNum);
 			if (productUnbreakable) {
 				if (productNbt == null) productNbt = new JsonObject();
 				productNbt.addProperty("Unbreakable", true);
 			}
-			if (productNbt != null) json.add("nbt", productNbt);
-			json.addProperty("costItem", costItem);
-			json.addProperty("costNum", costNum);
-			if (costNbt != null) json.add("costNbt", costNbt);
+			if (productNbt != null) productJson.add("nbt", productNbt);
+			JsonObject costJson = new JsonObject();
+			costJson.addProperty("item", costItem);
+			costJson.addProperty("num", costNum);
+			if (costNbt != null) costJson.add("nbt", costNbt);
+			JsonObject json = new JsonObject();
+			json.add("product", productJson);
+			json.add("cost", costJson);
 			jsonData.get("products").getAsJsonArray().add(json);
 			return this;
 		}
