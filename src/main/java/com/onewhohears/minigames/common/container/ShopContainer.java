@@ -6,8 +6,11 @@ import net.minecraft.world.SimpleContainer;
 
 public class ShopContainer extends SimpleContainer {
 	
+	public final GameShop shop;
+	
 	public ShopContainer(GameShop shop) {
-		super(shop.getProductNum()*3);
+		super(shop.getContainerList());
+		this.shop = shop;
 	}
 	
 }

@@ -161,9 +161,10 @@ public class MiniGameManager extends SavedData {
 		MiniGameData create(String gameInstanceId, String gameTypeId);
 	}
 	
-	public List<PlayerAgent<?>> getPlayerAgents(ServerPlayer player) {
+	public List<PlayerAgent<?>> getActiveGamePlayerAgents(ServerPlayer player) {
 		List<PlayerAgent<?>> agents = new ArrayList<>();
 		for (MiniGameData game : runningGames.values()) {
+			if (game.isStopped()) continue;
 			PlayerAgent<?> agent = game.getPlayerAgentByUUID(player.getStringUUID());
 			if (agent != null) agents.add(agent);
 		}

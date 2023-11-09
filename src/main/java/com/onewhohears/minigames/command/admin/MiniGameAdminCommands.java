@@ -15,6 +15,7 @@ public class MiniGameAdminCommands {
 			.then(new SubComRemove().remove())
 			.then(new SubComInfo().info())
 			.then(new SubComKit().kit())
+			.then(new SubComShop().shop())
 		);
 	}
 	

@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import com.onewhohears.minigames.util.UtilParse;
 
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -29,7 +30,6 @@ public class MiniGameShopsManager extends SimpleJsonResourceReloadListener {
 	}
 	
 	// TODO 3.4.1 shop system
-	// TODO 3.4.2 synch shop data to client
 	
 	private Map<String, GameShop> shops = new HashMap<>();
 	
@@ -57,6 +57,28 @@ public class MiniGameShopsManager extends SimpleJsonResourceReloadListener {
 			LOGGER.error("PARSE SHOP FAILED "+key.toString());
 			e.printStackTrace();
 		}});
+	}
+	
+	public void writeToBuffer(FriendlyByteBuf buffer) {
+		buffer.writeInt(shops.size());
+		shops.forEach((id, shop) -> {
+			buffer.writeUtf(shop.getKey().toString());
+			buffer.writeUtf(shop.getJsonData().toString());
+		});
+	}
+	
+	public void readBuffer(FriendlyByteBuf buffer) {
+		LOGGER.debug("READING SHOP DATA FROM SERVER");
+		int length = buffer.readInt();
+		for (int i = 0; i < length; ++i) {
+			String key_string = buffer.readUtf();
+			String json_string = buffer.readUtf();
+			ResourceLocation key = new ResourceLocation(key_string);
+			JsonObject json = UtilParse.GSON.fromJson(json_string, JsonObject.class);
+			GameShop shop = new GameShop(key, json);
+			shops.put(shop.getId(), shop);
+			LOGGER.debug("READ SHOP: "+key.toString());
+		}
 	}
 
 }

@@ -2,6 +2,7 @@ package com.onewhohears.minigames.common.container;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 public class CostSlot extends Slot {
 
@@ -11,6 +12,11 @@ public class CostSlot extends Slot {
 	
 	@Override
 	public boolean mayPickup(Player player) {
+		return false;
+	}
+	
+	@Override
+	public boolean mayPlace(ItemStack pStack) {
 		return false;
 	}
 

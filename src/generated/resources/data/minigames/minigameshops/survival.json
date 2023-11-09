@@ -1,0 +1,53 @@
+{
+  "id": "survival",
+  "products": [
+    {
+      "costItem": "minecraft:emerald",
+      "costNum": 1,
+      "item": "minecraft:bread",
+      "num": 8
+    },
+    {
+      "costItem": "minecraft:emerald",
+      "costNum": 1,
+      "item": "minecraft:cooked_beef",
+      "num": 5
+    },
+    {
+      "costItem": "minecraft:emerald",
+      "costNum": 1,
+      "item": "minecraft:arrow",
+      "num": 8
+    },
+    {
+      "costItem": "minecraft:emerald",
+      "costNum": 2,
+      "item": "minecraft:bow",
+      "num": 1
+    },
+    {
+      "costItem": "minecraft:emerald",
+      "costNum": 2,
+      "item": "minecraft:crossbow",
+      "num": 1
+    },
+    {
+      "costItem": "minecraft:emerald",
+      "costNum": 4,
+      "item": "minecraft:shield",
+      "nbt": {
+        "Unbreakable": true
+      },
+      "num": 1
+    },
+    {
+      "costItem": "minecraft:emerald",
+      "costNum": 4,
+      "item": "minecraft:splash_potion",
+      "nbt": {
+        "Potion": "minecraft:strong_healing"
+      },
+      "num": 1
+    }
+  ]
+}

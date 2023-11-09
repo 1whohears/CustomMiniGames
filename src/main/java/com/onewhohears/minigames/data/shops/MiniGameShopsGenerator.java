@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.google.gson.JsonObject;
 import com.onewhohears.minigames.MiniGamesMod;
 import com.onewhohears.minigames.data.JsonData;
 
@@ -29,7 +30,17 @@ public class MiniGameShopsGenerator implements DataProvider {
     }
 	
 	protected void registerShops() {
-		
+		JsonObject healthPotionNbt = new JsonObject();
+		healthPotionNbt.addProperty("Potion", "minecraft:strong_healing");
+		registerShop(GameShop.Builder.create(MiniGamesMod.MODID, "survival")
+				.addProduct("minecraft:bread", 8, "minecraft:emerald", 1)
+				.addProduct("minecraft:cooked_beef", 5, "minecraft:emerald", 1)
+				.addProduct("minecraft:arrow", 8, "minecraft:emerald", 1)
+				.addProduct("minecraft:bow", "minecraft:emerald", 2)
+				.addProduct("minecraft:crossbow", "minecraft:emerald", 2)
+				.addProduct("minecraft:shield", true, "minecraft:emerald", 4)
+				.addProduct("minecraft:splash_potion", healthPotionNbt, "minecraft:emerald", 4)
+				.build());
 	}
 	
 	protected void registerShop(JsonData shop) {
