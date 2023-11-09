@@ -29,6 +29,7 @@ public class MiniGameShopsManager extends SimpleJsonResourceReloadListener {
 	}
 	
 	// TODO 3.4.1 shop system
+	// TODO 3.4.2 synch shop data to client
 	
 	private Map<String, GameShop> shops = new HashMap<>();
 	

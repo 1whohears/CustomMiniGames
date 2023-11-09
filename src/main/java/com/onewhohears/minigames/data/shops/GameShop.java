@@ -15,6 +15,7 @@ import com.onewhohears.minigames.util.UtilParse;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -30,6 +31,9 @@ public class GameShop extends JsonData {
 			Product product = Product.create(jo);
 			if (product != null) products.add(product);
 		}
+	}
+	public int getProductNum() {
+		return products.size();
 	}
 	
 	public static class Product extends KitItem {
@@ -76,11 +80,38 @@ public class GameShop extends JsonData {
 			return stack;
 		}
 		public boolean canBuy(ServerPlayer player) {
+			Inventory inv = player.getInventory();
+			int costFound = 0;
+			ItemStack cost = getCostItem();
+			for (int i = 0; i < inv.getContainerSize(); ++i) {
+				ItemStack stack = inv.getItem(i);
+				if (isCostItem(cost, stack)) {
+					costFound += stack.getCount();
+					if (costFound >= costNum) return true;
+				}
+			}
 			return false;
 		}
 		public boolean handlePurchase(ServerPlayer player) {
 			if (!canBuy(player)) return false;
-			// TODO 3.4.2 handle purchase
+			Inventory inv = player.getInventory();
+			int costFound = 0;
+			ItemStack cost = getCostItem();
+			for (int i = 0; i < inv.getContainerSize(); ++i) {
+				ItemStack stack = inv.getItem(i);
+				if (isCostItem(cost, stack)) {
+					costFound += stack.getCount();
+					stack.shrink(stack.getCount());
+					if (costFound >= costNum) break;
+				}
+			}
+			player.addItem(getProductItem());
+			return true;
+		}
+		private boolean isCostItem(ItemStack cost, ItemStack stack) {
+			if (stack.isEmpty() || stack.isDamaged()) return false;
+			if (costNbt != null && !ItemStack.tagMatches(cost, stack)) return false;
+			else if (costNbt == null && ItemStack.isSame(cost, stack)) return false;
 			return true;
 		}
 	}
