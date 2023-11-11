@@ -61,7 +61,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 	}
 	
 	public void onStart(MinecraftServer server) {
-		System.out.println("PHASE END "+id);
+		System.out.println("PHASE START "+id);
 		updateWorldBorder(server);
 	}
 	
@@ -141,6 +141,11 @@ public abstract class GamePhase<T extends MiniGameData> {
 	
 	public long getWorldBorderChangeTime() {
 		return -1;
+	}
+	
+	@Override
+	public String toString() {
+		return "id:"+getId()+",age:"+getAge();
 	}
 	
 }

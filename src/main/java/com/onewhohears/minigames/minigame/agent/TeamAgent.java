@@ -13,6 +13,7 @@ import com.onewhohears.minigames.minigame.data.MiniGameData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
@@ -128,9 +129,13 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 	@Override
 	public void resetAgent() {
 		super.resetAgent();
-		playerAgents.forEach((username, player) -> {
-			player.resetAgent();
-		});
+		playerAgents.forEach((username, player) -> player.resetAgent());
+	}
+	
+	@Override
+	public void setupAgent() {
+		super.setupAgent();
+		playerAgents.forEach((username, player) -> player.setupAgent());
 	}
 	
 	@Override
@@ -174,6 +179,16 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 		if (team == null) return;
 		Component message = Component.empty().append(team.getFormattedDisplayName()).append(" is the winning team!");
 		getGameData().chatToAllPlayers(server, message);
+	}
+
+	@Override
+	public Component getDebugInfo(MinecraftServer server) {
+		MutableComponent message = Component.literal("[");
+		PlayerTeam pt = getTeam(server);
+		if (pt == null) message.append(getId());
+		else message.append(pt.getDisplayName());
+		message.append("]");
+		return message;
 	}
 
 }

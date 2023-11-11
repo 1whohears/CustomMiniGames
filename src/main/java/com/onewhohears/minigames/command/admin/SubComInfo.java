@@ -13,18 +13,24 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.scores.PlayerTeam;
 
 public class SubComInfo {
 	
 	public ArgumentBuilder<CommandSourceStack,?> info() {
 		return Commands.literal("info")
 			.then(listRunning())
-			.then(GameComArgs.runningGameIdArgument()
+			.then(GameComArgs.runningGameIdArgument().executes(commandgameInfo())
 				.then(Commands.literal("list_players").executes(commandPlayerList()))
 				.then(Commands.literal("list_teams").executes(commandTeamList()))
 			);
+	}
+	
+	private GameDataCom commandgameInfo() {
+		return (context, gameData) -> {
+			CommandSourceStack source = context.getSource();
+			source.sendSuccess(gameData.getDebugInfo(source.getServer()), true);
+			return 1;
+		};
 	}
 	
 	private GameDataCom commandPlayerList() {
@@ -39,9 +45,7 @@ public class SubComInfo {
 			for (int i = 0; i < players.size(); ++i) {
 				PlayerAgent<?> agent = players.get(i);
 				if (i != 0) message.append(", ");
-				ServerPlayer sp = agent.getPlayer(context.getSource().getServer());
-				if (sp == null) message.append(agent.getId());
-				else message.append(sp.getDisplayName());
+				message.append(agent.getDebugInfo(context.getSource().getServer()));
 			}
 			context.getSource().sendSuccess(message, true);
 			return 1;
@@ -60,9 +64,7 @@ public class SubComInfo {
 			for (int i = 0; i < teams.size(); ++i) {
 				TeamAgent<?> agent = teams.get(i);
 				if (i != 0) message.append(", ");
-				PlayerTeam pt = agent.getTeam(context.getSource().getServer());
-				if (pt == null) message.append(agent.getId());
-				else message.append(pt.getDisplayName());
+				message.append(agent.getDebugInfo(context.getSource().getServer()));
 			}
 			context.getSource().sendSuccess(message, true);
 			return 1;

@@ -9,6 +9,7 @@ import com.onewhohears.minigames.minigame.data.MiniGameData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -123,6 +124,16 @@ public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
 		if (player == null) return;
 		Component message = Component.empty().append(player.getDisplayName()).append(" is the winner!");
 		getGameData().chatToAllPlayers(server, message);
+	}
+
+	@Override
+	public Component getDebugInfo(MinecraftServer server) {
+		MutableComponent message = Component.literal("[");
+		ServerPlayer sp = getPlayer(server);
+		if (sp == null) message.append(getId());
+		else message.append(sp.getDisplayName());
+		message.append(",L:"+getLives()+",S:"+getScore()+",M:"+getMoney()+",M:"+getAge()+"]");
+		return message;
 	}
 
 }

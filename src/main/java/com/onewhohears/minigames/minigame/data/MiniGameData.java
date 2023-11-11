@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+
+import com.mojang.logging.LogUtils;
 import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
@@ -17,6 +20,7 @@ import com.onewhohears.minigames.util.UtilParse;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -24,6 +28,8 @@ import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
 
 public abstract class MiniGameData {
+	
+	protected static final Logger LOGGER = LogUtils.getLogger();
 	
 	private final String gameTypeId;
 	private final String instanceId;
@@ -134,6 +140,7 @@ public abstract class MiniGameData {
 	}
 	
 	public void serverTick(MinecraftServer server) {
+		//System.out.println("GAME TICK: id="+getInstanceId()+" start="+isStarted()+" stop="+isStopped());
 		if (!isStarted() && shouldStart(server)) start(server);
 		if (isStarted() && !isStopped() && shouldStop(server)) stop(server);
  		if (shouldTickGame(server)) tickGame(server);
@@ -156,7 +163,7 @@ public abstract class MiniGameData {
 	
 	public boolean changePhase(MinecraftServer server, String phaseId) {
 		if (!phases.containsKey(phaseId)) return false;
-		System.out.println("GAME CHANGE PHASE "+instanceId+" to "+phaseId);
+		LOGGER.debug("GAME CHANGE PHASE "+instanceId+" to "+phaseId);
 		currentPhase = phases.get(phaseId);
 		currentPhase.onReset(server);
 		currentPhase.onStart(server);
@@ -167,6 +174,7 @@ public abstract class MiniGameData {
 		if (!isSetupPhase()) return false;
 		if (!canFinishSetupPhase(server)) return false;
 		currentPhase.onStop(server);
+		setupAllAgents();
 		if (requiresSetRespawnPos()) applyAllAgentRespawnPoints(server);
 		return changePhase(server, nextPhase.getId());
 	}
@@ -176,24 +184,23 @@ public abstract class MiniGameData {
 	}
 	
 	public void reset(MinecraftServer server) {
-		System.out.println("GAME RESET "+instanceId);
+		LOGGER.debug("GAME RESET "+instanceId);
 		isStarted = false;
 		isStopped = false;
 		age = 0;
-		agents.clear();
+		resetAllAgents();
 		phases.forEach((id, phase) -> phase.onReset(server));
 	}
 	
 	public void start(MinecraftServer server) {
-		System.out.println("GAME START "+instanceId);
+		LOGGER.debug("GAME START "+instanceId);
 		isStarted = true;
 		isStopped = false;
-		resetAllAgents();
 		changePhase(server, setupPhase.getId());
 	}
 	
 	public void stop(MinecraftServer server) {
-		System.out.println("GAME STOP "+instanceId);
+		LOGGER.debug("GAME STOP "+instanceId);
 		isStarted = true;
 		isStopped = true;
 	}
@@ -441,16 +448,16 @@ public abstract class MiniGameData {
 		agents.forEach((id, agent) -> agent.resetAgent());
 	}
 	
+	public void setupAllAgents() {
+		agents.forEach((id, agent) -> agent.setupAgent());
+	}
+	
 	public void applyAllAgentRespawnPoints(MinecraftServer server) {
-		agents.forEach((id, agent) -> {
-			agent.applySpawnPoint(server);
-		});
+		agents.forEach((id, agent) -> agent.applySpawnPoint(server));
 	}
 	
 	public void tpPlayersToSpawnPosition(MinecraftServer server) {
-		agents.forEach((id, agent) -> {
-			agent.tpToSpawnPoint(server);
-		});
+		agents.forEach((id, agent) -> agent.tpToSpawnPoint(server));
 	}
 	
 	public void spreadPlayers(MinecraftServer server) {
@@ -470,6 +477,18 @@ public abstract class MiniGameData {
 			if (player == null) continue;
 			player.displayClientMessage(message, false);
 		}
+	}
+	
+	public String getDebugInfoString(MinecraftServer server) {
+		String info = "type:"+getGameTypeId()
+				   +"\nid:"+getInstanceId()
+				   +"\nage:"+getAge();
+		if (currentPhase != null) info += "\nphase:"+currentPhase.toString();
+		return info;
+	}
+	
+	public MutableComponent getDebugInfo(MinecraftServer server) {
+		return Component.literal(getDebugInfoString(server));
 	}
 	
 }

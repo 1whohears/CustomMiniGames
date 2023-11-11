@@ -6,6 +6,7 @@ import com.onewhohears.minigames.minigame.data.MiniGameData;
 import com.onewhohears.minigames.util.UtilParse;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.phys.Vec3;
@@ -60,6 +61,7 @@ public abstract class GameAgent<D extends MiniGameData> {
 	
 	public void onDeath(MinecraftServer server, @Nullable DamageSource source) {
 		lives = Math.max(lives-1, 0);
+		System.out.println("ON DEATH: "+id+" "+lives);
 	}
 	
 	public boolean shouldRunOnDeath() {
@@ -74,7 +76,12 @@ public abstract class GameAgent<D extends MiniGameData> {
 		age = 0;
 		score = 0;
 		money = 0;
+		System.out.println("RESET AGENT: "+id+" "+lives);
+	}
+	
+	public void setupAgent() {
 		lives = getGameData().getInitialLives();
+		System.out.println("SETUP AGENT: "+id+" "+lives);
 	}
 	
 	public String getId() {
@@ -129,5 +136,7 @@ public abstract class GameAgent<D extends MiniGameData> {
 	public abstract void applySpawnPoint(MinecraftServer server);
 	public abstract void tpToSpawnPoint(MinecraftServer server);
 	public abstract void onWin(MinecraftServer server);
+	
+	public abstract Component getDebugInfo(MinecraftServer server);
 	
 }
