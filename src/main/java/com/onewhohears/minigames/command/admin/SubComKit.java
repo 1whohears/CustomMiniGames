@@ -27,7 +27,7 @@ public class SubComKit {
 	
 	private ArgumentBuilder<CommandSourceStack,?> giveKitArg() {
 		return Commands.literal("give")
-			.then(GameComArgs.kitNameArgument().executes(commandGiveKitAll(false))
+			.then(GameComArgs.allKitNameArgument().executes(commandGiveKitAll(false))
 				.then(Commands.argument("players", EntityArgument.players()).executes(commandGiveKitAll(true))
 					.then(Commands.literal("give_all").executes(commandGiveKitAll(true)))
 					.then(Commands.literal("refill").executes(commandGiveKitRefill(true)))

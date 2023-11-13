@@ -148,4 +148,8 @@ public abstract class GamePhase<T extends MiniGameData> {
 		return "id:"+getId()+",age:"+getAge();
 	}
 	
+	public boolean shouldEndGame() {
+		return false;
+	}
+	
 }

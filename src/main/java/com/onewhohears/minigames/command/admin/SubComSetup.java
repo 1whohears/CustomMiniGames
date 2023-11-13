@@ -40,6 +40,8 @@ public class SubComSetup {
 				.then(setSpawnArg())
 				.then(setLivesArg())
 				.then(setUseBorderArg())
+				// TODO 3.4.4 add remove shops command
+				// TODO 3.5.4 add remove kits command
 			);
 	}
 	

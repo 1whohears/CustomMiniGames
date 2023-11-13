@@ -132,7 +132,7 @@ public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
 		ServerPlayer sp = getPlayer(server);
 		if (sp == null) message.append(getId());
 		else message.append(sp.getDisplayName());
-		message.append(",L:"+getLives()+",S:"+getScore()+",M:"+getMoney()+",M:"+getAge()+"]");
+		message.append(",L:"+getLives()+",S:"+getScore()+",M:"+getMoney()+",A:"+getAge()+"]");
 		return message;
 	}
 

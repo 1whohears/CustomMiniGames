@@ -28,7 +28,7 @@ public class MiniGameKitsManager extends SimpleJsonResourceReloadListener {
 		return instance;
 	}
 	
-	// TODO 3.6 kit system
+	// TODO 3.5.1 kit system
 	
 	private Map<String, GameKit> kits = new HashMap<>();
 	

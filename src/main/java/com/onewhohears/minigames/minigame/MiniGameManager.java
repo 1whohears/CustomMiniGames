@@ -53,7 +53,7 @@ public class MiniGameManager extends SavedData {
 		 * bomb defuse
 		 * hostage rescue
 		 */
-		// TODO 3.5 load custom game presets from data packs
+		// TODO 3.6.1 load custom game presets from data packs
 	}
 	
 	/**

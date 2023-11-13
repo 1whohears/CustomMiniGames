@@ -28,7 +28,7 @@ public class SubComShop {
 	
 	private ArgumentBuilder<CommandSourceStack,?> openShopArg() {
 		return Commands.literal("open")
-			.then(GameComArgs.shopNameArgument()
+			.then(GameComArgs.allShopNameArgument()
 			.executes(commandOpenShop(false))
 				.then(Commands.argument("players", EntityArgument.players())
 				.executes(commandOpenShop(true)))

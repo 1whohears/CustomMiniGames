@@ -2,8 +2,10 @@ package com.onewhohears.minigames.minigame.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +37,8 @@ public abstract class MiniGameData {
 	private final String instanceId;
 	private final Map<String, GameAgent<?>> agents = new HashMap<>();
 	private final Map<String, GamePhase<?>> phases = new HashMap<>();
+	private final Set<String> kits = new HashSet<>();
+	private final Set<String> shops = new HashSet<>();
 	private SetupPhase<?> setupPhase;
 	private GamePhase<?> nextPhase;
 	private GamePhase<?> currentPhase;
@@ -53,6 +57,8 @@ public abstract class MiniGameData {
 	}
 	
 	public CompoundTag save() {
+		// TODO 3.4.3 save and load enabled shops in game data
+		// TODO 3.5.3 save and load enabled kits in game data
 		CompoundTag nbt = new CompoundTag();
 		nbt.putString("gameTypeId", gameTypeId);
 		nbt.putString("instanceId", instanceId);
@@ -148,7 +154,7 @@ public abstract class MiniGameData {
 	
 	public void tickGame(MinecraftServer server) {
 		++age;
-		currentPhase.tickPhase(server);
+		getCurrentPhase().tickPhase(server);
 		agents.forEach((id, agent) -> { 
 			if (agent.canTickAgent(server)) 
 				tickAgent(server, agent); 
@@ -157,8 +163,8 @@ public abstract class MiniGameData {
 	
 	protected void tickAgent(MinecraftServer server, GameAgent<?> agent) {
 		agent.tickAgent(server);
-		if (agent.isPlayer()) currentPhase.tickPlayerAgent(server, (PlayerAgent<?>) agent);
-		else if (agent.isTeam()) currentPhase.tickTeamAgent(server, (TeamAgent<?>) agent);
+		if (agent.isPlayer()) getCurrentPhase().tickPlayerAgent(server, (PlayerAgent<?>) agent);
+		else if (agent.isTeam()) getCurrentPhase().tickTeamAgent(server, (TeamAgent<?>) agent);
  	}
 	
 	public boolean changePhase(MinecraftServer server, String phaseId) {
@@ -173,7 +179,7 @@ public abstract class MiniGameData {
 	public boolean finishSetupPhase(MinecraftServer server) {
 		if (!isSetupPhase()) return false;
 		if (!canFinishSetupPhase(server)) return false;
-		currentPhase.onStop(server);
+		getCurrentPhase().onStop(server);
 		setupAllAgents();
 		if (requiresSetRespawnPos()) applyAllAgentRespawnPoints(server);
 		return changePhase(server, nextPhase.getId());
@@ -203,6 +209,7 @@ public abstract class MiniGameData {
 		LOGGER.debug("GAME STOP "+instanceId);
 		isStarted = true;
 		isStopped = true;
+		getCurrentPhase().onStop(server);
 	}
 	
 	public boolean shouldTickGame(MinecraftServer server) {
@@ -210,7 +217,7 @@ public abstract class MiniGameData {
 	}
 	
 	public boolean isSetupPhase() {
-		return isStarted() && currentPhase.isSetupPhase();
+		return isStarted() && getCurrentPhase().isSetupPhase();
 	}
 	
 	public boolean shouldStart(MinecraftServer server) {
@@ -218,7 +225,7 @@ public abstract class MiniGameData {
 	}
 	
 	public boolean shouldStop(MinecraftServer server) {
-		return false;
+		return getCurrentPhase().shouldEndGame();
 	}
 	
 	public boolean isStarted() {
@@ -263,7 +270,7 @@ public abstract class MiniGameData {
 	
 	public void setGameCenter(Vec3 center, MinecraftServer server) {
 		setGameCenter(center);
-		currentPhase.updateWorldBorder(server);
+		getCurrentPhase().updateWorldBorder(server);
 	}
 	
 	public Vec3 getGameCenter() {
@@ -291,7 +298,7 @@ public abstract class MiniGameData {
 	}
 	
 	public void setUseWorldBorderDuringGame(boolean use) {
-		this.worldBorderDuringGame = use;
+		worldBorderDuringGame = use;
 	}
 	
 	public boolean areAgentRespawnPosSet() {
@@ -300,6 +307,30 @@ public abstract class MiniGameData {
 			if (!agent.hasRespawnPoint()) 
 				return false;
 		return true;
+	}
+	
+	public void addKits(String... ids) {
+		for (String id : ids) kits.add(id);
+	}
+	
+	public void removeKit(String id) {
+		kits.remove(id);
+	}
+	
+	public String[] getEnabledKitIds() {
+		return kits.toArray(new String[kits.size()]);
+	}
+	
+	public void addShops(String... ids) {
+		for (String id : ids) shops.add(id);
+	}
+	
+	public void removeShop(String id) {
+		shops.remove(id);
+	}
+	
+	public String[] getEnabledShopIds() {
+		return shops.toArray(new String[shops.size()]);
 	}
 	
 	public String getSetupInfo() {

@@ -16,6 +16,8 @@ public class DeathMatchData extends MiniGameData {
 		game.requiresSetRespawnPos = true;
 		game.worldBorderDuringGame = false;
 		game.initialLives = initialLives;
+		game.addKits("standard", "builder", "archer");
+		game.addShops("survival");
 		return game;
 	}
 	
@@ -29,6 +31,8 @@ public class DeathMatchData extends MiniGameData {
 		game.requiresSetRespawnPos = true;
 		game.worldBorderDuringGame = false;
 		game.initialLives = initialLives;
+		game.addKits("standard", "builder", "archer");
+		game.addShops("survival");
 		return game;
 	}
 	

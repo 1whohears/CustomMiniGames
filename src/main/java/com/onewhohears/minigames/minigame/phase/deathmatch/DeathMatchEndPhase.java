@@ -32,5 +32,10 @@ public class DeathMatchEndPhase<T extends DeathMatchData> extends GamePhase<T> {
 	public void onStop(MinecraftServer server) {
 		super.onStop(server);
 	}
+	
+	@Override
+	public boolean shouldEndGame() {
+		return getAge() >= 200;
+	}
 
 }
