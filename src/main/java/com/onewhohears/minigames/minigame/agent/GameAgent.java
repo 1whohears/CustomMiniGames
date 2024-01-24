@@ -40,6 +40,7 @@ public abstract class GameAgent<D extends MiniGameData> {
 		nbt.putInt("lives", lives);
 		nbt.putInt("money", money);
 		UtilParse.writeVec3(nbt, respawnPoint, "respawnPoint");
+		nbt.putString("selectedKit", selectedKit);
 		return nbt;
 	}
 	
