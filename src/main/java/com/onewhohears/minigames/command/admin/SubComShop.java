@@ -35,7 +35,7 @@ public class SubComShop {
 			);
 	}
 	
-	private void openPlayerShop(ServerPlayer player, GameShop shop) {
+	public static void openPlayerShop(ServerPlayer player, GameShop shop) {
 		ShopMenu.openScreen(player, shop);
 	}
 	

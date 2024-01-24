@@ -94,6 +94,18 @@ public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
 	public void setTeamAgent(TeamAgent<D> teamAgent) {
 		this.teamAgent = teamAgent;
 	}
+	
+	@Override
+	public boolean canUseKit(String kit) {
+		if (isPlayerOnTeam()) return getTeamAgent().canUseKit(kit);
+		return super.canUseKit(kit);
+	}
+	
+	@Override
+	public boolean canOpenShop(String shop) {
+		if (isPlayerOnTeam()) return getTeamAgent().canOpenShop(shop);
+		return super.canOpenShop(shop);
+	}
 
 	@Override
 	public void applySpawnPoint(MinecraftServer server) {

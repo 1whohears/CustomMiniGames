@@ -46,7 +46,7 @@ public class GameComArgs {
 	public static PlayerAgentSuggestion suggestEnabledKits() {
 		return (context, builder, agents) -> {
 			for (PlayerAgent<?> agent : agents) 
-				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getEnabledKitIds());
+				CommandUtil.suggestStringToBuilder(builder, agent.getAvailableKits());
 			return builder.buildFuture();
 		};
 	}
@@ -54,7 +54,7 @@ public class GameComArgs {
 	public static PlayerAgentSuggestion suggestEnabledShops() {
 		return (context, builder, agents) -> {
 			for (PlayerAgent<?> agent : agents) 
-				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getEnabledShopIds());
+				CommandUtil.suggestStringToBuilder(builder, agent.getAvailableShops());
 			return builder.buildFuture();
 		};
 	}

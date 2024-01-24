@@ -1,7 +1,12 @@
 package com.onewhohears.minigames.command.all;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.onewhohears.minigames.command.GameComArgs;
+import com.onewhohears.minigames.command.admin.SubComShop;
+import com.onewhohears.minigames.data.shops.GameShop;
+import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
+import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -22,17 +27,39 @@ public class MiniGameAllCommands {
 	
 	private PlayerAgentsCommand openShopComand() {
 		return (context, agents) -> {
-			// TODO 3.4.2 let normal players open shops
-			context.getSource().sendFailure(Component.literal("This doesn't do notn yet L!"));
-			return 1;
+			String shop_name = StringArgumentType.getString(context, "shop_name");
+			GameShop shop = MiniGameShopsManager.get().getShop(shop_name);
+			if (shop == null) {
+				Component message = Component.literal("There are no shops with the id "+shop_name);
+				context.getSource().sendFailure(message);
+				return 0;
+			}
+			for (PlayerAgent<?> agent : agents) {
+				if (!agent.canOpenShop(shop_name)) continue;
+				SubComShop.openPlayerShop(agent.getPlayer(context.getSource().getServer()), shop);
+				Component message = Component.literal("Opened shop "+shop_name);
+				context.getSource().sendSuccess(message, false);
+				return 1;
+			}
+			Component message = Component.literal("You can't currently open the shop "+shop_name);
+			context.getSource().sendFailure(message);
+			return 0;
 		};
 	}
 	
 	private PlayerAgentsCommand selectKitComand() {
 		return (context, agents) -> {
-			// TODO 3.4.2 let normal players select kits
-			context.getSource().sendFailure(Component.literal("This doesn't do notn yet L!"));
-			return 1;
+			String kit_name = StringArgumentType.getString(context, "kit_name");
+			for (PlayerAgent<?> agent : agents) {
+				if (!agent.canUseKit(kit_name)) continue;
+				agent.setSelectedKit(kit_name);
+				Component message = Component.literal("Changed kit to "+kit_name);
+				context.getSource().sendSuccess(message, false);
+				return 1;
+			}
+			Component message = Component.literal("You can't currently change your kit to "+kit_name);
+			context.getSource().sendFailure(message);
+			return 0;
 		};
 	}
 	

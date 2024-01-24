@@ -4,21 +4,31 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.mojang.logging.LogUtils;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 public class UtilParse {
 	
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Gson GSON = new Gson();
 	
 	public static CompoundTag getComoundFromResource(String path) {
@@ -30,7 +40,7 @@ public class UtilParse {
             dis.close();
         }
         catch (Exception e) {
-        	System.out.println("ERROR: COULD NOT PARSE COMPOUNDTAG "+path);
+        	LOGGER.error("ERROR: COULD NOT PARSE COMPOUNDTAG "+path);
             e.printStackTrace();
         	return new CompoundTag();
         }
@@ -52,7 +62,7 @@ public class UtilParse {
 			json = GSON.fromJson(br, JsonObject.class);
 			br.close();
 		} catch (Exception e) {
-			System.out.println("ERROR: COULD NOT PARSE JSON "+resource.sourcePackId());
+			LOGGER.error("ERROR: COULD NOT PARSE JSON "+resource.sourcePackId());
 			e.printStackTrace();
 			return new JsonObject();
 		}
@@ -67,7 +77,7 @@ public class UtilParse {
             json = GSON.fromJson(isr, JsonObject.class);
             isr.close();
         } catch (Exception e) {
-        	System.out.println("ERROR: COULD NOT PARSE JSON "+path);
+        	LOGGER.error("ERROR: COULD NOT PARSE JSON "+path);
             e.printStackTrace();
         	return new JsonObject();
         }
@@ -175,6 +185,26 @@ public class UtilParse {
 	public static String getStringSafe(JsonObject json, String name, String alt) {
 		if (!json.has(name)) return alt;
 		return json.get(name).getAsString();
+	}
+	
+	public static void writeStrings(CompoundTag nbt, String name, Collection<String> strings) {
+		ListTag list = new ListTag();
+		for (String s : strings) list.add(StringTag.valueOf(s));
+		nbt.put(name, list);
+	}
+	
+	public static Collection<String> readStrings(CompoundTag nbt, String name) {
+		ListTag list = nbt.getList(name, 8);
+		Collection<String> strings = new ArrayList<String>();
+		for (int i = 0; i < list.size(); ++i) strings.add(list.getString(i));
+		return strings;
+	}
+	
+	public static Set<String> readStringSet(CompoundTag nbt, String name) {
+		ListTag list = nbt.getList(name, 8);
+		Set<String> strings = new HashSet<String>();
+		for (int i = 0; i < list.size(); ++i) strings.add(list.getString(i));
+		return strings;
 	}
 	
 }

@@ -9,7 +9,11 @@ import net.minecraft.server.MinecraftServer;
 public class DeathMatchEndPhase<T extends DeathMatchData> extends GamePhase<T> {
 	
 	public DeathMatchEndPhase(T gameData) {
-		super("death_match_end", gameData, new NeverExitCondition<>());
+		this("death_match_end", gameData);
+	}
+	
+	public DeathMatchEndPhase(String id, T gameData) {
+		super(id, gameData, new NeverExitCondition<>());
 	}
 	
 	@Override

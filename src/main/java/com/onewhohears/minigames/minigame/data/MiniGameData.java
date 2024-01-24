@@ -43,7 +43,7 @@ public abstract class MiniGameData {
 	private GamePhase<?> nextPhase;
 	private GamePhase<?> currentPhase;
 	private int age;
-	private boolean isStarted, isStopped;
+	private boolean isStarted, isStopped, firstTick = true;
 	
 	protected boolean canAddIndividualPlayers, canAddTeams;
 	protected boolean requiresSetRespawnPos, worldBorderDuringGame;
@@ -57,8 +57,6 @@ public abstract class MiniGameData {
 	}
 	
 	public CompoundTag save() {
-		// TODO 3.4.3 save and load enabled shops in game data
-		// TODO 3.5.3 save and load enabled kits in game data
 		CompoundTag nbt = new CompoundTag();
 		nbt.putString("gameTypeId", gameTypeId);
 		nbt.putString("instanceId", instanceId);
@@ -74,6 +72,8 @@ public abstract class MiniGameData {
 		UtilParse.writeVec3(nbt, gameCenter, "gameCenter");
 		saveAgents(nbt);
 		savePhases(nbt);
+		UtilParse.writeStrings(nbt, "kits", kits);
+		UtilParse.writeStrings(nbt, "shops", shops);
 		return nbt;
 	}
 	
@@ -90,6 +90,9 @@ public abstract class MiniGameData {
 		gameCenter = UtilParse.readVec3(nbt, "gameCenter");
 		loadAgents(nbt);
 		loadPhases(nbt);
+		kits.clear(); shops.clear();
+		kits.addAll(UtilParse.readStringSet(nbt, "kits"));
+		shops.addAll(UtilParse.readStringSet(nbt, "shops"));
 	}
 	
 	protected void saveAgents(CompoundTag nbt) {
@@ -150,6 +153,7 @@ public abstract class MiniGameData {
 		if (!isStarted() && shouldStart(server)) start(server);
 		if (isStarted() && !isStopped() && shouldStop(server)) stop(server);
  		if (shouldTickGame(server)) tickGame(server);
+ 		firstTick = false;
 	}
 	
 	public void tickGame(MinecraftServer server) {
@@ -325,12 +329,16 @@ public abstract class MiniGameData {
 		for (String id : ids) shops.add(id);
 	}
 	
-	public void removeShop(String id) {
-		shops.remove(id);
+	public void removeShops(String... ids) {
+		for (String id : ids) shops.remove(id);
 	}
 	
 	public String[] getEnabledShopIds() {
 		return shops.toArray(new String[shops.size()]);
+	}
+	
+	public boolean isFirstTick() {
+		return firstTick;
 	}
 	
 	public String getSetupInfo() {
@@ -374,14 +382,19 @@ public abstract class MiniGameData {
 	}
 	
 	@Nullable
-	public TeamAgent<?> getAddTeam(PlayerTeam team) {
-		if (!canAddTeams()) return null;
+	public TeamAgent<?> getAddTeam(PlayerTeam team, boolean override) {
+		if (!override && !canAddTeams()) return null;
 		TeamAgent<?> agent = getTeamAgentByName(team.getName());
 		if (agent == null) {
 			agent = createTeamAgent(team);
 			agents.put(agent.getId(), agent);
 		}
 		return agent;
+	}
+	
+	@Nullable
+	public TeamAgent<?> getAddTeam(PlayerTeam team) {
+		return getAddTeam(team, false);
 	}
 	
 	public boolean hasAgentById(String id) {

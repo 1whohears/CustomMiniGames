@@ -5,6 +5,7 @@ import com.onewhohears.minigames.common.network.PacketHandler;
 import com.onewhohears.minigames.data.kits.MiniGameKitsGenerator;
 import com.onewhohears.minigames.data.shops.MiniGameShopsGenerator;
 import com.onewhohears.minigames.init.ModContainers;
+import com.onewhohears.minigames.init.ModItems;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -24,6 +25,7 @@ public class MiniGamesMod {
 	public MiniGamesMod() {
 		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		
+		ModItems.register(eventBus);
 		ModContainers.register(eventBus);
 		
 		eventBus.addListener(this::commonSetup);

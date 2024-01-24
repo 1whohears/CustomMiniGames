@@ -8,7 +8,11 @@ import net.minecraft.server.MinecraftServer;
 public class DeathMatchSetupPhase<T extends DeathMatchData> extends SetupPhase<T> {
 
 	public DeathMatchSetupPhase(T gameData) {
-		super("death_match_setup", gameData);
+		this("death_match_setup", gameData);
+	}
+	
+	public DeathMatchSetupPhase(String id, T gameData) {
+		super(id, gameData);
 		forceAdventureMode = true;
 	}
 	

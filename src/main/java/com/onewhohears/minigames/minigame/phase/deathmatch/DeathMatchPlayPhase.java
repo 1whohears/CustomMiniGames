@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.minigame.phase.deathmatch;
 
 import com.onewhohears.minigames.minigame.condition.DeathMatchEndCondition;
+import com.onewhohears.minigames.minigame.condition.PhaseExitCondition;
 import com.onewhohears.minigames.minigame.data.DeathMatchData;
 import com.onewhohears.minigames.minigame.phase.GamePhase;
 
@@ -9,7 +10,12 @@ import net.minecraft.server.MinecraftServer;
 public class DeathMatchPlayPhase<T extends DeathMatchData> extends GamePhase<T> {
 	
 	public DeathMatchPlayPhase(T gameData) {
-		super("death_match_play", gameData, new DeathMatchEndCondition<>());
+		this("death_match_play", gameData, new DeathMatchEndCondition<>());
+	}
+	
+	@SafeVarargs
+	public DeathMatchPlayPhase(String id, T gameData, PhaseExitCondition<T>...exitConditions) {
+		super(id, gameData, exitConditions);
 	}
 	
 	@Override

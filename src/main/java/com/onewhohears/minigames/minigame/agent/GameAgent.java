@@ -1,5 +1,8 @@
 package com.onewhohears.minigames.minigame.agent;
 
+import java.util.Arrays;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.minigame.data.MiniGameData;
@@ -20,6 +23,7 @@ public abstract class GameAgent<D extends MiniGameData> {
 	private int lives;
 	private int money;
 	private Vec3 respawnPoint;
+	private String selectedKit = "";
 	
 	protected GameAgent(String id, D gameData) {
 		this.id = id;
@@ -45,6 +49,7 @@ public abstract class GameAgent<D extends MiniGameData> {
 		lives = tag.getInt("lives");
 		money = tag.getInt("money");
 		respawnPoint = UtilParse.readVec3(tag, "respawnPoint");
+		selectedKit = tag.getString("selectedKit");
 	}
 	
 	public void tickAgent(MinecraftServer server) {
@@ -127,6 +132,31 @@ public abstract class GameAgent<D extends MiniGameData> {
 	
 	public boolean hasRespawnPoint() {
 		return respawnPoint != null;
+	}
+	
+	public String getSelectedKit() {
+		return selectedKit;
+	}
+	
+	public void setSelectedKit(@Nonnull String kit) {
+		if (kit == null || !canUseKit(kit)) return;
+		selectedKit = kit;
+	}
+	
+	public String[] getAvailableKits() {
+		return getGameData().getEnabledKitIds();
+	}
+	
+	public String[] getAvailableShops() {
+		return getGameData().getEnabledShopIds();
+	}
+	
+	public boolean canUseKit(String kit) {
+		return Arrays.asList(getAvailableKits()).contains(kit);
+	}
+	
+	public boolean canOpenShop(String shop) {
+		return Arrays.asList(getAvailableShops()).contains(shop);
 	}
 	
 	public abstract boolean isPlayer();
