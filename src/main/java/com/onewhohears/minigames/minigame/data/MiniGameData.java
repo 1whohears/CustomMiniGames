@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
-import com.onewhohears.minigames.init.ModItems;
+import com.onewhohears.minigames.init.MiniGameItems;
 import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
@@ -516,7 +516,7 @@ public abstract class MiniGameData {
 		int totalPlayers = getAllPlayerAgents().size();
 		int totalMoney = totalPlayers * getMoneyPerRound();
 		int moneyPerTeam = (int)((double)totalMoney / (double)teams.size());
-		ItemStack money = ModItems.MONEY.get().getDefaultInstance();
+		ItemStack money = MiniGameItems.MONEY.get().getDefaultInstance();
 		for (TeamAgent<?> team : teams) {
 			Collection<?> players = team.getPlayerAgents();
 			int moneyPerPlayer = (int)((double)moneyPerTeam / (double)players.size());

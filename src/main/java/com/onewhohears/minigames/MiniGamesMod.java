@@ -4,8 +4,9 @@ import com.onewhohears.minigames.client.screen.ShopScreen;
 import com.onewhohears.minigames.common.network.PacketHandler;
 import com.onewhohears.minigames.data.kits.MiniGameKitsGenerator;
 import com.onewhohears.minigames.data.shops.MiniGameShopsGenerator;
-import com.onewhohears.minigames.init.ModContainers;
-import com.onewhohears.minigames.init.ModItems;
+import com.onewhohears.minigames.init.MiniGameContainers;
+import com.onewhohears.minigames.init.MiniGameEntities;
+import com.onewhohears.minigames.init.MiniGameItems;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -25,8 +26,9 @@ public class MiniGamesMod {
 	public MiniGamesMod() {
 		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		
-		ModItems.register(eventBus);
-		ModContainers.register(eventBus);
+		MiniGameContainers.register(eventBus);
+		MiniGameEntities.register(eventBus);
+		MiniGameItems.register(eventBus);
 		
 		eventBus.addListener(this::commonSetup);
     	eventBus.addListener(this::clientSetup);
@@ -39,7 +41,7 @@ public class MiniGamesMod {
 	}
 	
 	private void clientSetup(FMLClientSetupEvent event) {
-		MenuScreens.register(ModContainers.SHOP_MENU.get(), ShopScreen::new);
+		MenuScreens.register(MiniGameContainers.SHOP_MENU.get(), ShopScreen::new);
     }
 	
 	private void onGatherData(GatherDataEvent event) {

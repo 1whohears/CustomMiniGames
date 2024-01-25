@@ -1,7 +1,7 @@
 package com.onewhohears.minigames.common.container;
 
 import com.onewhohears.minigames.data.shops.GameShop;
-import com.onewhohears.minigames.init.ModContainers;
+import com.onewhohears.minigames.init.MiniGameContainers;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,7 +29,7 @@ public class ShopMenu extends AbstractContainerMenu {
 	public final GameShop shop;
 	
 	public ShopMenu(int windowId, Inventory playerInv, GameShop shop) {
-		super(ModContainers.SHOP_MENU.get(), windowId);
+		super(MiniGameContainers.SHOP_MENU.get(), windowId);
 		this.shopInv = new ShopContainer(shop);
 		this.playerInv = playerInv;
 		this.shop = shop;
