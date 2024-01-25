@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import com.onewhohears.minigames.data.kits.GameKit;
+import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
 import net.minecraft.core.BlockPos;
@@ -146,6 +148,17 @@ public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
 		else message.append(sp.getDisplayName());
 		message.append(",L:"+getLives()+",S:"+getScore()+",M:"+getMoney()+",A:"+getAge()+"]");
 		return message;
+	}
+
+	@Override
+	public void refillPlayerKit(MinecraftServer server) {
+		String kitName = getSelectedKit();
+		if (kitName == null || kitName.isEmpty()) return;
+		GameKit kit = MiniGameKitsManager.get().getKit(kitName);
+		if (kit == null) return;
+		ServerPlayer player = getPlayer(server);
+		if (player == null) return;
+		kit.giveItemsRefill(player);
 	}
 
 }

@@ -174,6 +174,11 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 	}
 	
 	@Override
+	public void refillPlayerKit(MinecraftServer server) {
+		playerAgents.forEach((username, player) -> player.refillPlayerKit(server));
+	}
+	
+	@Override
 	public void onWin(MinecraftServer server) {
 		PlayerTeam team = getTeam(server);
 		if (team == null) return;

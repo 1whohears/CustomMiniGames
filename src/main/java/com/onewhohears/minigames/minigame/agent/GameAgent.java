@@ -167,6 +167,7 @@ public abstract class GameAgent<D extends MiniGameData> {
 	public abstract void applySpawnPoint(MinecraftServer server);
 	public abstract void tpToSpawnPoint(MinecraftServer server);
 	public abstract void onWin(MinecraftServer server);
+	public abstract void refillPlayerKit(MinecraftServer server);
 	
 	public abstract Component getDebugInfo(MinecraftServer server);
 	

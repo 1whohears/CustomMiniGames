@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.minigame.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
+import com.onewhohears.minigames.init.ModItems;
 import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
@@ -25,6 +27,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
@@ -47,7 +50,7 @@ public abstract class MiniGameData {
 	
 	protected boolean canAddIndividualPlayers, canAddTeams;
 	protected boolean requiresSetRespawnPos, worldBorderDuringGame;
-	protected int initialLives = 3;
+	protected int initialLives = 3, moneyPerRound = 10;
 	protected double gameBorderSize = 1000;
 	protected Vec3 gameCenter = Vec3.ZERO;
 	
@@ -502,6 +505,29 @@ public abstract class MiniGameData {
 	
 	public void tpPlayersToSpawnPosition(MinecraftServer server) {
 		agents.forEach((id, agent) -> agent.tpToSpawnPoint(server));
+	}
+	
+	public int getMoneyPerRound() {
+		return moneyPerRound;
+	}
+	
+	public void giveMoneyToTeams(MinecraftServer server) {
+		List<TeamAgent<?>> teams = getTeamAgents();
+		int totalPlayers = getAllPlayerAgents().size();
+		int totalMoney = totalPlayers * getMoneyPerRound();
+		int moneyPerTeam = (int)((double)totalMoney / (double)teams.size());
+		ItemStack money = ModItems.MONEY.get().getDefaultInstance();
+		for (TeamAgent<?> team : teams) {
+			Collection<?> players = team.getPlayerAgents();
+			int moneyPerPlayer = (int)((double)moneyPerTeam / (double)players.size());
+			money.setCount(moneyPerPlayer);
+			players.forEach((player) -> {
+				PlayerAgent<?> pa = (PlayerAgent<?>)player;
+				ServerPlayer sp = pa.getPlayer(server);
+				if (sp == null) return;
+				sp.addItem(money.copy());
+			});
+		}
 	}
 	
 	public void spreadPlayers(MinecraftServer server) {
