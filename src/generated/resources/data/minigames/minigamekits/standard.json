@@ -1,5 +1,5 @@
 {
-  "id": "standard",
+  "displayName": "preset.minigames.standard",
   "kitItems": [
     {
       "item": "minecraft:diamond_sword",
@@ -101,5 +101,7 @@
       },
       "num": 1
     }
-  ]
+  ],
+  "presetId": "standard",
+  "presetType": "gamekit"
 }

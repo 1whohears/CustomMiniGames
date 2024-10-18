@@ -12,6 +12,7 @@ import java.util.zip.GZIPInputStream;
 
 import javax.annotation.Nullable;
 
+import com.onewhohears.onewholibs.util.JsonToNBTUtil;
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;

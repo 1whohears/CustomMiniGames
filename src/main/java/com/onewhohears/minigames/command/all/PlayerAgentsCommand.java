@@ -22,7 +22,7 @@ public interface PlayerAgentsCommand extends Command<CommandSourceStack> {
 			return 0;
 		}
 		List<PlayerAgent<?>> agents = MiniGameManager.get().getActiveGamePlayerAgents(player);
-		if (agents.size() == 0) {
+		if (agents.isEmpty()) {
 			Component message = Component.literal("You must be in an active game to use this command!");
 			context.getSource().sendFailure(message);
 			return 0;

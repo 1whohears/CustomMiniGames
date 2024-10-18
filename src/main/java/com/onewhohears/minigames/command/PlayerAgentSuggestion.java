@@ -21,7 +21,7 @@ public interface PlayerAgentSuggestion extends SuggestionProvider<CommandSourceS
 		ServerPlayer player = context.getSource().getPlayer();
 		if (player == null) return null;
 		List<PlayerAgent<?>> agents = MiniGameManager.get().getActiveGamePlayerAgents(player);
-		if (agents.size() == 0) return null;
+		if (agents.isEmpty()) return null;
 		return getPlayerAgentsSuggestions(context, builder, agents);
 	}
 	

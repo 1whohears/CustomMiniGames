@@ -28,7 +28,7 @@ public class MiniGameAllCommands {
 	private PlayerAgentsCommand openShopComand() {
 		return (context, agents) -> {
 			String shop_name = StringArgumentType.getString(context, "shop_name");
-			GameShop shop = MiniGameShopsManager.get().getShop(shop_name);
+			GameShop shop = MiniGameShopsManager.get().get(shop_name);
 			if (shop == null) {
 				Component message = Component.literal("There are no shops with the id "+shop_name);
 				context.getSource().sendFailure(message);

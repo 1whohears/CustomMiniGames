@@ -1,5 +1,7 @@
 {
-  "id": "survival",
+  "displayName": "preset.minigames.survival",
+  "presetId": "survival",
+  "presetType": "gameshop",
   "products": [
     {
       "cost": {

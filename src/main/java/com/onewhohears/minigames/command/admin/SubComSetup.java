@@ -128,7 +128,7 @@ public class SubComSetup {
 	private GameSetupCom commandSetPlayerSpawn() {
 		return (context, gameData) -> {
 			Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "player");
-			if (players.size() == 0) {
+			if (players.isEmpty()) {
 				Component message = Component.literal("No player spawnpoints were changed");
 				context.getSource().sendSuccess(message, true);
 				return 1;
@@ -208,7 +208,7 @@ public class SubComSetup {
 	private GameSetupCom commandRemovePlayers() {
 		return (context, gameData) -> {
 			Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "player");
-			if (players.size() == 0) {
+			if (players.isEmpty()) {
 				context.getSource().sendSuccess(Component.literal("No players could be removed."), true);
 				return 1;
 			}
@@ -235,7 +235,7 @@ public class SubComSetup {
 				return 0;
 			}
 			Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "player");
-			if (players.size() == 0) {
+			if (players.isEmpty()) {
 				context.getSource().sendSuccess(Component.literal("No players could be added."), true);
 				return 1;
 			}

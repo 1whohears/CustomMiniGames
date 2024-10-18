@@ -1,62 +1,36 @@
 package com.onewhohears.minigames.data.kits;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetReloadListener;
 
-import javax.annotation.Nullable;
+public class MiniGameKitsManager extends JsonPresetReloadListener<GameKit> {
 
-import org.slf4j.Logger;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.mojang.logging.LogUtils;
-import com.onewhohears.minigames.util.UtilParse;
-
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
-
-public class MiniGameKitsManager extends SimpleJsonResourceReloadListener {
-	
-	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String KIND = "minigamekits";
 	private static MiniGameKitsManager instance;
-	
+
+	public MiniGameKitsManager() {
+		super(KIND);
+	}
+
 	public static MiniGameKitsManager get() {
 		if (instance == null) instance = new MiniGameKitsManager();
 		return instance;
 	}
-	
-	// TODO 3.5.1 kit system
-	
-	private Map<String, GameKit> kits = new HashMap<>();
-	
-	@Nullable
-	public GameKit getKit(String kit_name) {
-		return kits.get(kit_name);
-	}
-	
-	public String[] getKitNames() {
-		return kits.keySet().toArray(new String[kits.size()]);
-	}
-	
-	protected MiniGameKitsManager() {
-		super(UtilParse.GSON, KIND);
+
+	@Override
+	public GameKit[] getNewArray(int i) {
+		return new GameKit[i];
 	}
 
 	@Override
-	protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager manager, ProfilerFiller profiler) {
-		kits.clear();
-		map.forEach((key, je) -> { try {
-			JsonObject json = UtilParse.GSON.fromJson(je, JsonObject.class);
-			GameKit kit = new GameKit(key, json);
-			kits.put(kit.getId(), kit);
-			LOGGER.debug("ADDING KIT: "+key.toString());
-		} catch (Exception e) {
-			LOGGER.error("PARSE KIT FAILED "+key.toString());
-			e.printStackTrace();
-		}});
+	protected void resetCache() {
+
 	}
+
+	@Override
+	public void registerDefaultPresetTypes() {
+		addPresetType(GameKit.GAMEKIT);
+	}
+
+	// TODO 3.5.1 kit system
 
 }

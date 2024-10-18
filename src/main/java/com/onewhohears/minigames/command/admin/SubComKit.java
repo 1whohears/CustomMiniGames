@@ -49,7 +49,7 @@ public class SubComKit {
 	private Command<CommandSourceStack> commandGiveKit(boolean clearAll, boolean clearOther, boolean refill, boolean playerParam) {
 		return (context) -> {
 			String kit_name = StringArgumentType.getString(context, "kit_name");
-			GameKit kit = MiniGameKitsManager.get().getKit(kit_name);
+			GameKit kit = MiniGameKitsManager.get().get(kit_name);
 			if (kit == null) {
 				Component message = Component.literal("There are no kits with the id "+kit_name);
 				context.getSource().sendFailure(message);

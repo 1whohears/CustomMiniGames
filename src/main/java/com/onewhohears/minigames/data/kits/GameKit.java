@@ -8,10 +8,14 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.onewhohears.minigames.data.JsonData;
-import com.onewhohears.minigames.util.JsonToNBTUtil;
+import com.onewhohears.minigames.data.MiniGamePresetType;
+import com.onewhohears.onewholibs.util.JsonToNBTUtil;
 import com.onewhohears.minigames.util.UtilParse;
 
+import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetInstance;
+import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetStats;
+import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetType;
+import com.onewhohears.onewholibs.data.jsonpreset.PresetBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,9 +24,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class GameKit extends JsonData {
-	
-	private List<KitItem> items = new ArrayList<>();
+public class GameKit extends JsonPresetStats {
+
+	public static final MiniGamePresetType GAMEKIT = new MiniGamePresetType("gamekit", GameKit::new);
+
+	private final List<KitItem> items = new ArrayList<>();
 	public GameKit(ResourceLocation key, JsonObject json) {
 		super(key, json);
 		JsonArray list = json.get("kitItems").getAsJsonArray();
@@ -32,6 +38,17 @@ public class GameKit extends JsonData {
 			if (kitItem != null) items.add(kitItem);
 		}
 	}
+
+	@Override
+	public JsonPresetType getType() {
+		return GAMEKIT;
+	}
+
+	@Override
+	public @org.jetbrains.annotations.Nullable JsonPresetInstance<?> createPresetInstance() {
+		return null;
+	}
+
 	public void giveItems(ServerPlayer player) {
 		for (KitItem item : items) player.addItem(item.getItem());
 	}
@@ -129,11 +146,11 @@ public class GameKit extends JsonData {
 			return ItemStack.isSameItemSameTags(getItem(), stack);
 		}
 		public Predicate<ItemStack> sameChecker() {
-			return (stack) -> isSameItem(stack);
+			return this::isSameItem;
 		}
 	}
 	
-	public static class Builder extends JsonData.Builder<GameKit.Builder> {
+	public static class Builder extends PresetBuilder<GameKit.Builder> {
 		public static Builder create(String namespace, String id) {
 			return new Builder(namespace, id);
 		}
@@ -152,7 +169,7 @@ public class GameKit extends JsonData {
 			if (keep) json.addProperty("keep", keep);
 			if (refill) json.addProperty("refill", refill);
 			if (ignoreNbt) json.addProperty("ignoreNbt", ignoreNbt);
-			jsonData.get("kitItems").getAsJsonArray().add(json);
+			getData().get("kitItems").getAsJsonArray().add(json);
 			return this;
 		}
 		public Builder addItemKeep(String itemkey, int num, boolean unbreakable, JsonObject nbt) {
@@ -213,8 +230,8 @@ public class GameKit extends JsonData {
 			return addItem(itemkey, 1, null);
 		}
 		protected Builder(String namespace, String id) {
-			super(namespace, id, (key, json) -> new GameKit(key, json));
-			jsonData.add("kitItems", new JsonArray());
+			super(namespace, id, GAMEKIT);
+			this.getData().add("kitItems", new JsonArray());
 		}
 	}
 	

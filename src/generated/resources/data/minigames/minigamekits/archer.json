@@ -1,5 +1,5 @@
 {
-  "id": "archer",
+  "displayName": "preset.minigames.archer",
   "kitItems": [
     {
       "item": "minecraft:bow",
@@ -116,5 +116,7 @@
       "keep": true,
       "num": 64
     }
-  ]
+  ],
+  "presetId": "archer",
+  "presetType": "gamekit"
 }

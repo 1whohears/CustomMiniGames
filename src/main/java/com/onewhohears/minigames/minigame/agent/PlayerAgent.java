@@ -154,7 +154,7 @@ public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
 	public void refillPlayerKit(MinecraftServer server) {
 		String kitName = getSelectedKit();
 		if (kitName == null || kitName.isEmpty()) return;
-		GameKit kit = MiniGameKitsManager.get().getKit(kitName);
+		GameKit kit = MiniGameKitsManager.get().get(kitName);
 		if (kit == null) return;
 		ServerPlayer player = getPlayer(server);
 		if (player == null) return;

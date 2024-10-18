@@ -24,7 +24,7 @@ public class MiniGameContainers {
 	public static final RegistryObject<MenuType<ShopMenu>> SHOP_MENU = 
 			register("shop_menu", (windowId, playerInv, data) -> {
 				String shop_name = data.readUtf();
-				GameShop shop = MiniGameShopsManager.get().getShop(shop_name);
+				GameShop shop = MiniGameShopsManager.get().get(shop_name);
 				return new ShopMenu(windowId, playerInv, shop);
 			});
 	

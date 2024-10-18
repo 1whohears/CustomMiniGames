@@ -7,10 +7,14 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.onewhohears.minigames.data.JsonData;
-import com.onewhohears.minigames.util.JsonToNBTUtil;
+import com.onewhohears.minigames.data.MiniGamePresetType;
+import com.onewhohears.onewholibs.util.JsonToNBTUtil;
 import com.onewhohears.minigames.util.UtilParse;
 
+import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetInstance;
+import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetStats;
+import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetType;
+import com.onewhohears.onewholibs.data.jsonpreset.PresetBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -19,7 +23,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class GameShop extends JsonData {
+public class GameShop extends JsonPresetStats {
+
+	public static final MiniGamePresetType GAMESHOP = new MiniGamePresetType("gameshop", GameShop::new);
 	
 	protected List<Product> products = new ArrayList<>();
 	public GameShop(ResourceLocation key, JsonObject json) {
@@ -31,6 +37,17 @@ public class GameShop extends JsonData {
 			if (product != null) products.add(product);
 		}
 	}
+
+	@Override
+	public JsonPresetType getType() {
+		return GAMESHOP;
+	}
+
+	@Override
+	public @org.jetbrains.annotations.Nullable JsonPresetInstance<?> createPresetInstance() {
+		return null;
+	}
+
 	public int getProductNum() {
 		return products.size();
 	}
@@ -150,7 +167,7 @@ public class GameShop extends JsonData {
 		}
 	}
 	
-	public static class Builder extends JsonData.Builder<GameShop.Builder> {
+	public static class Builder extends PresetBuilder<GameShop.Builder> {
 		public static Builder create(String namespace, String id) {
 			return new Builder(namespace, id);
 		}
@@ -171,7 +188,7 @@ public class GameShop extends JsonData {
 			JsonObject json = new JsonObject();
 			json.add("product", productJson);
 			json.add("cost", costJson);
-			jsonData.get("products").getAsJsonArray().add(json);
+			getData().get("products").getAsJsonArray().add(json);
 			return this;
 		}
 		public Builder addProduct(String productItem, int productNum, boolean productUnbreakable, JsonObject productNbt, String costItem, int costNum) {
@@ -196,8 +213,8 @@ public class GameShop extends JsonData {
 			return addProduct(productItem, 1, false, null, costItem, costNum, null);
 		}
 		protected Builder(String namespace, String id) {
-			super(namespace, id, (key, json) -> new GameShop(key, json));
-			jsonData.add("products", new JsonArray());
+			super(namespace, id, GAMESHOP);
+			getData().add("products", new JsonArray());
 		}
 	}
 	

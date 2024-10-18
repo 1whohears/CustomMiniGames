@@ -4,5 +4,11 @@
 	"item.minigames.money_money": "Money Money",
 	"item.minigames.wacky_money": "Wacky Money",
 	"item.minigames.zelda_money": "Zelda Money",
-	"item.minigames.yakuza_money": "Yakuza Money"
+	"item.minigames.yakuza_money": "Yakuza Money",
+
+	"preset.minigames.survival": "Survival Shop",
+
+	"preset.minigames.archer": "Archer Kit",
+	"preset.minigames.builder": "Builder Kit",
+	"preset.minigames.standard": "Standard Kit"
 }

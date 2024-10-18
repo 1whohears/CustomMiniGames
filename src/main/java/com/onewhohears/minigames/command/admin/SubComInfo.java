@@ -36,7 +36,7 @@ public class SubComInfo {
 	private GameDataCom commandPlayerList() {
 		return (context, gameData) -> {
 			List<PlayerAgent<?>> players = gameData.getAllPlayerAgents();
-			if (players.size() == 0) {
+			if (players.isEmpty()) {
 				Component message = Component.literal("There are zero players in the game "+gameData.getInstanceId());
 				context.getSource().sendSuccess(message, true);
 				return 1;
@@ -55,7 +55,7 @@ public class SubComInfo {
 	private GameDataCom commandTeamList() {
 		return (context, gameData) -> {
 			List<TeamAgent<?>> teams = gameData.getTeamAgents();
-			if (teams.size() == 0) {
+			if (teams.isEmpty()) {
 				Component message = Component.literal("There are zero teams in the game "+gameData.getInstanceId());
 				context.getSource().sendSuccess(message, true);
 				return 1;

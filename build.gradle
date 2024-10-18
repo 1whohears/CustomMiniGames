@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+    }
+}
+
 plugins {
     id 'eclipse'
     id 'maven-publish'
@@ -5,9 +15,11 @@ plugins {
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
-version = '0.0.7'
-group = 'com.1whohears.minigames'
-archivesBaseName = 'minigames-1.19.2'
+apply plugin: 'org.spongepowered.mixin'
+
+version = '0.0.8'
+group = "com.1whohears.${mod_id}"
+archivesBaseName = "${mod_id}-${minecraft_version}"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -66,14 +78,21 @@ minecraft {
     }
 }
 
+/*mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+}*/
+
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-	
+    maven { url "https://repo.repsy.io/mvn/1whohears/1wholibs" }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.2-43.3.0'
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    // https://github.com/1whohears/1wholibs
+    implementation fg.deobf("com.onewhohears.onewholibs:onewholibs-${minecraft_version}:${onewholibs_version}")
 }
 
 jar {

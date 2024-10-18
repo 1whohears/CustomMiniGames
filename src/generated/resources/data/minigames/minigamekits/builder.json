@@ -1,5 +1,5 @@
 {
-  "id": "builder",
+  "displayName": "preset.minigames.builder",
   "kitItems": [
     {
       "item": "minecraft:diamond_axe",
@@ -88,5 +88,7 @@
       },
       "num": 1
     }
-  ]
+  ],
+  "presetId": "builder",
+  "presetType": "gamekit"
 }

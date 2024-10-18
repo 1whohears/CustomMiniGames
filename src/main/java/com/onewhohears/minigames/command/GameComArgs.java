@@ -25,12 +25,12 @@ public class GameComArgs {
 	
 	public static ArgumentBuilder<CommandSourceStack,?> allKitNameArgument() {
 		return Commands.argument("kit_name", StringArgumentType.word())
-				.suggests(CommandUtil.suggestStrings(() -> MiniGameKitsManager.get().getKitNames()));
+				.suggests(CommandUtil.suggestStrings(() -> MiniGameKitsManager.get().getAllIds()));
 	}
 	
 	public static ArgumentBuilder<CommandSourceStack,?> allShopNameArgument() {
 		return Commands.argument("shop_name", StringArgumentType.word())
-				.suggests(CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getShopNames()));
+				.suggests(CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds()));
 	}
 	
 	public static ArgumentBuilder<CommandSourceStack,?> enabledKitNameArgument() {
