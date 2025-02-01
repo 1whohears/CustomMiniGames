@@ -42,7 +42,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 		checkExitConditions(server);
 	}
 	
-	public void tickPlayerAgent(MinecraftServer server, PlayerAgent<?> agent) {
+	public void tickPlayerAgent(MinecraftServer server, PlayerAgent agent) {
 		ServerPlayer player = agent.getPlayer(server);
 		if (player == null) return;
 		if (!player.gameMode.isCreative()) {
@@ -51,7 +51,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 		}
 	}
 	
-	public void tickTeamAgent(MinecraftServer server, TeamAgent<?> agent) {
+	public void tickTeamAgent(MinecraftServer server, TeamAgent agent) {
 		
 	}
 	
@@ -70,7 +70,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 	}
 	
 	public void checkExitConditions(MinecraftServer server) {
-		if (exitConditions == null || exitConditions.length == 0) return;
+		if (exitConditions == null) return;
 		for (PhaseExitCondition<T> con : exitConditions) {
 			if (con.shouldExit(server, this)) {
 				con.onExit(server, this);

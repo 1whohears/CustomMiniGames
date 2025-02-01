@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.minigame.data.MiniGameData;
-import com.onewhohears.minigames.util.UtilParse;
+import com.onewhohears.onewholibs.util.UtilParse;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -14,10 +14,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.phys.Vec3;
 
-public abstract class GameAgent<D extends MiniGameData> {
+public abstract class GameAgent {
 	
 	private final String id;
-	private final D gameData;
+	private final MiniGameData gameData;
 	private int age;
 	private int score;
 	private int lives;
@@ -25,7 +25,7 @@ public abstract class GameAgent<D extends MiniGameData> {
 	private Vec3 respawnPoint;
 	private String selectedKit = "";
 	
-	protected GameAgent(String id, D gameData) {
+	protected GameAgent(String id, MiniGameData gameData) {
 		this.id = id;
 		this.gameData = gameData;
 	}
@@ -94,7 +94,7 @@ public abstract class GameAgent<D extends MiniGameData> {
 		return id;
 	}
 	
-	public D getGameData() {
+	public MiniGameData getGameData() {
 		return gameData;
 	}
 	
@@ -140,7 +140,7 @@ public abstract class GameAgent<D extends MiniGameData> {
 	}
 	
 	public void setSelectedKit(@Nonnull String kit) {
-		if (kit == null || !canUseKit(kit)) return;
+		if (!canUseKit(kit)) return;
 		selectedKit = kit;
 	}
 	

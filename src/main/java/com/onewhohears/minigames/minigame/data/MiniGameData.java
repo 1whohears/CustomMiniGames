@@ -1,12 +1,6 @@
 package com.onewhohears.minigames.minigame.data;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Nullable;
 
@@ -19,7 +13,7 @@ import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 import com.onewhohears.minigames.minigame.phase.GamePhase;
 import com.onewhohears.minigames.minigame.phase.SetupPhase;
-import com.onewhohears.minigames.util.UtilParse;
+import com.onewhohears.onewholibs.util.UtilParse;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -38,7 +32,7 @@ public abstract class MiniGameData {
 	
 	private final String gameTypeId;
 	private final String instanceId;
-	private final Map<String, GameAgent<?>> agents = new HashMap<>();
+	private final Map<String, GameAgent> agents = new HashMap<>();
 	private final Map<String, GamePhase<?>> phases = new HashMap<>();
 	private final Set<String> kits = new HashSet<>();
 	private final Set<String> shops = new HashSet<>();
@@ -109,7 +103,7 @@ public abstract class MiniGameData {
 		for (int i = 0; i < agentList.size(); ++i) {
 			CompoundTag tag = agentList.getCompound(i);
 			String id = tag.getString("id");
-			GameAgent<?> agent;
+			GameAgent agent;
 			if (tag.getBoolean("isPlayer")) agent = createPlayerAgent(id);	
 			else if (tag.getBoolean("isTeam")) agent = createTeamAgent(id);
 			else continue;
@@ -168,10 +162,10 @@ public abstract class MiniGameData {
 		});
 	}
 	
-	protected void tickAgent(MinecraftServer server, GameAgent<?> agent) {
+	protected void tickAgent(MinecraftServer server, GameAgent agent) {
 		agent.tickAgent(server);
-		if (agent.isPlayer()) getCurrentPhase().tickPlayerAgent(server, (PlayerAgent<?>) agent);
-		else if (agent.isTeam()) getCurrentPhase().tickTeamAgent(server, (TeamAgent<?>) agent);
+		if (agent.isPlayer()) getCurrentPhase().tickPlayerAgent(server, (PlayerAgent) agent);
+		else if (agent.isTeam()) getCurrentPhase().tickTeamAgent(server, (TeamAgent) agent);
  	}
 	
 	public boolean changePhase(MinecraftServer server, String phaseId) {
@@ -310,14 +304,14 @@ public abstract class MiniGameData {
 	
 	public boolean areAgentRespawnPosSet() {
 		if (!requiresSetRespawnPos()) return true;
-		for (GameAgent<?> agent : agents.values()) 
+		for (GameAgent agent : agents.values())
 			if (!agent.hasRespawnPoint()) 
 				return false;
 		return true;
 	}
 	
 	public void addKits(String... ids) {
-		for (String id : ids) kits.add(id);
+        kits.addAll(Arrays.asList(ids));
 	}
 	
 	public void removeKit(String id) {
@@ -325,11 +319,11 @@ public abstract class MiniGameData {
 	}
 	
 	public String[] getEnabledKitIds() {
-		return kits.toArray(new String[kits.size()]);
+		return kits.toArray(new String[0]);
 	}
 	
 	public void addShops(String... ids) {
-		for (String id : ids) shops.add(id);
+        Collections.addAll(shops, ids);
 	}
 	
 	public void removeShops(String... ids) {
@@ -337,7 +331,7 @@ public abstract class MiniGameData {
 	}
 	
 	public String[] getEnabledShopIds() {
-		return shops.toArray(new String[shops.size()]);
+		return shops.toArray(new String[0]);
 	}
 	
 	public boolean isFirstTick() {
@@ -354,29 +348,27 @@ public abstract class MiniGameData {
 		if (requiresSetRespawnPos()) info += "\nuse set_spawn to set a player or team spawnpoint. ";
 		return info;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public <D extends MiniGameData> PlayerAgent<D> createPlayerAgent(String uuid) {
-		return new PlayerAgent<D>(uuid, (D) this);
+
+	public PlayerAgent createPlayerAgent(String uuid) {
+		return new PlayerAgent(uuid, this);
 	}
 	
-	public <D extends MiniGameData> PlayerAgent<D> createPlayerAgent(ServerPlayer player) {
+	public PlayerAgent createPlayerAgent(ServerPlayer player) {
 		return createPlayerAgent(player.getStringUUID());
 	}
-	
-	@SuppressWarnings("unchecked")
-	public <D extends MiniGameData> TeamAgent<D> createTeamAgent(String teamName) {
-		return new TeamAgent<D>(teamName, (D)this);
+
+	public TeamAgent createTeamAgent(String teamName) {
+		return new TeamAgent(teamName, this);
 	}
 	
-	public <D extends MiniGameData> TeamAgent<D> createTeamAgent(PlayerTeam team) {
+	public TeamAgent createTeamAgent(PlayerTeam team) {
 		return createTeamAgent(team.getName());
 	}
 	
 	@Nullable
-	public PlayerAgent<?> getAddIndividualPlayer(ServerPlayer player) {
+	public PlayerAgent getAddIndividualPlayer(ServerPlayer player) {
 		if (!canAddIndividualPlayers()) return null;
-		PlayerAgent<?> agent = getPlayerAgentByUUID(player.getStringUUID());
+		PlayerAgent agent = getPlayerAgentByUUID(player.getStringUUID());
 		if (agent == null) {
 			agent = createPlayerAgent(player);
 			agents.put(agent.getId(), agent);
@@ -385,9 +377,9 @@ public abstract class MiniGameData {
 	}
 	
 	@Nullable
-	public TeamAgent<?> getAddTeam(PlayerTeam team, boolean override) {
+	public TeamAgent getAddTeam(PlayerTeam team, boolean override) {
 		if (!override && !canAddTeams()) return null;
-		TeamAgent<?> agent = getTeamAgentByName(team.getName());
+		TeamAgent agent = getTeamAgentByName(team.getName());
 		if (agent == null) {
 			agent = createTeamAgent(team);
 			agents.put(agent.getId(), agent);
@@ -396,7 +388,7 @@ public abstract class MiniGameData {
 	}
 	
 	@Nullable
-	public TeamAgent<?> getAddTeam(PlayerTeam team) {
+	public TeamAgent getAddTeam(PlayerTeam team) {
 		return getAddTeam(team, false);
 	}
 	
@@ -405,7 +397,7 @@ public abstract class MiniGameData {
 	}
 	
 	@Nullable
-	public GameAgent<?> getAgentById(String id) {
+	public GameAgent getAgentById(String id) {
 		return agents.get(id);
 	}
 	
@@ -414,15 +406,15 @@ public abstract class MiniGameData {
 	}
 	
 	@Nullable
-	public PlayerAgent<?> getPlayerAgentByUUID(String uuid) {
+	public PlayerAgent getPlayerAgentByUUID(String uuid) {
 		if (canAddIndividualPlayers()) {
-			GameAgent<?> agent = getAgentById(uuid);
-			if (agent != null && agent.isPlayer()) return (PlayerAgent<?>) agent;
+			GameAgent agent = getAgentById(uuid);
+			if (agent != null && agent.isPlayer()) return (PlayerAgent) agent;
 		}
 		if (canAddTeams()) {
-			for (GameAgent<?> agent : agents.values()) if (agent.isTeam()) {
-				TeamAgent<?> team = (TeamAgent<?>)agent;
-				PlayerAgent<?> player = team.getPlayerAgentByUUID(uuid);
+			for (GameAgent agent : agents.values()) if (agent.isTeam()) {
+				TeamAgent team = (TeamAgent)agent;
+				PlayerAgent player = team.getPlayerAgentByUUID(uuid);
 				if (player != null) return player;
 			}
 		}
@@ -430,16 +422,16 @@ public abstract class MiniGameData {
 	}
 	
 	@Nullable
-	public TeamAgent<?> getTeamAgentByName(String name) {
+	public TeamAgent getTeamAgentByName(String name) {
 		if (!canAddTeams()) return null;
-		GameAgent<?> agent = getAgentById(name);
+		GameAgent agent = getAgentById(name);
 		if (agent == null) return null;
-		if (agent.isTeam()) return (TeamAgent<?>) agent;
+		if (agent.isTeam()) return (TeamAgent) agent;
 		return null;
 	}
 	
 	@Nullable
-	public TeamAgent<?> getPlayerTeamAgent(ServerPlayer player) {
+	public TeamAgent getPlayerTeamAgent(ServerPlayer player) {
 		if (!canAddTeams()) return null;
 		Team team = player.getTeam();
 		if (team == null) return null;
@@ -447,47 +439,46 @@ public abstract class MiniGameData {
 	}
 	
 	@Nullable
-	public TeamAgent<?> getPlayerTeamAgent(String uuid) {
+	public TeamAgent getPlayerTeamAgent(String uuid) {
 		if (!canAddTeams()) return null;
-		for (GameAgent<?> agent : agents.values()) if (agent.isTeam()) {
-			TeamAgent<?> team = (TeamAgent<?>)agent;
+		for (GameAgent agent : agents.values()) if (agent.isTeam()) {
+			TeamAgent team = (TeamAgent)agent;
 			if (team.getPlayerAgentByUUID(uuid) != null) 
 				return team;
 		}
 		return null;
 	}
 	
-	public List<GameAgent<?>> getLivingAgents() {
-		List<GameAgent<?>> living = new ArrayList<>();
-		for (GameAgent<?> agent : agents.values()) 
+	public List<GameAgent> getLivingAgents() {
+		List<GameAgent> living = new ArrayList<>();
+		for (GameAgent agent : agents.values())
 			if (!agent.isDead()) living.add(agent);
 		return living;
 	}
 	
-	public List<GameAgent<?>> getDeadAgents() {
-		List<GameAgent<?>> dead = new ArrayList<>();
-		for (GameAgent<?> agent : agents.values()) 
+	public List<GameAgent> getDeadAgents() {
+		List<GameAgent> dead = new ArrayList<>();
+		for (GameAgent agent : agents.values())
 			if (agent.isDead()) dead.add(agent);
 		return dead;
 	}
 	
-	public List<PlayerAgent<?>> getAllPlayerAgents() {
-		List<PlayerAgent<?>> players = new ArrayList<>();
-		for (GameAgent<?> agent : agents.values()) {
-			if (agent.isPlayer()) players.add((PlayerAgent<?>) agent);
+	public List<PlayerAgent> getAllPlayerAgents() {
+		List<PlayerAgent> players = new ArrayList<>();
+		for (GameAgent agent : agents.values()) {
+			if (agent.isPlayer()) players.add((PlayerAgent) agent);
 			else if (agent.isTeam()) {
-				TeamAgent<?> team = (TeamAgent<?>) agent;
-				for (PlayerAgent<?> player : team.getPlayerAgents()) 
-					players.add(player);
+				TeamAgent team = (TeamAgent) agent;
+                players.addAll(team.getPlayerAgents());
 			}
 		}
 		return players;
 	}
 	
-	public List<TeamAgent<?>> getTeamAgents() {
-		List<TeamAgent<?>> teams = new ArrayList<>();
-		for (GameAgent<?> agent : agents.values()) 
-			if (agent.isTeam()) teams.add((TeamAgent<?>) agent);
+	public List<TeamAgent> getTeamAgents() {
+		List<TeamAgent> teams = new ArrayList<>();
+		for (GameAgent agent : agents.values())
+			if (agent.isTeam()) teams.add((TeamAgent) agent);
 		return teams;
 	}
 	
@@ -512,17 +503,17 @@ public abstract class MiniGameData {
 	}
 	
 	public void giveMoneyToTeams(MinecraftServer server) {
-		List<TeamAgent<?>> teams = getTeamAgents();
+		List<TeamAgent> teams = getTeamAgents();
 		int totalPlayers = getAllPlayerAgents().size();
 		int totalMoney = totalPlayers * getMoneyPerRound();
 		int moneyPerTeam = (int)((double)totalMoney / (double)teams.size());
 		ItemStack money = MiniGameItems.MONEY.get().getDefaultInstance();
-		for (TeamAgent<?> team : teams) {
+		for (TeamAgent team : teams) {
 			Collection<?> players = team.getPlayerAgents();
 			int moneyPerPlayer = (int)((double)moneyPerTeam / (double)players.size());
 			money.setCount(moneyPerPlayer);
 			players.forEach((player) -> {
-				PlayerAgent<?> pa = (PlayerAgent<?>)player;
+				PlayerAgent pa = (PlayerAgent)player;
 				ServerPlayer sp = pa.getPlayer(server);
 				if (sp == null) return;
 				sp.addItem(money.copy());
@@ -535,14 +526,14 @@ public abstract class MiniGameData {
 	}
 	
 	public void announceWinners(MinecraftServer server) {
-		List<GameAgent<?>> winners = getLivingAgents();
+		List<GameAgent> winners = getLivingAgents();
 		if (winners.size() != 1) return;
-		GameAgent<?> winner = winners.get(0);
+		GameAgent winner = winners.get(0);
 		winner.onWin(server);
 	}
 	
 	public void chatToAllPlayers(MinecraftServer server, Component message) {
-		for (PlayerAgent<?> agent : getAllPlayerAgents()) {
+		for (PlayerAgent agent : getAllPlayerAgents()) {
 			ServerPlayer player = agent.getPlayer(server);
 			if (player == null) continue;
 			player.displayClientMessage(message, false);

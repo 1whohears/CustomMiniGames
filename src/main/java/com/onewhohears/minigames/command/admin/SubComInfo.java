@@ -35,7 +35,7 @@ public class SubComInfo {
 	
 	private GameDataCom commandPlayerList() {
 		return (context, gameData) -> {
-			List<PlayerAgent<?>> players = gameData.getAllPlayerAgents();
+			List<PlayerAgent> players = gameData.getAllPlayerAgents();
 			if (players.isEmpty()) {
 				Component message = Component.literal("There are zero players in the game "+gameData.getInstanceId());
 				context.getSource().sendSuccess(message, true);
@@ -43,7 +43,7 @@ public class SubComInfo {
 			}
 			MutableComponent message = Component.empty();
 			for (int i = 0; i < players.size(); ++i) {
-				PlayerAgent<?> agent = players.get(i);
+				PlayerAgent agent = players.get(i);
 				if (i != 0) message.append(", ");
 				message.append(agent.getDebugInfo(context.getSource().getServer()));
 			}
@@ -54,7 +54,7 @@ public class SubComInfo {
 	
 	private GameDataCom commandTeamList() {
 		return (context, gameData) -> {
-			List<TeamAgent<?>> teams = gameData.getTeamAgents();
+			List<TeamAgent> teams = gameData.getTeamAgents();
 			if (teams.isEmpty()) {
 				Component message = Component.literal("There are zero teams in the game "+gameData.getInstanceId());
 				context.getSource().sendSuccess(message, true);
@@ -62,7 +62,7 @@ public class SubComInfo {
 			}
 			MutableComponent message = Component.empty();
 			for (int i = 0; i < teams.size(); ++i) {
-				TeamAgent<?> agent = teams.get(i);
+				TeamAgent agent = teams.get(i);
 				if (i != 0) message.append(", ");
 				message.append(agent.getDebugInfo(context.getSource().getServer()));
 			}

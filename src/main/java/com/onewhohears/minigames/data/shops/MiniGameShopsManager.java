@@ -1,23 +1,6 @@
 package com.onewhohears.minigames.data.shops;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetReloadListener;
-import org.slf4j.Logger;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.mojang.logging.LogUtils;
-import com.onewhohears.minigames.util.UtilParse;
-
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
 
 public class MiniGameShopsManager extends JsonPresetReloadListener<GameShop> {
 

@@ -19,13 +19,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.Level;
 
-public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
+public class PlayerAgent extends GameAgent {
 	
 	private UUID playerId;
 	private ServerPlayer player;
-	private TeamAgent<D> teamAgent;
+	private TeamAgent teamAgent;
 	
-	public PlayerAgent(String uuid, D gameData) {
+	public PlayerAgent(String uuid, MiniGameData gameData) {
 		super(uuid, gameData);
 	}
 	
@@ -63,7 +63,9 @@ public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
 	@Nullable
 	public ServerPlayer getPlayer(MinecraftServer server) {
 		if (player != null && player.isAddedToWorld()) return player;
-		player = server.getPlayerList().getPlayer(getPlayerId());
+		UUID uuid = getPlayerId();
+		if (uuid == null) return null;
+		player = server.getPlayerList().getPlayer(uuid);
 		return player;
 	}
 	
@@ -89,11 +91,11 @@ public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
 	}
 	
 	@Nullable
-	public TeamAgent<D> getTeamAgent() {
+	public TeamAgent getTeamAgent() {
 		return teamAgent;
 	}
 	
-	public void setTeamAgent(TeamAgent<D> teamAgent) {
+	public void setTeamAgent(TeamAgent teamAgent) {
 		this.teamAgent = teamAgent;
 	}
 	
@@ -127,8 +129,8 @@ public class PlayerAgent<D extends MiniGameData> extends GameAgent<D> {
 		if (pos == null) pos = server.overworld().getSharedSpawnPos();
 		ResourceKey<Level> dim = player.getRespawnDimension();
 		ServerLevel level = server.getLevel(dim);
-		player.teleportTo(level, 
-				pos.getX(), pos.getY(), pos.getZ(), 
+		player.teleportTo(level,
+				pos.getX(), pos.getY(), pos.getZ(),
 				0, 0);
 	}
 

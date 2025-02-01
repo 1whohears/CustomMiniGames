@@ -21,7 +21,7 @@ public interface PlayerAgentsCommand extends Command<CommandSourceStack> {
 			context.getSource().sendFailure(message);
 			return 0;
 		}
-		List<PlayerAgent<?>> agents = MiniGameManager.get().getActiveGamePlayerAgents(player);
+		List<PlayerAgent> agents = MiniGameManager.get().getActiveGamePlayerAgents(player);
 		if (agents.isEmpty()) {
 			Component message = Component.literal("You must be in an active game to use this command!");
 			context.getSource().sendFailure(message);
@@ -30,6 +30,6 @@ public interface PlayerAgentsCommand extends Command<CommandSourceStack> {
 		return runPlayerAgents(context, agents);
 	}
 	
-	int runPlayerAgents(CommandContext<CommandSourceStack> context, List<PlayerAgent<?>> agents) throws CommandSyntaxException;
+	int runPlayerAgents(CommandContext<CommandSourceStack> context, List<PlayerAgent> agents) throws CommandSyntaxException;
 	
 }

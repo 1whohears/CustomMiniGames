@@ -20,12 +20,12 @@ public interface PlayerAgentSuggestion extends SuggestionProvider<CommandSourceS
 			final SuggestionsBuilder builder) throws CommandSyntaxException {
 		ServerPlayer player = context.getSource().getPlayer();
 		if (player == null) return null;
-		List<PlayerAgent<?>> agents = MiniGameManager.get().getActiveGamePlayerAgents(player);
+		List<PlayerAgent> agents = MiniGameManager.get().getActiveGamePlayerAgents(player);
 		if (agents.isEmpty()) return null;
 		return getPlayerAgentsSuggestions(context, builder, agents);
 	}
 	
 	CompletableFuture<Suggestions> getPlayerAgentsSuggestions(final CommandContext<CommandSourceStack> context, 
-			final SuggestionsBuilder builder, List<PlayerAgent<?>> agents) throws CommandSyntaxException;
+			final SuggestionsBuilder builder, List<PlayerAgent> agents) throws CommandSyntaxException;
 	
 }

@@ -18,11 +18,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
 
-public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
+public class TeamAgent extends GameAgent {
 	
-	private final Map<String, PlayerAgent<D>> playerAgents = new HashMap<>();
+	private final Map<String, PlayerAgent> playerAgents = new HashMap<>();
 	
-	public TeamAgent(String teamName, D gameData) {
+	public TeamAgent(String teamName, MiniGameData gameData) {
 		super(teamName, gameData);
 	}
 	
@@ -50,7 +50,7 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 		for (int i = 0; i < playerList.size(); ++i) {
 			CompoundTag tag = playerList.getCompound(i);
 			String id = tag.getString("id");
-			PlayerAgent<D> agent = getGameData().createPlayerAgent(id);
+			PlayerAgent agent = getGameData().createPlayerAgent(id);
 			agent.load(tag);
 			playerAgents.put(id, agent);
 		}
@@ -86,7 +86,7 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 			if (playerAgents.containsKey(username)) continue;
 			ServerPlayer player = server.getPlayerList().getPlayerByName(username);
 			if (player != null) {
-				PlayerAgent<D> agent = getGameData().createPlayerAgent(player);
+				PlayerAgent agent = getGameData().createPlayerAgent(player);
 				agent.setTeamAgent(this);
 				playerAgents.put(username, agent);
 			}
@@ -103,25 +103,25 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 	}
 	
 	@Nullable
-	public PlayerAgent<D> getPlayerAgentByUsername(String name) {
+	public PlayerAgent getPlayerAgentByUsername(String name) {
 		return playerAgents.get(name);
 	}
 	
 	@Nullable
-	public PlayerAgent<D> getPlayerAgentByUUID(String uuid) {
-		for (PlayerAgent<D> agent : playerAgents.values()) 
+	public PlayerAgent getPlayerAgentByUUID(String uuid) {
+		for (PlayerAgent agent : playerAgents.values())
 			if (agent.getId().equals(uuid)) 
 				return agent;
 		return null;
 	}
 	
-	public Collection<PlayerAgent<D>> getPlayerAgents() {
+	public Collection<PlayerAgent> getPlayerAgents() {
 		return playerAgents.values();
 	}
 	
-	public List<PlayerAgent<D>> getLivingPlayerAgents() {
-		List<PlayerAgent<D>> living = new ArrayList<>();
-		for (PlayerAgent<D> agent : playerAgents.values()) 
+	public List<PlayerAgent> getLivingPlayerAgents() {
+		List<PlayerAgent> living = new ArrayList<>();
+		for (PlayerAgent agent : playerAgents.values())
 			if (!agent.isDead()) living.add(agent);
 		return living;
 	}
@@ -161,7 +161,7 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 	@Override
 	public void applySpawnPoint(MinecraftServer server) {
 		if (!hasRespawnPoint()) return;
-		for (PlayerAgent<?> agent : playerAgents.values()) {
+		for (PlayerAgent agent : playerAgents.values()) {
 			agent.setRespawnPoint(getRespawnPoint());
 			agent.applySpawnPoint(server);
 		}
@@ -169,7 +169,7 @@ public class TeamAgent<D extends MiniGameData> extends GameAgent<D> {
 
 	@Override
 	public void tpToSpawnPoint(MinecraftServer server) {
-		for (PlayerAgent<?> agent : playerAgents.values()) 
+		for (PlayerAgent agent : playerAgents.values())
 			agent.tpToSpawnPoint(server);
 	}
 	

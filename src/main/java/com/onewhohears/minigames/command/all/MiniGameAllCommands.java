@@ -34,7 +34,7 @@ public class MiniGameAllCommands {
 				context.getSource().sendFailure(message);
 				return 0;
 			}
-			for (PlayerAgent<?> agent : agents) {
+			for (PlayerAgent agent : agents) {
 				if (!agent.canOpenShop(shop_name)) continue;
 				SubComShop.openPlayerShop(agent.getPlayer(context.getSource().getServer()), shop);
 				Component message = Component.literal("Opened shop "+shop_name);
@@ -50,7 +50,7 @@ public class MiniGameAllCommands {
 	private PlayerAgentsCommand selectKitComand() {
 		return (context, agents) -> {
 			String kit_name = StringArgumentType.getString(context, "kit_name");
-			for (PlayerAgent<?> agent : agents) {
+			for (PlayerAgent agent : agents) {
 				if (!agent.canUseKit(kit_name)) continue;
 				agent.setSelectedKit(kit_name);
 				Component message = Component.literal("Changed kit to "+kit_name);

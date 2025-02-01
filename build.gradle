@@ -17,7 +17,7 @@ plugins {
 
 apply plugin: 'org.spongepowered.mixin'
 
-version = '0.0.8'
+version = '0.0.9'
 group = "com.1whohears.${mod_id}"
 archivesBaseName = "${mod_id}-${minecraft_version}"
 

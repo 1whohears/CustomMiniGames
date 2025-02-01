@@ -29,3 +29,10 @@ showAsResourcePack=false
     versionRange="[1.19.2,1.20)"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.minigames]]
+    modId = "onewholibs"
+    mandatory = true
+    versionRange = "[1.5.12,)"
+    ordering = "NONE"
+    side = "BOTH"

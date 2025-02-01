@@ -9,7 +9,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.onewhohears.minigames.data.MiniGamePresetType;
 import com.onewhohears.onewholibs.util.JsonToNBTUtil;
-import com.onewhohears.minigames.util.UtilParse;
+import com.onewhohears.onewholibs.util.UtilParse;
 
 import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetInstance;
 import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetStats;

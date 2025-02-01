@@ -9,8 +9,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
-import com.onewhohears.minigames.util.UtilConvert;
 
+import com.onewhohears.onewholibs.util.math.UtilGeometry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -135,14 +135,14 @@ public class SubComSetup {
 			}
 			BlockPos pos = BlockPosArgument.getSpawnablePos(context, "spawn_pos");
 			for (ServerPlayer player : players) {
-				PlayerAgent<?> agent = gameData.getPlayerAgentByUUID(player.getStringUUID());
+				PlayerAgent agent = gameData.getPlayerAgentByUUID(player.getStringUUID());
 				if (agent == null) {
 					Component message = Component.literal("The player ").append(player.getDisplayName())
 							.append(" is not in the game "+gameData.getInstanceId());
 					context.getSource().sendFailure(message);
 					continue;
 				}
-				agent.setRespawnPoint(UtilConvert.toVec3(pos));
+				agent.setRespawnPoint(UtilGeometry.toVec3(pos));
 				Component message = Component.literal("Set ").append(player.getDisplayName())
 						.append(" spawn point to "+pos.toShortString());
 				context.getSource().sendSuccess(message, true);
@@ -155,14 +155,14 @@ public class SubComSetup {
 		return (context, gameData) -> {
 			PlayerTeam team = TeamArgument.getTeam(context, "team");
 			BlockPos pos = BlockPosArgument.getSpawnablePos(context, "spawn_pos");
-			TeamAgent<?> agent = gameData.getTeamAgentByName(team.getName());
+			TeamAgent agent = gameData.getTeamAgentByName(team.getName());
 			if (agent == null) {
 				Component message = Component.literal("The team ").append(team.getDisplayName())
 						.append(" is not in the game "+gameData.getInstanceId());
 				context.getSource().sendFailure(message);
 				return 0;
 			}
-			agent.setRespawnPoint(UtilConvert.toVec3(pos));
+			agent.setRespawnPoint(UtilGeometry.toVec3(pos));
 			Component message = Component.literal("Set ").append(team.getDisplayName())
 					.append(" spawn point to "+pos.toShortString());
 			context.getSource().sendSuccess(message, true);
@@ -183,7 +183,7 @@ public class SubComSetup {
 	private GameSetupCom commandSetCenter() {
 		return (context, gameData) -> {
 			BlockPos pos = BlockPosArgument.getSpawnablePos(context, "game_center");
-			gameData.setGameCenter(UtilConvert.toVec3(pos), context.getSource().getServer());
+			gameData.setGameCenter(UtilGeometry.toVec3(pos), context.getSource().getServer());
 			Component message = Component.literal("Changed "+gameData.getInstanceId()+" center pos!");
 			context.getSource().sendSuccess(message, true);
 			return 1;
