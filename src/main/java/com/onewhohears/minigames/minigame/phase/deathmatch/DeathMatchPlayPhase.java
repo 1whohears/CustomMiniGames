@@ -31,9 +31,7 @@ public class DeathMatchPlayPhase<T extends DeathMatchData> extends GamePhase<T> 
 	@Override
 	public void onStart(MinecraftServer server) {
 		super.onStart(server);
-		getGameData().tpPlayersToSpawnPosition(server);
-		if (getGameData().isClearOnStart()) getGameData().clearAllPlayerInventories(server);
-		getGameData().refillAllAgentKits(server);
+		getGameData().onGameStart(server);
 	}
 	
 	@Override

@@ -328,7 +328,11 @@ public abstract class MiniGameData {
 	public String[] getEnabledKitIds() {
 		return kits.toArray(new String[0]);
 	}
-	
+
+	public boolean hasKit(String id) {
+		return kits.contains(id);
+	}
+
 	public void addShops(String... ids) {
         Collections.addAll(shops, ids);
 	}
@@ -340,6 +344,10 @@ public abstract class MiniGameData {
 	public String[] getEnabledShopIds() {
 		return shops.toArray(new String[0]);
 	}
+
+	public boolean hasShop(String id) {
+		return shops.contains(id);
+	}
 	
 	public boolean isFirstTick() {
 		return firstTick;
@@ -350,6 +358,7 @@ public abstract class MiniGameData {
 		info += "\nuse set_use_border to set if the world border is used during gameplay phase. ";
 		info += "\nuse set_size to set the game world border size and random start position distance. ";
 		info += "\nuse set_lives to set the number of initial lives. ";
+		info += "\nuse clear_on_start to set if player inventories should be cleared should be cleared on start.";
 		if (canAddIndividualPlayers()) info += "\nuse add_player to add players to the game. ";
 		if (canAddTeams()) info += "\nuse add_team to add teams to the game. ";
 		if (requiresSetRespawnPos()) info += "\nuse set_spawn to set a player or team spawnpoint. ";
@@ -589,5 +598,11 @@ public abstract class MiniGameData {
 
 	public void setClearOnStart(boolean clear) {
 		clearOnStart = clear;
+	}
+
+	public void onGameStart(MinecraftServer server) {
+		tpPlayersToSpawnPosition(server);
+		if (isClearOnStart()) clearAllPlayerInventories(server);
+		refillAllAgentKits(server);
 	}
 }

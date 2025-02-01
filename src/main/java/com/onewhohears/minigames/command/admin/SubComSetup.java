@@ -5,8 +5,11 @@ import java.util.Collection;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.onewhohears.minigames.command.GameComArgs;
+import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
+import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 
@@ -39,11 +42,35 @@ public class SubComSetup {
 								.then(setLivesArg())
 								.then(setUseBorderArg())
 								.then(setClearOnStartArg())
-								// TODO 3.4.4 add remove shops command
-								// TODO 3.5.4 add remove kits command
+								.then(addKitArg()).then(removeKitArg())
+								.then(addShopArg()).then(removeShopArg())
 			);
 	}
-	
+
+	private ArgumentBuilder<CommandSourceStack,?> addKitArg() {
+		return Commands.literal("add_kit")
+				.then(GameComArgs.allKitNameArgument()
+						.executes(commandAddKit()));
+	}
+
+	private ArgumentBuilder<CommandSourceStack,?> removeKitArg() {
+		return Commands.literal("remove_kit")
+				.then(GameComArgs.enabledKitNameArgument()
+						.executes(commandRemoveKit()));
+	}
+
+	private ArgumentBuilder<CommandSourceStack,?> addShopArg() {
+		return Commands.literal("add_shop")
+				.then(GameComArgs.allKitNameArgument()
+						.executes(commandAddShop()));
+	}
+
+	private ArgumentBuilder<CommandSourceStack,?> removeShopArg() {
+		return Commands.literal("remove_shop")
+				.then(GameComArgs.enabledKitNameArgument()
+						.executes(commandRemoveShop()));
+	}
+
 	private ArgumentBuilder<CommandSourceStack,?> addTeamArg() {
 		return Commands.literal("add_team")
 				.then(Commands.argument("team", TeamArgument.team())
@@ -299,6 +326,76 @@ public class SubComSetup {
 				return 0;
 			}
 			MutableComponent message = Component.literal("Added team "+team.getName()+" to "+gameData.getInstanceId()+"!");
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
+	}
+
+	private GameSetupCom commandAddKit() {
+		return (context, gameData) -> {
+			String kit_name = StringArgumentType.getString(context, "kit_name");
+			if (gameData.hasKit(kit_name)) {
+				Component message = Component.literal(gameData.getInstanceId()+" already has kit "+kit_name+" enabled!");
+				context.getSource().sendSuccess(message, true);
+				return 1;
+			}
+			if (!MiniGameKitsManager.get().has(kit_name)) {
+				Component message = Component.literal("Kit "+kit_name+" does not exist!");
+				context.getSource().sendFailure(message);
+				return 0;
+			}
+			gameData.addKits(kit_name);
+			MutableComponent message = Component.literal("Added kit "+kit_name+" to "+gameData.getInstanceId()+"!");
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
+	}
+
+	private GameSetupCom commandRemoveKit() {
+		return (context, gameData) -> {
+			String kit_name = StringArgumentType.getString(context, "kit_name");
+			if (!gameData.hasKit(kit_name)) {
+				Component message = Component.literal(gameData.getInstanceId()+" doesn't have kit "+kit_name+"!");
+				context.getSource().sendSuccess(message, true);
+				return 1;
+			}
+			gameData.removeKit(kit_name);
+			MutableComponent message = Component.literal("Removed kit "+kit_name+" from "+gameData.getInstanceId()+"!");
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
+	}
+
+	private GameSetupCom commandAddShop() {
+		return (context, gameData) -> {
+			String shop_name = StringArgumentType.getString(context, "shop_name");
+			if (gameData.hasShop(shop_name)) {
+				Component message = Component.literal(gameData.getInstanceId()+" already has shop "+shop_name+" enabled!");
+				context.getSource().sendSuccess(message, true);
+				return 1;
+			}
+			if (!MiniGameShopsManager.get().has(shop_name)) {
+				Component message = Component.literal("Shop "+shop_name+" does not exist!");
+				context.getSource().sendFailure(message);
+				return 0;
+			}
+			gameData.addShops(shop_name);
+			MutableComponent message = Component.literal("Added shop "+shop_name+" to "+gameData.getInstanceId()+"!");
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
+	}
+
+	private GameSetupCom commandRemoveShop() {
+		return (context, gameData) -> {
+			String shop_name = StringArgumentType.getString(context, "shop_name");
+			if (!gameData.hasShop(shop_name)) {
+				Component message = Component.literal(gameData.getInstanceId()+" doesn't have shop "+shop_name+"!");
+				context.getSource().sendSuccess(message, true);
+				return 1;
+			}
+			gameData.removeShops(shop_name);
+			MutableComponent message = Component.literal("Removed shop "+shop_name+" from "+gameData.getInstanceId()+"!");
 			context.getSource().sendSuccess(message, true);
 			return 1;
 		};
