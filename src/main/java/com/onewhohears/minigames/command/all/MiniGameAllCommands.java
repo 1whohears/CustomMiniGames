@@ -17,15 +17,15 @@ public class MiniGameAllCommands {
 	public MiniGameAllCommands(CommandDispatcher<CommandSourceStack> d) {
 		d.register(Commands.literal("shop").requires((stack) -> stack.hasPermission(0))
 			.then(GameComArgs.enabledShopNameArgument()
-			.executes(openShopComand()))
+			.executes(openShopCommand()))
 		);
 		d.register(Commands.literal("kit").requires((stack) -> stack.hasPermission(0))
 			.then(GameComArgs.enabledKitNameArgument()
-			.executes(selectKitComand()))
+			.executes(selectKitCommand()))
 		);
 	}
 	
-	private PlayerAgentsCommand openShopComand() {
+	private PlayerAgentsCommand openShopCommand() {
 		return (context, agents) -> {
 			String shop_name = StringArgumentType.getString(context, "shop_name");
 			GameShop shop = MiniGameShopsManager.get().get(shop_name);
@@ -47,7 +47,7 @@ public class MiniGameAllCommands {
 		};
 	}
 	
-	private PlayerAgentsCommand selectKitComand() {
+	private PlayerAgentsCommand selectKitCommand() {
 		return (context, agents) -> {
 			String kit_name = StringArgumentType.getString(context, "kit_name");
 			for (PlayerAgent agent : agents) {

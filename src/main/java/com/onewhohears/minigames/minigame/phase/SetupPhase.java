@@ -1,5 +1,6 @@
 package com.onewhohears.minigames.minigame.phase;
 
+import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.condition.NeverExitCondition;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
@@ -74,5 +75,9 @@ public abstract class SetupPhase<T extends MiniGameData> extends GamePhase<T> {
 	public double getWorldBorderSize() {
 		return 32;
 	}
-	
+
+	public boolean canAgentOpenShop(GameAgent agent, String shop) {
+		return false;
+	}
+
 }

@@ -160,11 +160,11 @@ public abstract class GameAgent {
 	}
 	
 	public boolean canUseKit(String kit) {
-		return Arrays.asList(getAvailableKits()).contains(kit);
+		return getGameData().canUseKit(this, kit);
 	}
 	
 	public boolean canOpenShop(String shop) {
-		return Arrays.asList(getAvailableShops()).contains(shop);
+		return getGameData().canOpenShop(this, shop);
 	}
 	
 	public abstract boolean isPlayer();

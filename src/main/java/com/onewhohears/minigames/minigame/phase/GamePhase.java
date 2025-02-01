@@ -1,5 +1,6 @@
 package com.onewhohears.minigames.minigame.phase;
 
+import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 import com.onewhohears.minigames.minigame.condition.PhaseExitCondition;
@@ -167,5 +168,13 @@ public abstract class GamePhase<T extends MiniGameData> {
 	}
 
 	public void onLogOut(PlayerAgent player, MinecraftServer server) {
+	}
+
+	public boolean canAgentUseKit(GameAgent agent, String kit) {
+		return getGameData().hasKit(kit);
+	}
+
+	public boolean canAgentOpenShop(GameAgent agent, String shop) {
+		return getGameData().hasShop(shop);
 	}
 }

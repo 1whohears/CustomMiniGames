@@ -8,10 +8,12 @@ import com.onewhohears.minigames.data.kits.GameKit;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -157,7 +159,10 @@ public class PlayerAgent extends GameAgent {
 	public void onWin(MinecraftServer server) {
 		ServerPlayer player = getPlayer(server);
 		if (player == null) return;
-		Component message = Component.empty().append(player.getDisplayName()).append(" is the winner!");
+		Style style = player.getDisplayName().getStyle().withColor(ChatFormatting.GOLD)
+				.withBold(true).withUnderlined(true);
+		Component message = Component.empty().append(player.getDisplayName())
+				.append(" is the winner!").setStyle(style);
 		getGameData().chatToAllPlayers(server, message);
 	}
 

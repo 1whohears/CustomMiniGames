@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
@@ -187,7 +188,9 @@ public class TeamAgent extends GameAgent {
 	public void onWin(MinecraftServer server) {
 		PlayerTeam team = getTeam(server);
 		if (team == null) return;
-		Component message = Component.empty().append(team.getFormattedDisplayName()).append(" is the winning team!");
+		Style style = team.getDisplayName().getStyle().withBold(true).withUnderlined(true);
+		Component message = Component.empty().append(team.getFormattedDisplayName())
+				.append(" is the winning team!").setStyle(style);
 		getGameData().chatToAllPlayers(server, message);
 	}
 

@@ -600,9 +600,20 @@ public abstract class MiniGameData {
 		clearOnStart = clear;
 	}
 
+	public abstract Component getStartGameMessage(MinecraftServer server);
+
 	public void onGameStart(MinecraftServer server) {
 		tpPlayersToSpawnPosition(server);
 		if (isClearOnStart()) clearAllPlayerInventories(server);
 		refillAllAgentKits(server);
+		chatToAllPlayers(server, getStartGameMessage(server));
+	}
+
+	public boolean canUseKit(GameAgent agent, String kit) {
+		return getCurrentPhase().canAgentUseKit(agent, kit);
+	}
+
+	public boolean canOpenShop(GameAgent agent, String shop) {
+		return getCurrentPhase().canAgentOpenShop(agent, shop);
 	}
 }

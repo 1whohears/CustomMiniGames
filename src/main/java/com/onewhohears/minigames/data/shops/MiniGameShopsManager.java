@@ -31,6 +31,4 @@ public class MiniGameShopsManager extends JsonPresetReloadListener<GameShop> {
 		addPresetType(GameShop.GAMESHOP);
 	}
 
-	// TODO 3.4.1 shop system
-
 }
