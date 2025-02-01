@@ -29,19 +29,18 @@ public class SubComSetup {
 	
 	public ArgumentBuilder<CommandSourceStack,?> setup() {
 		return Commands.literal("setup")
-			.then(GameComArgs.runningGameIdArgument()
-				.then(Commands.literal("start").executes(commandStartGame()))
-				.then(addTeamArg())
-				.then(removeTeamArg())
-				.then(addPlayerArg())
-				.then(removePlayerArg())
-				.then(setCenterArg())
-				.then(setSizeArg())
-				.then(setSpawnArg())
-				.then(setLivesArg())
-				.then(setUseBorderArg())
-				// TODO 3.4.4 add remove shops command
-				// TODO 3.5.4 add remove kits command
+				.then(GameComArgs.runningGameIdArgument()
+								.then(Commands.literal("start").executes(commandStartGame()))
+								.then(addTeamArg()).then(removeTeamArg())
+								.then(addPlayerArg()).then(removePlayerArg())
+								.then(setCenterArg())
+								.then(setSizeArg())
+								.then(setSpawnArg())
+								.then(setLivesArg())
+								.then(setUseBorderArg())
+								.then(setClearOnStartArg())
+								// TODO 3.4.4 add remove shops command
+								// TODO 3.5.4 add remove kits command
 			);
 	}
 	
@@ -102,6 +101,12 @@ public class SubComSetup {
 				.then(Commands.argument("use", BoolArgumentType.bool())
 				.executes(commandSetUseWorldBorder()));
 	}
+
+	private ArgumentBuilder<CommandSourceStack,?> setClearOnStartArg() {
+		return Commands.literal("clear_on_start")
+				.then(Commands.argument("clear", BoolArgumentType.bool())
+						.executes(commandSetClearOnStart()));
+	}
 	
 	private GameSetupCom commandSetUseWorldBorder() {
 		return (context, gameData) -> {
@@ -110,6 +115,18 @@ public class SubComSetup {
 			Component message; 
 			if (use) message = Component.literal(gameData.getInstanceId()+" will have a world border during game play phase.");
 			else message = Component.literal(gameData.getInstanceId()+" will NOT have a world border during game play phase.");
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
+	}
+
+	private GameSetupCom commandSetClearOnStart() {
+		return (context, gameData) -> {
+			boolean clear = BoolArgumentType.getBool(context, "clear");
+			gameData.setClearOnStart(clear);
+			Component message;
+			if (clear) message = Component.literal(gameData.getInstanceId()+" will clear player inventories on when the game starts.");
+			else message = Component.literal(gameData.getInstanceId()+" will NOT clear player inventories on when the game starts.");
 			context.getSource().sendSuccess(message, true);
 			return 1;
 		};

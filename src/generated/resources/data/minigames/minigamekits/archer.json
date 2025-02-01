@@ -2,6 +2,7 @@
   "displayName": "preset.minigames.archer",
   "kitItems": [
     {
+      "ignoreNbt": true,
       "item": "minecraft:bow",
       "keep": true,
       "nbt": {
@@ -40,6 +41,7 @@
       "refill": true
     },
     {
+      "ignoreNbt": true,
       "item": "minecraft:crossbow",
       "keep": true,
       "nbt": {

@@ -40,6 +40,24 @@ minecraft {
             }
         }
 
+        client2 {
+            parent runs.client
+            taskName 'runClient2'
+            arg '--username=StupidIdiot'
+        }
+
+        client3 {
+            parent runs.client
+            taskName 'runClient3'
+            arg '--username=LunaticDonkey'
+        }
+
+        client4 {
+            parent runs.client
+            taskName 'runClient4'
+            arg '--username=DisastrousDumbAss'
+        }
+
         server {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'

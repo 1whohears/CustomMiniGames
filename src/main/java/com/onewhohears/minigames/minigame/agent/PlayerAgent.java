@@ -53,6 +53,25 @@ public class PlayerAgent extends GameAgent {
 	@Override
 	public void onDeath(MinecraftServer server, @Nullable DamageSource source) {
 		super.onDeath(server, source);
+		getGameData().onPlayerDeath(this, server, source);
+	}
+
+	@Override
+	public void onRespawn(MinecraftServer server) {
+		super.onRespawn(server);
+		getGameData().onPlayerRespawn(this, server);
+	}
+
+	@Override
+	public void onLogIn(MinecraftServer server) {
+		super.onLogIn(server);
+		getGameData().onLogIn(this, server);
+	}
+
+	@Override
+	public void onLogOut(MinecraftServer server) {
+		super.onLogOut(server);
+		getGameData().onLogOut(this, server);
 	}
 	
 	@Override
@@ -161,6 +180,13 @@ public class PlayerAgent extends GameAgent {
 		ServerPlayer player = getPlayer(server);
 		if (player == null) return;
 		kit.giveItemsRefill(player);
+	}
+
+	@Override
+	public void clearPlayerInventory(MinecraftServer server) {
+		ServerPlayer player = getPlayer(server);
+		if (player == null) return;
+		player.getInventory().clearContent();
 	}
 
 }

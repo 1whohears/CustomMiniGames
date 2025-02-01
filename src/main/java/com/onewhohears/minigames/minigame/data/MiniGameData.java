@@ -4,6 +4,8 @@ import java.util.*;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.Util;
+import net.minecraft.world.damagesource.DamageSource;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -42,7 +44,10 @@ public abstract class MiniGameData {
 	private int age;
 	private boolean isStarted, isStopped, firstTick = true;
 	
-	protected boolean canAddIndividualPlayers, canAddTeams;
+	protected boolean canAddIndividualPlayers;
+	protected boolean canAddTeams;
+
+	protected boolean clearOnStart;
 	protected boolean requiresSetRespawnPos, worldBorderDuringGame;
 	protected int initialLives = 3, moneyPerRound = 10;
 	protected double gameBorderSize = 1000;
@@ -66,6 +71,7 @@ public abstract class MiniGameData {
 		nbt.putBoolean("worldBorderDuringGame", worldBorderDuringGame);
 		nbt.putInt("initialLives", initialLives);
 		nbt.putDouble("gameBorderSize", gameBorderSize);
+		nbt.putBoolean("clearOnStart", clearOnStart);
 		UtilParse.writeVec3(nbt, gameCenter, "gameCenter");
 		saveAgents(nbt);
 		savePhases(nbt);
@@ -85,6 +91,7 @@ public abstract class MiniGameData {
 		initialLives = nbt.getInt("initialLives");
 		gameBorderSize = nbt.getDouble("gameBorderSize");
 		gameCenter = UtilParse.readVec3(nbt, "gameCenter");
+		clearOnStart = nbt.getBoolean("clearOnStart");
 		loadAgents(nbt);
 		loadPhases(nbt);
 		kits.clear(); shops.clear();
@@ -551,5 +558,36 @@ public abstract class MiniGameData {
 	public MutableComponent getDebugInfo(MinecraftServer server) {
 		return Component.literal(getDebugInfoString(server));
 	}
-	
+
+	public void onPlayerDeath(PlayerAgent player, MinecraftServer server, @Nullable DamageSource source) {
+		getCurrentPhase().onPlayerDeath(player, server, source);
+	}
+
+	public void onPlayerRespawn(PlayerAgent player, MinecraftServer server) {
+		getCurrentPhase().onPlayerRespawn(player, server);
+	}
+
+	public void onLogIn(PlayerAgent player, MinecraftServer server) {
+		getCurrentPhase().onLogIn(player, server);
+	}
+
+	public void onLogOut(PlayerAgent player, MinecraftServer server) {
+		getCurrentPhase().onLogOut(player, server);
+	}
+
+	public void refillAllAgentKits(MinecraftServer server) {
+		agents.forEach((name, agent) -> agent.refillPlayerKit(server));
+	}
+
+	public void clearAllPlayerInventories(MinecraftServer server) {
+		agents.forEach((name, agent) -> agent.clearPlayerInventory(server));
+	}
+
+	public boolean isClearOnStart() {
+		return clearOnStart;
+	}
+
+	public void setClearOnStart(boolean clear) {
+		clearOnStart = clear;
+	}
 }

@@ -181,6 +181,9 @@ public class GameKit extends JsonPresetStats {
 		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt) {
 			return addItem(itemkey, num, unbreakable, nbt, false, false, false);
 		}
+		public Builder addItemKeep(String itemkey, boolean unbreakable, boolean ignoreNbt) {
+			return addItem(itemkey, 1, unbreakable, null, true, false, ignoreNbt);
+		}
 		public Builder addItemKeep(String itemkey, boolean unbreakable) {
 			return addItemKeep(itemkey, 1, unbreakable, null);
 		}

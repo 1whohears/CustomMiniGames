@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.common.event;
 
 import com.onewhohears.onewholibs.common.event.GetJsonPresetListenersEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -28,12 +29,38 @@ public class CommonForgeEvents {
 	
 	@SubscribeEvent(priority = EventPriority.NORMAL)
 	public static void livingDeathEvent(LivingDeathEvent event) {
-		LivingEntity living = event.getEntity();
-		if (living.level.isClientSide) return;
-		if (living instanceof ServerPlayer player) 
-			for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player))
-				if (agent.shouldRunOnDeath()) 
-					agent.onDeath(player.getServer(), event.getSource());
+		if (event.getEntity().getLevel().isClientSide()) return;
+		if (!(event.getEntity() instanceof ServerPlayer player)) return;
+		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player))
+			if (agent.shouldRunOnDeath())
+				agent.onDeath(player.getServer(), event.getSource());
+	}
+
+	@SubscribeEvent
+	public static void playerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+		if (event.getEntity().getLevel().isClientSide() || event.isEndConquered()) return;
+		if (!(event.getEntity() instanceof ServerPlayer player)) return;
+		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player))
+			if (agent.shouldRunOnRespawn())
+				agent.onRespawn(player.getServer());
+	}
+
+	@SubscribeEvent
+	public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+		if (event.getEntity().getLevel().isClientSide()) return;
+		if (!(event.getEntity() instanceof ServerPlayer player)) return;
+		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player))
+			if (agent.shouldRunOnRespawn())
+				agent.onLogIn(player.getServer());
+	}
+
+	@SubscribeEvent
+	public static void playerLoggedIn(PlayerEvent.PlayerLoggedOutEvent event) {
+		if (event.getEntity().getLevel().isClientSide()) return;
+		if (!(event.getEntity() instanceof ServerPlayer player)) return;
+		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player))
+			if (agent.shouldRunOnRespawn())
+				agent.onLogOut(player.getServer());
 	}
 	
 	@SubscribeEvent(priority = EventPriority.NORMAL)

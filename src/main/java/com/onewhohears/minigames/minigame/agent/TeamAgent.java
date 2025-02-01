@@ -177,7 +177,12 @@ public class TeamAgent extends GameAgent {
 	public void refillPlayerKit(MinecraftServer server) {
 		playerAgents.forEach((username, player) -> player.refillPlayerKit(server));
 	}
-	
+
+	@Override
+	public void clearPlayerInventory(MinecraftServer server) {
+		playerAgents.forEach((username, player) -> player.clearPlayerInventory(server));
+	}
+
 	@Override
 	public void onWin(MinecraftServer server) {
 		PlayerTeam team = getTeam(server);

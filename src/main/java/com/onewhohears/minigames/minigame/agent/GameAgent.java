@@ -69,8 +69,15 @@ public abstract class GameAgent {
 		lives = Math.max(lives-1, 0);
 		System.out.println("ON DEATH: "+id+" "+lives);
 	}
+
+	public void onRespawn(MinecraftServer server) {
+	}
 	
 	public boolean shouldRunOnDeath() {
+		return !getGameData().isSetupPhase();
+	}
+
+	public boolean shouldRunOnRespawn() {
 		return !getGameData().isSetupPhase();
 	}
 	
@@ -168,7 +175,13 @@ public abstract class GameAgent {
 	public abstract void tpToSpawnPoint(MinecraftServer server);
 	public abstract void onWin(MinecraftServer server);
 	public abstract void refillPlayerKit(MinecraftServer server);
+	public abstract void clearPlayerInventory(MinecraftServer server);
 	
 	public abstract Component getDebugInfo(MinecraftServer server);
-	
+
+	public void onLogIn(MinecraftServer server) {
+	}
+
+	public void onLogOut(MinecraftServer server) {
+	}
 }

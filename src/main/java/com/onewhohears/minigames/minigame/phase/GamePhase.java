@@ -8,9 +8,12 @@ import com.onewhohears.minigames.minigame.data.MiniGameData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
 
 public abstract class GamePhase<T extends MiniGameData> {
 	
@@ -151,5 +154,18 @@ public abstract class GamePhase<T extends MiniGameData> {
 	public boolean shouldEndGame() {
 		return false;
 	}
-	
+
+	public void onPlayerDeath(PlayerAgent player, MinecraftServer server, @Nullable DamageSource source) {
+
+	}
+
+	public void onPlayerRespawn(PlayerAgent player, MinecraftServer server) {
+		player.refillPlayerKit(server);
+	}
+
+	public void onLogIn(PlayerAgent player, MinecraftServer server) {
+	}
+
+	public void onLogOut(PlayerAgent player, MinecraftServer server) {
+	}
 }
