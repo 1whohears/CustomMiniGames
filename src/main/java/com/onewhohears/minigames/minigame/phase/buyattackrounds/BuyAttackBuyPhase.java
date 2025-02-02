@@ -1,5 +1,6 @@
 package com.onewhohears.minigames.minigame.phase.buyattackrounds;
 
+import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.condition.BuyAttackGameWinCondition;
 import com.onewhohears.minigames.minigame.condition.TimeoutPhaseExitCondition;
 import com.onewhohears.minigames.minigame.data.BuyAttackData;
@@ -8,6 +9,7 @@ import com.onewhohears.minigames.minigame.phase.GamePhase;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 
 public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
 
@@ -22,6 +24,23 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
     @Override
     public void tickPhase(MinecraftServer server) {
         super.tickPhase(server);
+    }
+
+    @Override
+    public void tickPlayerAgent(MinecraftServer server, PlayerAgent agent) {
+        super.tickPlayerAgent(server, agent);
+        buyRadiusCheck(server, agent);
+    }
+
+    public void buyRadiusCheck(MinecraftServer server, PlayerAgent agent) {
+        int buyRad = getGameData().getBuyRadius();
+        if (buyRad > -1 && agent.getRespawnPoint() != null) {
+            ServerPlayer player = agent.getPlayer(server);
+            if (player == null) return;
+            if (player.distanceToSqr(agent.getRespawnPoint()) > buyRad * buyRad) {
+                agent.tpToSpawnPoint(server);
+            }
+        }
     }
 
     @Override

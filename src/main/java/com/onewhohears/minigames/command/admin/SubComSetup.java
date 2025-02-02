@@ -100,6 +100,17 @@ public class SubComSetup {
 							context.getSource().sendSuccess(message, true);
 							return 1;
 						}, 1, 10000))
+						.then(setIntParamArg("buy_radius", "blocks", (context, gameData, num) -> {
+							if (!(gameData instanceof BuyAttackData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.setBuyRadius(num);
+							Component message = UtilMCText.literal("Set Buy Radius to "+num);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, -1, 10000))
 			);
 	}
 

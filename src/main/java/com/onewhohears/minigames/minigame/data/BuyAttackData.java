@@ -33,6 +33,7 @@ public class BuyAttackData extends MiniGameData {
     protected int attackTime = 6000;
     protected int attackEndTime = 200;
     protected int roundsToWin = 3;
+    protected int buyRadius = 50;
 
     protected int currentRound = 0;
 
@@ -54,6 +55,7 @@ public class BuyAttackData extends MiniGameData {
         nbt.putInt("roundsToWin", roundsToWin);
         nbt.putInt("currentRound", currentRound);
         nbt.putInt("attackEndTime", attackEndTime);
+        nbt.putInt("buyRadius", buyRadius);
         return nbt;
     }
 
@@ -65,6 +67,7 @@ public class BuyAttackData extends MiniGameData {
         roundsToWin = nbt.getInt("roundsToWin");
         currentRound = nbt.getInt("currentRound");
         attackEndTime = nbt.getInt("attackEndTime");
+        buyRadius = nbt.getInt("buyRadius");
     }
 
     @Override
@@ -124,6 +127,14 @@ public class BuyAttackData extends MiniGameData {
 
     public Optional<GameAgent> getWinningAgent() {
         return getAgentsWithScore(getRoundsToWin()).findFirst();
+    }
+
+    public int getBuyRadius() {
+        return buyRadius;
+    }
+
+    public void setBuyRadius(int buyRadius) {
+        this.buyRadius = buyRadius;
     }
 
 }
