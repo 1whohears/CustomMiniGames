@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -182,7 +183,7 @@ public class PlayerAgent extends GameAgent {
 				.withBold(true).withUnderlined(true);
 		Component message = Component.empty().append(player.getDisplayName())
 				.append(" is the winner!").setStyle(style);
-		getGameData().chatToAllPlayers(server, message);
+		getGameData().chatToAllPlayers(server, message, SoundEvents.FIREWORK_ROCKET_LAUNCH);
 	}
 
 	@Override

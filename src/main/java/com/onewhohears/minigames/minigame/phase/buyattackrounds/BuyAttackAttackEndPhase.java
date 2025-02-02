@@ -10,6 +10,7 @@ import com.onewhohears.minigames.minigame.phase.GamePhase;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.sounds.SoundEvents;
 
 public class BuyAttackAttackEndPhase<T extends BuyAttackData> extends GamePhase<T> {
 
@@ -38,7 +39,7 @@ public class BuyAttackAttackEndPhase<T extends BuyAttackData> extends GamePhase<
     public void onStart(MinecraftServer server) {
         super.onStart(server);
         Component message = UtilMCText.literal("Buy Phase will Start Soon!").setStyle(MiniGameData.GOLD_BOLD);
-        getGameData().chatToAllPlayers(server, message);
+        getGameData().chatToAllPlayers(server, message, SoundEvents.EXPERIENCE_ORB_PICKUP);
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 
 public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
 
@@ -60,7 +61,7 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
         }
         getGameData().giveMoneyToTeams(server);
         Component message = UtilMCText.literal("Buy Phase Start!").setStyle(MiniGameData.GOLD_BOLD);
-        getGameData().chatToAllPlayers(server, message);
+        getGameData().chatToAllPlayers(server, message, SoundEvents.EXPERIENCE_ORB_PICKUP);
     }
 
     @Override

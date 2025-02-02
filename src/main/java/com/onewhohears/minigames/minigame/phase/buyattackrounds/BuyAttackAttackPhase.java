@@ -11,6 +11,7 @@ import com.onewhohears.minigames.minigame.phase.GamePhase;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.sounds.SoundEvents;
 
 public class BuyAttackAttackPhase<T extends BuyAttackData> extends GamePhase<T> {
 
@@ -41,7 +42,7 @@ public class BuyAttackAttackPhase<T extends BuyAttackData> extends GamePhase<T> 
         super.onStart(server);
         getGameData().resetAllPlayerHealth(server);
         Component message = UtilMCText.literal("Attack Phase Start!").setStyle(MiniGameData.GOLD_BOLD);
-        getGameData().chatToAllPlayers(server, message);
+        getGameData().chatToAllPlayers(server, message, SoundEvents.EXPERIENCE_ORB_PICKUP);
     }
 
     @Override

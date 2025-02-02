@@ -8,6 +8,9 @@ import javax.annotation.Nullable;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import org.slf4j.Logger;
 
@@ -571,7 +574,8 @@ public abstract class MiniGameData {
 	}
 
 	public void announceScores(MinecraftServer server) {
-		chatToAllPlayers(server, UtilMCText.literal("Current Scores:").setStyle(GREEN_BOLD));
+		chatToAllPlayers(server, UtilMCText.literal("Current Scores:").setStyle(GREEN_BOLD),
+				SoundEvents.VILLAGER_CELEBRATE);
 		MutableComponent message = UtilMCText.empty().setStyle(GREEN);
 		List<GameAgent> agentList = getAllAgents();
 		agentList.sort((agent1, agent2) -> (int) (agent2.getScore() - agent1.getScore()));
@@ -582,12 +586,17 @@ public abstract class MiniGameData {
 		chatToAllPlayers(server, message);
 	}
 	
-	public void chatToAllPlayers(MinecraftServer server, Component message) {
+	public void chatToAllPlayers(MinecraftServer server, Component message, @Nullable SoundEvent sound) {
 		for (PlayerAgent agent : getAllPlayerAgents()) {
 			ServerPlayer player = agent.getPlayer(server);
 			if (player == null) continue;
 			player.displayClientMessage(message, false);
+			if (sound != null) player.playNotifySound(sound, SoundSource.NEUTRAL, 1, 1);
 		}
+	}
+
+	public void chatToAllPlayers(MinecraftServer server, Component message) {
+		chatToAllPlayers(server, message, null);
 	}
 	
 	public String getDebugInfoString(MinecraftServer server) {

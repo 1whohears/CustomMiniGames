@@ -18,6 +18,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.scores.PlayerTeam;
 
 public class TeamAgent extends GameAgent {
@@ -192,7 +193,7 @@ public class TeamAgent extends GameAgent {
 		Style style = team.getDisplayName().getStyle().withBold(true).withUnderlined(true);
 		Component message = Component.empty().append(team.getFormattedDisplayName())
 				.append(" is the winning team!").setStyle(style);
-		getGameData().chatToAllPlayers(server, message);
+		getGameData().chatToAllPlayers(server, message, SoundEvents.FIREWORK_ROCKET_LAUNCH);
 	}
 
 	@Override
