@@ -63,4 +63,9 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
         return getGameData().getGameBorderSize();
     }
 
+    @Override
+    public boolean allowPVP() {
+        return false;
+    }
+
 }

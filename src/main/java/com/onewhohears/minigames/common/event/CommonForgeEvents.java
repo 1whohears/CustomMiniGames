@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.common.event;
 
 import com.onewhohears.onewholibs.common.event.GetJsonPresetListenersEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.slf4j.Logger;
 
@@ -12,7 +13,6 @@ import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -26,7 +26,19 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 public class CommonForgeEvents {
 	
 	private static final Logger LOGGER = LogUtils.getLogger();
-	
+
+	@SubscribeEvent
+	public static void livingHurtEvent(LivingHurtEvent event) {
+		if (event.getEntity().getLevel().isClientSide()) return;
+		if (!(event.getEntity() instanceof ServerPlayer player)) return;
+		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player)) {
+			if (!agent.getGameData().getCurrentPhase().allowPVP()) {
+				event.setCanceled(true);
+				return;
+			}
+		}
+	}
+
 	@SubscribeEvent(priority = EventPriority.NORMAL)
 	public static void livingDeathEvent(LivingDeathEvent event) {
 		if (event.getEntity().getLevel().isClientSide()) return;

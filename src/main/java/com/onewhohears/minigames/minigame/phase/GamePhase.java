@@ -212,4 +212,8 @@ public abstract class GamePhase<T extends MiniGameData> {
 	public boolean canAgentOpenShop(GameAgent agent, String shop) {
 		return getGameData().hasShop(shop);
 	}
+
+	public boolean allowPVP() {
+		return true;
+	}
 }
