@@ -6,7 +6,9 @@ import com.onewhohears.minigames.minigame.agent.TeamAgent;
 import com.onewhohears.minigames.minigame.condition.PhaseExitCondition;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
+import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -22,6 +24,9 @@ public abstract class GamePhase<T extends MiniGameData> {
 	private final T gameData;
 	private final PhaseExitCondition<T>[] exitConditions;
 	private int age;
+
+	protected boolean announceTimeLeft = false;
+	protected int maxTime = 0;
 	
 	@SafeVarargs
 	protected GamePhase(String id, T gameData, PhaseExitCondition<T>...exitConditions) {
@@ -42,16 +47,46 @@ public abstract class GamePhase<T extends MiniGameData> {
 	}
 	
 	public void tickPhase(MinecraftServer server) {
+		if (announceTimeLeft) announceTimeLeft(server);
 		++age;
 		checkExitConditions(server);
+	}
+
+	public void announceTimeLeft(MinecraftServer server) {
+		int ticksRemaining = maxTime - age;
+		if (ticksRemaining % 20 != 0) return;
+		int secondsRemaining = ticksRemaining / 20;
+		int minutes = -1, seconds = -1;
+		if (secondsRemaining == 600) minutes = 10;
+		else if (secondsRemaining == 300) minutes = 5;
+		else if (secondsRemaining == 240) minutes = 4;
+		else if (secondsRemaining == 180) minutes = 3;
+		else if (secondsRemaining == 120) minutes = 2;
+		else if (secondsRemaining == 60) seconds = 60;
+		else if (secondsRemaining == 30) seconds = 30;
+		else if (secondsRemaining == 10) seconds = 10;
+		else if (secondsRemaining == 5) seconds = 5;
+		else if (secondsRemaining == 4) seconds = 4;
+		else if (secondsRemaining == 3) seconds = 3;
+		else if (secondsRemaining == 2) seconds = 2;
+		else if (secondsRemaining == 1) seconds = 1;
+		Component message = null;
+		if (minutes != -1) message = UtilMCText.literal(minutes+" minutes left!").setStyle(MiniGameData.AQUA);
+		else if (seconds != -1) message = UtilMCText.literal(seconds+" seconds left!").setStyle(MiniGameData.AQUA);
+		else return;
+		getGameData().chatToAllPlayers(server, message);
 	}
 	
 	public void tickPlayerAgent(MinecraftServer server, PlayerAgent agent) {
 		ServerPlayer player = agent.getPlayer(server);
 		if (player == null) return;
-		if (!player.gameMode.isCreative()) {
-			if (isForceSurvivalMode()) player.setGameMode(GameType.SURVIVAL);
-			else if (isForceAdventureMode()) player.setGameMode(GameType.ADVENTURE);
+		if (player.gameMode.isCreative()) return;
+		if (isForceSurvivalMode()) {
+			if (!isSetupPhase() && agent.isDead()) player.setGameMode(GameType.SPECTATOR);
+			else player.setGameMode(GameType.SURVIVAL);
+		} else if (isForceAdventureMode()) {
+			if (!isSetupPhase() && agent.isDead()) player.setGameMode(GameType.SPECTATOR);
+			else player.setGameMode(GameType.ADVENTURE);
 		}
 	}
 	
@@ -79,7 +114,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 			if (con.shouldExit(server, this)) {
 				con.onExit(server, this);
 				gameData.changePhase(server, con.getNextPhaseId());
-				break;
+				return;
 			}
 		}
 	}
@@ -122,7 +157,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 	public boolean isSetupPhase() {
 		return false;
 	}
-	
+
 	public boolean isForceAdventureMode() {
 		return false;
 	}

@@ -1,10 +1,13 @@
 package com.onewhohears.minigames.minigame.data;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.Util;
+import com.onewhohears.onewholibs.util.UtilMCText;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.damagesource.DamageSource;
 import org.slf4j.Logger;
 
@@ -29,7 +32,14 @@ import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
 
 public abstract class MiniGameData {
-	
+
+	public static final Style GOLD_BOLD = Style.EMPTY.withBold(true)
+			.withUnderlined(true).withColor(ChatFormatting.GOLD);
+	public static final Style AQUA = Style.EMPTY.withColor(ChatFormatting.AQUA);
+	public static final Style GREEN_BOLD = Style.EMPTY.withBold(true)
+			.withUnderlined(true).withColor(ChatFormatting.DARK_GREEN);
+	public static final Style GREEN = Style.EMPTY.withColor(ChatFormatting.GREEN);
+
 	protected static final Logger LOGGER = LogUtils.getLogger();
 	
 	private final String gameTypeId;
@@ -497,6 +507,14 @@ public abstract class MiniGameData {
 			if (agent.isTeam()) teams.add((TeamAgent) agent);
 		return teams;
 	}
+
+	public List<GameAgent> getAllAgents() {
+        return new ArrayList<>(agents.values());
+	}
+
+	public Stream<GameAgent> getAgentsWithScore(int score) {
+		return agents.values().stream().filter(agent -> agent.getScore() >= score);
+	}
 	
 	public void resetAllAgents() {
 		agents.forEach((id, agent) -> agent.resetAgent());
@@ -516,6 +534,10 @@ public abstract class MiniGameData {
 	
 	public int getMoneyPerRound() {
 		return moneyPerRound;
+	}
+
+	public void setMoneyPerRound(int money) {
+		moneyPerRound = money;
 	}
 	
 	public void giveMoneyToTeams(MinecraftServer server) {
@@ -546,6 +568,18 @@ public abstract class MiniGameData {
 		if (winners.size() != 1) return;
 		GameAgent winner = winners.get(0);
 		winner.onWin(server);
+	}
+
+	public void announceScores(MinecraftServer server) {
+		chatToAllPlayers(server, UtilMCText.literal("Current Scores:").setStyle(GREEN_BOLD));
+		MutableComponent message = UtilMCText.empty().setStyle(GREEN);
+		List<GameAgent> agentList = getAllAgents();
+		agentList.sort((agent1, agent2) -> (int) (agent2.getScore() - agent1.getScore()));
+		for (GameAgent agent : agentList) {
+			Component name = agent.getDisplayName(server);
+			message.append(name).append(": "+agent.getScore()+"\n");
+		}
+		chatToAllPlayers(server, message);
 	}
 	
 	public void chatToAllPlayers(MinecraftServer server, Component message) {

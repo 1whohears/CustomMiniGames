@@ -1,20 +1,19 @@
-package com.onewhohears.minigames.minigame.phase.deathmatch;
+package com.onewhohears.minigames.minigame.phase.buyattackrounds;
 
 import com.onewhohears.minigames.minigame.condition.NeverExitCondition;
-import com.onewhohears.minigames.minigame.data.DeathMatchData;
+import com.onewhohears.minigames.minigame.data.BuyAttackData;
 import com.onewhohears.minigames.minigame.phase.GamePhase;
-
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
-public class DeathMatchEndPhase<T extends DeathMatchData> extends GamePhase<T> {
-	
-	public DeathMatchEndPhase(T gameData) {
-		this("death_match_end", gameData);
+public class BuyAttackEndPhase<T extends BuyAttackData> extends GamePhase<T> {
+
+	public BuyAttackEndPhase(T gameData) {
+		this("buy_attack_end", gameData);
 	}
-	
-	public DeathMatchEndPhase(String id, T gameData) {
+
+	public BuyAttackEndPhase(String id, T gameData) {
 		super(id, gameData, new NeverExitCondition<>());
 	}
 	

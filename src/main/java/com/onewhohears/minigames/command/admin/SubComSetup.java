@@ -7,12 +7,16 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 
+import com.onewhohears.minigames.minigame.data.BuyAttackData;
+import com.onewhohears.minigames.minigame.data.MiniGameData;
+import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilGeometry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -24,6 +28,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
+import org.apache.commons.lang3.function.TriFunction;
+import org.apache.logging.log4j.util.TriConsumer;
 
 public class SubComSetup {
 	
@@ -33,18 +39,85 @@ public class SubComSetup {
 	public ArgumentBuilder<CommandSourceStack,?> setup() {
 		return Commands.literal("setup")
 				.then(GameComArgs.runningGameIdArgument()
-								.then(Commands.literal("start").executes(commandStartGame()))
-								.then(addTeamArg()).then(removeTeamArg())
-								.then(addPlayerArg()).then(removePlayerArg())
-								.then(setCenterArg())
-								.then(setSizeArg())
-								.then(setSpawnArg())
-								.then(setLivesArg())
-								.then(setUseBorderArg())
-								.then(setClearOnStartArg())
-								.then(addKitArg()).then(removeKitArg())
-								.then(addShopArg()).then(removeShopArg())
+						.then(Commands.literal("start").executes(commandStartGame()))
+						.then(addTeamArg()).then(removeTeamArg())
+						.then(addPlayerArg()).then(removePlayerArg())
+						.then(setCenterArg())
+						.then(setSizeArg())
+						.then(setSpawnArg())
+						.then(setLivesArg())
+						.then(setUseBorderArg())
+						.then(setClearOnStartArg())
+						.then(addKitArg()).then(removeKitArg())
+						.then(addShopArg()).then(removeShopArg())
+						.then(setIntParamArg("buy_time", "ticks", (context, gameData, num) -> {
+							if (!(gameData instanceof BuyAttackData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.setBuyTime(num);
+							Component message = UtilMCText.literal("Set Buy Time to "+num+" ticks!");
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, 0, 2000000))
+						.then(setIntParamArg("attack_time", "ticks", (context, gameData, num) -> {
+							if (!(gameData instanceof BuyAttackData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.setAttackTime(num);
+							Component message = UtilMCText.literal("Set Attack Time to "+num+" ticks!");
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, 0, 2000000))
+						.then(setIntParamArg("attack_end_time", "ticks", (context, gameData, num) -> {
+							if (!(gameData instanceof BuyAttackData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.setAttackEndTime(num);
+							Component message = UtilMCText.literal("Set Attack End Time to "+num+" ticks!");
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, 0, 2000000))
+						.then(setIntParamArg("rounds_to_win", "rounds", (context, gameData, num) -> {
+							if (!(gameData instanceof BuyAttackData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.setRoundsToWin(num);
+							Component message = UtilMCText.literal("Set Rounds to Win to "+num+" rounds!");
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, 1, 1000000))
+						.then(setIntParamArg("money_per_round", "money", (context, gameData, num) -> {
+							gameData.setMoneyPerRound(num);
+							Component message = UtilMCText.literal("Set money per round to "+num);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, 1, 10000))
 			);
+	}
+
+	private ArgumentBuilder<CommandSourceStack,?> setIntParamArg(String argName, String valueName,
+																 TriFunction<CommandContext<CommandSourceStack>,
+																		 MiniGameData, Integer, Integer> consumer,
+																 int min, int max) {
+		return Commands.literal(argName)
+				.then(Commands.argument(valueName, IntegerArgumentType.integer(min, max))
+						.executes(commandInteger(valueName, consumer)));
+	}
+
+	private GameSetupCom commandInteger(String valueName, TriFunction<
+			CommandContext<CommandSourceStack>, MiniGameData, Integer, Integer> consumer) {
+		return (context, gameData) -> {
+			int num = IntegerArgumentType.getInteger(context, valueName);
+			return consumer.apply(context, gameData, num);
+		};
 	}
 
 	private ArgumentBuilder<CommandSourceStack,?> addKitArg() {

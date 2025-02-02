@@ -4,14 +4,10 @@ import com.onewhohears.minigames.minigame.phase.deathmatch.DeathMatchEndPhase;
 import com.onewhohears.minigames.minigame.phase.deathmatch.DeathMatchPlayPhase;
 import com.onewhohears.minigames.minigame.phase.deathmatch.DeathMatchSetupPhase;
 import com.onewhohears.onewholibs.util.UtilMCText;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 
 public class DeathMatchData extends MiniGameData {
-
-	public static final Style GOLD_BOLD = Style.EMPTY.withBold(true).withUnderlined(true).withColor(ChatFormatting.GOLD);
 
 	public static DeathMatchData createSimpleTeamDeathMatch(String instanceId, String gameTypeId, int initialLives) {
 		DeathMatchData game = new DeathMatchData(instanceId, gameTypeId);

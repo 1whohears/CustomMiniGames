@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.onewhohears.minigames.minigame.data.BuyAttackData;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -43,9 +44,9 @@ public class MiniGameManager extends SavedData {
 			DeathMatchData.createSimpleTeamDeathMatch(instanceId, gameTypeId, 3));
 		registerGame("simple_ffa_deathmatch", (instanceId, gameTypeId) -> 
 			DeathMatchData.createSimpleFFADeathMatch(instanceId, gameTypeId, 3));
+		registerGame("simple_buy_attack_phases", BuyAttackData::createBuyAttackPhaseMatch);
 		/*
 		 * TODO 3.1 create and register the following minigame modes
-		 * team/ffa death match (1 or multiple lives)
 		 * team capture the flag
 		 * team/ffa territory control
 		 * one volunteer runs away from everyone else

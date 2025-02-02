@@ -8,6 +8,7 @@ import com.onewhohears.minigames.data.kits.GameKit;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
+import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -159,7 +160,7 @@ public class PlayerAgent extends GameAgent {
 	public void onWin(MinecraftServer server) {
 		ServerPlayer player = getPlayer(server);
 		if (player == null) return;
-		Style style = player.getDisplayName().getStyle().withColor(ChatFormatting.GOLD)
+		Style style = player.getDisplayName().getStyle().withColor(ChatFormatting.LIGHT_PURPLE)
 				.withBold(true).withUnderlined(true);
 		Component message = Component.empty().append(player.getDisplayName())
 				.append(" is the winner!").setStyle(style);
@@ -174,6 +175,13 @@ public class PlayerAgent extends GameAgent {
 		else message.append(sp.getDisplayName());
 		message.append(",L:"+getLives()+",S:"+getScore()+",M:"+getMoney()+",A:"+getAge()+"]");
 		return message;
+	}
+
+	@Override
+	public Component getDisplayName(MinecraftServer server) {
+		ServerPlayer sp = getPlayer(server);
+		if (sp == null) return UtilMCText.literal(getId());
+		return sp.getDisplayName();
 	}
 
 	@Override

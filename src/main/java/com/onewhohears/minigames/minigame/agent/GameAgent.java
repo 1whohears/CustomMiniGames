@@ -19,10 +19,10 @@ public abstract class GameAgent {
 	private final String id;
 	private final MiniGameData gameData;
 	private int age;
-	private int score;
+	private double score;
 	private int lives;
 	private int money;
-	private Vec3 respawnPoint;
+	private Vec3 respawnPoint = null;
 	private String selectedKit = "";
 	
 	protected GameAgent(String id, MiniGameData gameData) {
@@ -36,20 +36,22 @@ public abstract class GameAgent {
 		nbt.putBoolean("isTeam", isTeam());
 		nbt.putString("id", id);
 		nbt.putInt("age", age);
-		nbt.putInt("score", score);
+		nbt.putDouble("score", score);
 		nbt.putInt("lives", lives);
 		nbt.putInt("money", money);
-		UtilParse.writeVec3(nbt, respawnPoint, "respawnPoint");
+		if (respawnPoint != null)
+			UtilParse.writeVec3(nbt, respawnPoint, "respawnPoint");
 		nbt.putString("selectedKit", selectedKit);
 		return nbt;
 	}
 	
 	public void load(CompoundTag tag) {
 		age = tag.getInt("age");
-		score = tag.getInt("score");
+		score = tag.getDouble("score");
 		lives = tag.getInt("lives");
 		money = tag.getInt("money");
-		respawnPoint = UtilParse.readVec3(tag, "respawnPoint");
+		if (tag.contains("respawnPoint"))
+			respawnPoint = UtilParse.readVec3(tag, "respawnPoint");
 		selectedKit = tag.getString("selectedKit");
 	}
 	
@@ -94,6 +96,7 @@ public abstract class GameAgent {
 	
 	public void setupAgent() {
 		lives = getGameData().getInitialLives();
+		addMoney(getGameData().getMoneyPerRound());
 		System.out.println("SETUP AGENT: "+id+" "+lives);
 	}
 	
@@ -109,10 +112,18 @@ public abstract class GameAgent {
 		return age;
 	}
 	
-	public int getScore() {
+	public double getScore() {
 		return score;
 	}
-	
+
+	public void setScore(double score) {
+		this.score = score;
+	}
+
+	public void addScore(double score) {
+		setScore(getScore() + score);
+	}
+
 	public int getLives() {
 		return lives;
 	}
@@ -128,7 +139,11 @@ public abstract class GameAgent {
 	public void setMoney(int money) {
 		this.money = money;
 	}
-	
+
+	public void addMoney(int money) {
+		this.money += money;
+	}
+
 	@Nullable
 	public Vec3 getRespawnPoint() {
 		return respawnPoint;
@@ -178,6 +193,7 @@ public abstract class GameAgent {
 	public abstract void clearPlayerInventory(MinecraftServer server);
 	
 	public abstract Component getDebugInfo(MinecraftServer server);
+	public abstract Component getDisplayName(MinecraftServer server);
 
 	public void onLogIn(MinecraftServer server) {
 	}

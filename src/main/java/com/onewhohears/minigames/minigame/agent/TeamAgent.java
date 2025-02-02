@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
+import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -202,6 +203,13 @@ public class TeamAgent extends GameAgent {
 		else message.append(pt.getDisplayName());
 		message.append("]");
 		return message;
+	}
+
+	@Override
+	public Component getDisplayName(MinecraftServer server) {
+		PlayerTeam pt = getTeam(server);
+		if (pt == null) return UtilMCText.literal(getId());
+		return pt.getDisplayName();
 	}
 
 }
