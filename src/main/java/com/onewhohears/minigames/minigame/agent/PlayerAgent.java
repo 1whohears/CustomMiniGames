@@ -21,12 +21,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class PlayerAgent extends GameAgent {
 	
 	private UUID playerId;
 	private ServerPlayer player;
 	private TeamAgent teamAgent;
+	@Nullable private Vec3 deathPosition = null;
 	
 	public PlayerAgent(String uuid, MiniGameData gameData) {
 		super(uuid, gameData);
@@ -59,10 +61,26 @@ public class PlayerAgent extends GameAgent {
 		getGameData().onPlayerDeath(this, server, source);
 	}
 
+	public void setDeathPosition(@Nullable Vec3 pos) {
+		deathPosition = pos;
+	}
+
+	@Nullable
+	public Vec3 getDeathPosition() {
+		return deathPosition;
+	}
+
 	@Override
 	public void onRespawn(MinecraftServer server) {
 		super.onRespawn(server);
 		getGameData().onPlayerRespawn(this, server);
+		if (isDead()) {
+			Vec3 pos = getDeathPosition();
+			if (pos == null) return;
+			ServerPlayer sp = getPlayer(server);
+			if (sp == null) return;
+			sp.teleportTo(pos.x(), pos.y(), pos.z());
+		}
 	}
 
 	@Override
@@ -202,4 +220,9 @@ public class PlayerAgent extends GameAgent {
 		player.getInventory().clearContent();
 	}
 
+	@Override
+	public void resetAgent() {
+		super.resetAgent();
+		deathPosition = null;
+	}
 }

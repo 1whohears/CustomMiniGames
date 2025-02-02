@@ -43,9 +43,12 @@ public class CommonForgeEvents {
 	public static void livingDeathEvent(LivingDeathEvent event) {
 		if (event.getEntity().getLevel().isClientSide()) return;
 		if (!(event.getEntity() instanceof ServerPlayer player)) return;
-		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player))
-			if (agent.shouldRunOnDeath())
+		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player)) {
+			if (agent.shouldRunOnDeath()) {
+				agent.setDeathPosition(player.position());
 				agent.onDeath(player.getServer(), event.getSource());
+			}
+		}
 	}
 
 	@SubscribeEvent
