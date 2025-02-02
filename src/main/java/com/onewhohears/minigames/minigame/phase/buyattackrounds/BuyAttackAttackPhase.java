@@ -39,6 +39,7 @@ public class BuyAttackAttackPhase<T extends BuyAttackData> extends GamePhase<T> 
     @Override
     public void onStart(MinecraftServer server) {
         super.onStart(server);
+        getGameData().resetAllPlayerHealth(server);
         Component message = UtilMCText.literal("Attack Phase Start!").setStyle(MiniGameData.GOLD_BOLD);
         getGameData().chatToAllPlayers(server, message);
     }

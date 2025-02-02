@@ -56,6 +56,7 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
         else {
             getGameData().tpPlayersToSpawnPosition(server);
             getGameData().refillAllAgentKits(server);
+            getGameData().resetAllPlayerHealth(server);
         }
         getGameData().giveMoneyToTeams(server);
         Component message = UtilMCText.literal("Buy Phase Start!").setStyle(MiniGameData.GOLD_BOLD);

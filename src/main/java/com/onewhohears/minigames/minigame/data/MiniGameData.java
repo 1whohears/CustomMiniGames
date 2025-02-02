@@ -640,6 +640,7 @@ public abstract class MiniGameData {
 		tpPlayersToSpawnPosition(server);
 		if (isClearOnStart()) clearAllPlayerInventories(server);
 		refillAllAgentKits(server);
+		resetAllPlayerHealth(server);
 		chatToAllPlayers(server, getStartGameMessage(server));
 	}
 
@@ -649,5 +650,16 @@ public abstract class MiniGameData {
 
 	public boolean canOpenShop(GameAgent agent, String shop) {
 		return getCurrentPhase().canAgentOpenShop(agent, shop);
+	}
+
+	public void resetAllPlayerHealth(MinecraftServer server) {
+		for (PlayerAgent agent : getAllPlayerAgents()) {
+			ServerPlayer player = agent.getPlayer(server);
+			if (player == null) continue;
+			player.setHealth(player.getMaxHealth());
+			player.getFoodData().setFoodLevel(20);
+			player.getFoodData().setSaturation(20);
+			player.getFoodData().setExhaustion(0);
+		}
 	}
 }
