@@ -27,8 +27,7 @@ public class TimeoutPhaseExitCondition<D extends MiniGameData> extends PhaseExit
 	}
 	
 	@Override
-	public void onExit(MinecraftServer server, GamePhase<D> currentPhase) {
-		super.onExit(server, currentPhase);
+	public void onLeave(MinecraftServer server, GamePhase<D> currentPhase) {
 		if (timeEndTranslatable != null)
 			currentPhase.getGameData().chatToAllPlayers(server, 
 				Component.translatable(timeEndTranslatable));

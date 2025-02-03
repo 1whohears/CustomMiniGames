@@ -2,6 +2,7 @@ package com.onewhohears.minigames.minigame.phase.buyattackrounds;
 
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.condition.BuyAttackGameWinCondition;
+import com.onewhohears.minigames.minigame.condition.PhaseExitCondition;
 import com.onewhohears.minigames.minigame.condition.TimeoutPhaseExitCondition;
 import com.onewhohears.minigames.minigame.data.BuyAttackData;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
@@ -15,9 +16,14 @@ import net.minecraft.sounds.SoundEvents;
 public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
 
     public BuyAttackBuyPhase(T gameData) {
-        super("buy_attack_buy", gameData, new TimeoutPhaseExitCondition<>("buy_attack_buy_end",
+        this("buy_attack_buy", gameData, new TimeoutPhaseExitCondition<>("buy_attack_buy_end",
                 "buy_attack_attack", gameData.getBuyTime()),
                 new BuyAttackGameWinCondition<>());
+    }
+
+    @SafeVarargs
+    public BuyAttackBuyPhase(String id, T gameData, PhaseExitCondition<T>...exitConditions) {
+        super(id, gameData, exitConditions);
         announceTimeLeft = true;
         maxTime = gameData.getBuyTime();
     }

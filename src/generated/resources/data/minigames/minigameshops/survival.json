@@ -5,7 +5,7 @@
   "products": [
     {
       "cost": {
-        "item": "minecraft:emerald",
+        "item": "minigames:money",
         "num": 1
       },
       "product": {
@@ -15,7 +15,7 @@
     },
     {
       "cost": {
-        "item": "minecraft:emerald",
+        "item": "minigames:money",
         "num": 1
       },
       "product": {
@@ -25,7 +25,7 @@
     },
     {
       "cost": {
-        "item": "minecraft:emerald",
+        "item": "minigames:money",
         "num": 1
       },
       "product": {
@@ -35,7 +35,7 @@
     },
     {
       "cost": {
-        "item": "minecraft:emerald",
+        "item": "minigames:money",
         "num": 2
       },
       "product": {
@@ -45,7 +45,7 @@
     },
     {
       "cost": {
-        "item": "minecraft:emerald",
+        "item": "minigames:money",
         "num": 2
       },
       "product": {
@@ -55,7 +55,7 @@
     },
     {
       "cost": {
-        "item": "minecraft:emerald",
+        "item": "minigames:money",
         "num": 4
       },
       "product": {
@@ -68,7 +68,7 @@
     },
     {
       "cost": {
-        "item": "minecraft:emerald",
+        "item": "minigames:money",
         "num": 4
       },
       "product": {

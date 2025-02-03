@@ -17,9 +17,13 @@ public abstract class PhaseExitCondition<D extends MiniGameData> {
 	
 	public abstract boolean shouldExit(MinecraftServer server, GamePhase<D> currentPhase);
 	
-	public void onExit(MinecraftServer server, GamePhase<D> currentPhase) {
+	public final void onExit(MinecraftServer server, GamePhase<D> currentPhase) {
 		System.out.println("EXIT COND "+id+" to phase "+nextPhaseId);
 		currentPhase.onStop(server);
+		onLeave(server, currentPhase);
+	}
+
+	protected void onLeave(MinecraftServer server, GamePhase<D> currentPhase) {
 	}
 	
 	public String getId() {

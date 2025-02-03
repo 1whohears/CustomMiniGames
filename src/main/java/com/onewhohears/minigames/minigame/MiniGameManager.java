@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.minigame.data.BuyAttackData;
+import com.onewhohears.minigames.minigame.data.KillFlagData;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -45,6 +46,7 @@ public class MiniGameManager extends SavedData {
 		registerGame("simple_ffa_deathmatch", (instanceId, gameTypeId) -> 
 			DeathMatchData.createSimpleFFADeathMatch(instanceId, gameTypeId, 3));
 		registerGame("simple_buy_attack_phases", BuyAttackData::createBuyAttackPhaseMatch);
+		registerGame("simple_kill_flag", KillFlagData::createKillFlagMatch);
 		/*
 		 * TODO 3.1 create and register the following minigame modes
 		 * team capture the flag

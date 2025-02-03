@@ -30,12 +30,12 @@ public class BuyAttackData extends MiniGameData {
     }
 
     protected int buyTime = 400;
-    protected int attackTime = 6000;
+    protected int attackTime = 4800;
     protected int attackEndTime = 200;
     protected int roundsToWin = 3;
-    protected int buyRadius = 50;
+    protected int buyRadius = 24;
 
-    protected int currentRound = 0;
+    private int currentRound = 0;
 
     public BuyAttackData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);
@@ -135,6 +135,10 @@ public class BuyAttackData extends MiniGameData {
 
     public void setBuyRadius(int buyRadius) {
         this.buyRadius = buyRadius;
+    }
+
+    public void announceWinnersByScore(MinecraftServer server) {
+        getAgentsWithScore(getRoundsToWin()).forEach(agent -> agent.onWin(server));
     }
 
 }

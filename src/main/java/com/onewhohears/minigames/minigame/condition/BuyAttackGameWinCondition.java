@@ -16,8 +16,8 @@ public class BuyAttackGameWinCondition<D extends BuyAttackData> extends PhaseExi
     }
 
     @Override
-    public void onExit(MinecraftServer server, GamePhase<D> currentPhase) {
-        super.onExit(server, currentPhase);
+    public void onLeave(MinecraftServer server, GamePhase<D> currentPhase) {
         currentPhase.getGameData().announceScores(server);
+        currentPhase.getGameData().announceWinnersByScore(server);
     }
 }

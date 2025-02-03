@@ -1,10 +1,6 @@
 package com.onewhohears.minigames.minigame.agent;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Nullable;
 
@@ -82,9 +78,8 @@ public class TeamAgent extends GameAgent {
 		PlayerTeam team = getTeam(server);
 		if (team == null) return;
 		Collection<String> usernames = team.getPlayers();
-		playerAgents.forEach((username, player) -> {
-			if (!usernames.contains(username) && player.canTickAgent(server)) playerAgents.remove(username);
-		});
+        playerAgents.entrySet().removeIf(entry ->
+				!usernames.contains(entry.getKey()) && entry.getValue().canTickAgent(server));
 		for (String username : usernames) {
 			if (playerAgents.containsKey(username)) continue;
 			ServerPlayer player = server.getPlayerList().getPlayerByName(username);
@@ -112,7 +107,7 @@ public class TeamAgent extends GameAgent {
 	
 	@Nullable
 	public PlayerAgent getPlayerAgentByUUID(String uuid) {
-		for (PlayerAgent agent : playerAgents.values())
+		for (PlayerAgent agent : getPlayerAgents())
 			if (agent.getId().equals(uuid)) 
 				return agent;
 		return null;
@@ -124,7 +119,7 @@ public class TeamAgent extends GameAgent {
 	
 	public List<PlayerAgent> getLivingPlayerAgents() {
 		List<PlayerAgent> living = new ArrayList<>();
-		for (PlayerAgent agent : playerAgents.values())
+		for (PlayerAgent agent : getPlayerAgents())
 			if (!agent.isDead()) living.add(agent);
 		return living;
 	}
@@ -164,7 +159,7 @@ public class TeamAgent extends GameAgent {
 	@Override
 	public void applySpawnPoint(MinecraftServer server) {
 		if (!hasRespawnPoint()) return;
-		for (PlayerAgent agent : playerAgents.values()) {
+		for (PlayerAgent agent : getPlayerAgents()) {
 			agent.setRespawnPoint(getRespawnPoint());
 			agent.applySpawnPoint(server);
 		}
@@ -172,7 +167,7 @@ public class TeamAgent extends GameAgent {
 
 	@Override
 	public void tpToSpawnPoint(MinecraftServer server) {
-		for (PlayerAgent agent : playerAgents.values())
+		for (PlayerAgent agent : getPlayerAgents())
 			agent.tpToSpawnPoint(server);
 	}
 	

@@ -16,15 +16,15 @@ import net.minecraft.sounds.SoundEvents;
 public class BuyAttackAttackPhase<T extends BuyAttackData> extends GamePhase<T> {
 
     public BuyAttackAttackPhase(T gameData) {
-        this(gameData, new AttackPhaseTimeoutCondition<>(gameData.getAttackTime()),
+        this("buy_attack_attack", gameData, new AttackPhaseTimeoutCondition<>(gameData.getAttackTime()),
                 new BuyAttackGameWinCondition<>(), new BuyAttackRoundWinCondition<>());
-        announceTimeLeft = true;
-        maxTime = gameData.getAttackTime();
     }
 
     @SafeVarargs
-    public BuyAttackAttackPhase(T gameData, PhaseExitCondition<T>...exitConditions) {
-        super("buy_attack_attack", gameData, exitConditions);
+    public BuyAttackAttackPhase(String id, T gameData, PhaseExitCondition<T>...exitConditions) {
+        super(id, gameData, exitConditions);
+        announceTimeLeft = true;
+        maxTime = gameData.getAttackTime();
     }
 
     @Override

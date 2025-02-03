@@ -26,13 +26,13 @@ public class MiniGameShopsGenerator extends JsonPresetGenerator<GameShop> {
 		JsonObject healthPotionNbt = new JsonObject();
 		healthPotionNbt.addProperty("Potion", "minecraft:strong_healing");
 		addPresetToGenerate(GameShop.Builder.create(MiniGamesMod.MODID, "survival")
-				.addProduct("minecraft:bread", 8, "minecraft:emerald", 1)
-				.addProduct("minecraft:cooked_beef", 5, "minecraft:emerald", 1)
-				.addProduct("minecraft:arrow", 8, "minecraft:emerald", 1)
-				.addProduct("minecraft:bow", "minecraft:emerald", 2)
-				.addProduct("minecraft:crossbow", "minecraft:emerald", 2)
-				.addProduct("minecraft:shield", true, "minecraft:emerald", 4)
-				.addProduct("minecraft:splash_potion", healthPotionNbt, "minecraft:emerald", 4)
+				.addProduct("minecraft:bread", 8, "minigames:money", 1)
+				.addProduct("minecraft:cooked_beef", 5, "minigames:money", 1)
+				.addProduct("minecraft:arrow", 8, "minigames:money", 1)
+				.addProduct("minecraft:bow", "minigames:money", 2)
+				.addProduct("minecraft:crossbow", "minigames:money", 2)
+				.addProduct("minecraft:shield", true, "minigames:money", 4)
+				.addProduct("minecraft:splash_potion", healthPotionNbt, "minigames:money", 4)
 				.build());
 	}
 }

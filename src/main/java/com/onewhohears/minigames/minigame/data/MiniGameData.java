@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import com.onewhohears.minigames.entity.FlagEntity;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;
@@ -12,6 +13,9 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -49,12 +53,13 @@ public abstract class MiniGameData {
 	private final String instanceId;
 	private final Map<String, GameAgent> agents = new HashMap<>();
 	private final Map<String, GamePhase<?>> phases = new HashMap<>();
+	private final Set<FlagEntity> flags = new HashSet<>();
 	private final Set<String> kits = new HashSet<>();
 	private final Set<String> shops = new HashSet<>();
 	private SetupPhase<?> setupPhase;
 	private GamePhase<?> nextPhase;
 	private GamePhase<?> currentPhase;
-	private int age;
+	private int age, resets;
 	private boolean isStarted, isStopped, firstTick = true;
 	
 	protected boolean canAddIndividualPlayers;
@@ -76,6 +81,7 @@ public abstract class MiniGameData {
 		nbt.putString("gameTypeId", gameTypeId);
 		nbt.putString("instanceId", instanceId);
 		nbt.putInt("age", age);
+		nbt.putInt("resets", resets);
 		nbt.putBoolean("isStarted", isStarted);
 		nbt.putBoolean("isStopped", isStopped);
 		nbt.putBoolean("canAddIndividualPlayers", canAddIndividualPlayers);
@@ -95,6 +101,7 @@ public abstract class MiniGameData {
 	
 	public void load(CompoundTag nbt) {
 		age = nbt.getInt("age");
+		resets = nbt.getInt("resets");
 		isStarted = nbt.getBoolean("isStarted");
 		isStopped = nbt.getBoolean("isStopped");
 		canAddIndividualPlayers = nbt.getBoolean("canAddIndividualPlayers");
@@ -196,18 +203,24 @@ public abstract class MiniGameData {
 		currentPhase.onStart(server);
 		return true;
 	}
-	
-	public boolean finishSetupPhase(MinecraftServer server) {
-		if (!isSetupPhase()) return false;
-		if (!canFinishSetupPhase(server)) return false;
+
+	@Nullable
+	public final String getStartFailedReason(MinecraftServer server) {
+		if (!isSetupPhase()) return "Game isn't in setup phase, need to reset the game to start a new one.";
+		if (agents.size() < 2) return "There must be at least 2 players!";
+		if (!areAgentRespawnPosSet()) return "Must set respawn positions for each team!";
+		String other = getAdditionalStartFailReasons(server);
+		if (other != null) return null;
 		getCurrentPhase().onStop(server);
 		setupAllAgents();
 		if (requiresSetRespawnPos()) applyAllAgentRespawnPoints(server);
-		return changePhase(server, nextPhase.getId());
+		if (!changePhase(server, nextPhase.getId())) return "Failed to change phase. Contact developer.";
+		return null;
 	}
-	
-	public boolean canFinishSetupPhase(MinecraftServer server) {
-		return agents.size() >= 2 && areAgentRespawnPosSet();
+
+	@Nullable
+	protected String getAdditionalStartFailReasons(MinecraftServer server) {
+		return null;
 	}
 	
 	public void reset(MinecraftServer server) {
@@ -215,8 +228,19 @@ public abstract class MiniGameData {
 		isStarted = false;
 		isStopped = false;
 		age = 0;
+		++resets;
 		resetAllAgents();
 		phases.forEach((id, phase) -> phase.onReset(server));
+		discardAllFlags();
+	}
+
+	public void discardAllFlags() {
+		flags.forEach(Entity::discard);
+		flags.clear();
+	}
+
+	public int getNumResets() {
+		return resets;
 	}
 	
 	public void start(MinecraftServer server) {
@@ -670,5 +694,41 @@ public abstract class MiniGameData {
 			player.getFoodData().setSaturation(20);
 			player.getFoodData().setExhaustion(0);
 		}
+	}
+
+	public void onFlagDeath(@NotNull FlagEntity flag, @Nullable DamageSource source) {
+		flags.remove(flag);
+	}
+
+	public void onFlagSpawn(@NotNull FlagEntity flag) {
+		flags.add(flag);
+	}
+
+	public List<FlagEntity> getLivingFlags() {
+		return flags.stream().filter(LivingEntity::isAlive).toList();
+	}
+
+	public void awardLivingFlagTeams() {
+		getLivingFlags().forEach(flag -> {
+			String id = flag.getTeamId();
+			GameAgent team = getAgentById(id);
+			if (team == null) return;
+			team.addScore(1);
+		});
+	}
+
+	public void awardLivingTeamsTie() {
+		double numLiving = currentPhase.getGameData().getLivingAgents().size();
+		for (GameAgent agent : currentPhase.getGameData().getLivingAgents())
+			agent.addScore(1d/numLiving);
+	}
+
+	public void awardLivingTeams() {
+		for (GameAgent agent : currentPhase.getGameData().getLivingAgents())
+			agent.addScore(1);
+	}
+
+	public String[] getAllAgentIds() {
+		return agents.keySet().toArray(new String[0]);
 	}
 }

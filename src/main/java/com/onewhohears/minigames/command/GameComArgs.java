@@ -11,6 +11,8 @@ import com.onewhohears.minigames.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
+import java.util.Arrays;
+
 public class GameComArgs {
 	
 	public static ArgumentBuilder<CommandSourceStack,?> runningGameIdArgument() {
@@ -55,6 +57,14 @@ public class GameComArgs {
 		return (context, builder, agents) -> {
 			for (PlayerAgent agent : agents)
 				CommandUtil.suggestStringToBuilder(builder, agent.getAvailableShops());
+			return builder.buildFuture();
+		};
+	}
+
+	public static PlayerAgentSuggestion suggestAgentNames() {
+		return (context, builder, agents) -> {
+			for (PlayerAgent agent : agents)
+				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getAllAgentIds());
 			return builder.buildFuture();
 		};
 	}

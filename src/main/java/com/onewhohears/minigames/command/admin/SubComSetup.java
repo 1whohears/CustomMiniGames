@@ -8,6 +8,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
@@ -15,6 +16,7 @@ import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 
 import com.onewhohears.minigames.minigame.data.BuyAttackData;
+import com.onewhohears.minigames.minigame.data.KillFlagData;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilGeometry;
@@ -44,7 +46,8 @@ public class SubComSetup {
 						.then(addPlayerArg()).then(removePlayerArg())
 						.then(setCenterArg())
 						.then(setSizeArg())
-						.then(setSpawnArg())
+						.then(setSpawnPlayerArg())
+						.then(setSpawnTeamArg())
 						.then(setLivesArg())
 						.then(setUseBorderArg())
 						.then(setClearOnStartArg())
@@ -111,7 +114,84 @@ public class SubComSetup {
 							context.getSource().sendSuccess(message, true);
 							return 1;
 						}, -1, 10000))
+						.then(setStringParamArg("add_attacker", "team", (context, gameData, string) -> {
+							if (!(gameData instanceof KillFlagData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							if (!data.addAttacker(string)) {
+								Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							Component message = UtilMCText.literal("Added attacker "+string);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, GameComArgs.suggestAgentNames()))
+						.then(setStringParamArg("add_defender", "team", (context, gameData, string) -> {
+							if (!(gameData instanceof KillFlagData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							if (!data.addDefender(string)) {
+								Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							Component message = UtilMCText.literal("Added defender "+string);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, GameComArgs.suggestAgentNames()))
+						.then(setStringParamArg("remove_attacker", "team", (context, gameData, string) -> {
+							if (!(gameData instanceof KillFlagData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							if (!data.removeAttacker(string)) {
+								Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							Component message = UtilMCText.literal("Removed attacker "+string);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, GameComArgs.suggestAgentNames()))
+						.then(setStringParamArg("remove_defender", "team", (context, gameData, string) -> {
+							if (!(gameData instanceof KillFlagData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							if (!data.removeDefender(string)) {
+								Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							Component message = UtilMCText.literal("Removed defender "+string);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, GameComArgs.suggestAgentNames()))
 			);
+	}
+
+	private ArgumentBuilder<CommandSourceStack,?> setStringParamArg(String argName, String valueName,
+																	TriFunction<CommandContext<CommandSourceStack>,
+																		 MiniGameData, String, Integer> consumer,
+																	SuggestionProvider<CommandSourceStack> suggests) {
+		return Commands.literal(argName)
+				.then(Commands.argument(valueName, StringArgumentType.string())
+						.suggests(suggests).executes(commandString(valueName, consumer)));
+	}
+
+	private GameSetupCom commandString(String valueName, TriFunction<
+			CommandContext<CommandSourceStack>, MiniGameData, String, Integer> consumer) {
+		return (context, gameData) -> {
+			String string = StringArgumentType.getString(context, valueName);
+			return consumer.apply(context, gameData, string);
+		};
 	}
 
 	private ArgumentBuilder<CommandSourceStack,?> setIntParamArg(String argName, String valueName,
@@ -191,14 +271,18 @@ public class SubComSetup {
 				.executes(commandSetSize()));
 	}
 	
-	private ArgumentBuilder<CommandSourceStack,?> setSpawnArg() {
-		return Commands.literal("set_spawn")
+	private ArgumentBuilder<CommandSourceStack,?> setSpawnPlayerArg() {
+		return Commands.literal("set_spawn_player")
 				.then(Commands.argument("player", EntityArgument.players())
 					.then(Commands.argument("spawn_pos", BlockPosArgument.blockPos())
-					.executes(commandSetPlayerSpawn())))
-				.then(Commands.argument("team", TeamArgument.team())
-					.then(Commands.argument("spawn_pos", BlockPosArgument.blockPos())
-					.executes(commandSetTeamSpawn())));
+					.executes(commandSetPlayerSpawn())));
+	}
+
+	private ArgumentBuilder<CommandSourceStack,?> setSpawnTeamArg() {
+		return Commands.literal("set_spawn_team")
+					.then(Commands.argument("team", TeamArgument.team())
+							.then(Commands.argument("spawn_pos", BlockPosArgument.blockPos())
+									.executes(commandSetTeamSpawn())));
 	}
 	
 	private ArgumentBuilder<CommandSourceStack,?> setLivesArg() {
@@ -320,10 +404,11 @@ public class SubComSetup {
 	
 	private GameSetupCom commandStartGame() {
 		return (context, gameData) -> {
-			if (!gameData.finishSetupPhase(context.getSource().getServer())) {
+			String reason  = gameData.getStartFailedReason(context.getSource().getServer());
+			if (reason != null) {
 				MutableComponent message = Component.literal(gameData.getInstanceId()+" is currently unable to finish setup!");
-				message.append("\nUse /game setup "+gameData.getInstanceId()+" to finish settig up the game.");
-				message.append("\n"+gameData.getSetupInfo());
+				message.append("\nUse /game setup "+gameData.getInstanceId()+" to finish setting up the game.");
+				message.append("\n"+reason);
 				context.getSource().sendFailure(message);
 				return 0;
 			}

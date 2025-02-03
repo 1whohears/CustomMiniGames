@@ -1,5 +1,6 @@
 package com.onewhohears.minigames.common.event;
 
+import com.onewhohears.minigames.entity.FlagEntity;
 import com.onewhohears.onewholibs.common.event.GetJsonPresetListenersEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -42,6 +43,10 @@ public class CommonForgeEvents {
 	@SubscribeEvent(priority = EventPriority.NORMAL)
 	public static void livingDeathEvent(LivingDeathEvent event) {
 		if (event.getEntity().getLevel().isClientSide()) return;
+		if (event.getEntity() instanceof FlagEntity flag) {
+			flag.onDeath(event.getSource());
+			return;
+		}
 		if (!(event.getEntity() instanceof ServerPlayer player)) return;
 		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player)) {
 			if (agent.shouldRunOnDeath()) {
