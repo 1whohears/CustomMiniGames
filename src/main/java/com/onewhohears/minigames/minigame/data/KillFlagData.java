@@ -27,7 +27,8 @@ public class KillFlagData extends BuyAttackData {
                 new BuyAttackAttackEndPhase<>(game),
                 new BuyAttackEndPhase<>(game));
         game.addKits("standard", "builder", "archer");
-        game.addShops("survival");
+        game.addAttackerShop("survival");
+        game.addDefenderShop("survival");
         return game;
     }
 

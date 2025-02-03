@@ -138,7 +138,7 @@ public class TeamAgent extends GameAgent {
 	
 	@Override
 	public boolean isDead() {
-		return getLivingPlayerAgents().size() == 0;
+		return getLivingPlayerAgents().isEmpty();
 	}
 
 	@Override

@@ -3,11 +3,13 @@ package com.onewhohears.minigames.entity;
 import java.util.Collections;
 import java.util.List;
 
+import com.mojang.logging.LogUtils;
 import com.onewhohears.minigames.init.MiniGameEntities;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -20,8 +22,10 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class FlagEntity extends Mob {
 
@@ -31,7 +35,11 @@ public class FlagEntity extends Mob {
 		if (flag == null) return false;
 		flag.setPos(team.getRespawnPoint());
 		flag.linkGame(data, team);
-		return level.addFreshEntity(flag);
+		if (level.addFreshEntity(flag)) {
+			data.onFlagSpawn(flag);
+			return true;
+		}
+		return false;
 	}
 
 	public static final EntityDataAccessor<String> GAME_INSTANCE_ID = SynchedEntityData.defineId(FlagEntity.class, EntityDataSerializers.STRING);
@@ -46,10 +54,13 @@ public class FlagEntity extends Mob {
 
 	public static final List<ItemStack> EMPTY_LIST = Collections.emptyList();
 
+	private static final Logger LOGGER = LogUtils.getLogger();
+
 	private int gameResetCount = 0;
 
 	public FlagEntity(EntityType<? extends FlagEntity> entityType, Level level) {
 		super(entityType, level);
+		setPersistenceRequired();
 		this.blocksBuilding = true;
 		this.noPhysics = true;
 	}
@@ -67,6 +78,7 @@ public class FlagEntity extends Mob {
 		nbt.putString("gameInstanceId", getGameInstanceId());
 		nbt.putString("teamId", getTeamId());
 		nbt.putInt("gameResetCount", getGameResetCount());
+		System.out.println("saving flag");
 	}
 
 	@Override
@@ -75,6 +87,15 @@ public class FlagEntity extends Mob {
 		setGameInstanceId(nbt.getString("gameInstanceId"));
 		setTeamId(nbt.getString("teamId"));
 		setGameResetCount(nbt.getInt("gameResetCount"));
+		LOGGER.debug("gameInstanceId = {}", getGameInstanceId());
+		LOGGER.debug("manager exists = {}", MiniGameManager.get() != null);
+		if (getGameInstanceId().isEmpty()) return;
+		MiniGameData data = getGameData();
+		if (data == null || data.isStopped() || data.getNumResets() != getGameResetCount()) {
+			discard();
+			return;
+		}
+		data.onFlagSpawn(this);
 	}
 
 	public void onDeath(@Nullable DamageSource source) {
@@ -85,18 +106,6 @@ public class FlagEntity extends Mob {
 			return;
 		}
 		data.onFlagDeath(this, source);
-	}
-
-	@Override
-	public void onAddedToWorld() {
-		super.onAddedToWorld();
-		if (getLevel().isClientSide()) return;
-		MiniGameData data = getGameData();
-		if (data == null || data.isStopped() || data.getNumResets() != getGameResetCount()) {
-			discard();
-			return;
-		}
-		data.onFlagSpawn(this);
 	}
 
 	public void linkGame(MiniGameData data, GameAgent team) {
@@ -167,4 +176,18 @@ public class FlagEntity extends Mob {
 		return true;
 	}
 
+	@Override
+	public Packet<?> getAddEntityPacket() {
+		return NetworkHooks.getEntitySpawningPacket(this);
+	}
+
+	@Override
+	public boolean isPersistenceRequired() {
+		return true;
+	}
+
+	@Override
+	public boolean removeWhenFarAway(double distanceToClosestPlayer) {
+		return false;
+	}
 }

@@ -83,8 +83,8 @@ public class MiniGameManager extends SavedData {
 	
 	public static void serverStarted(MinecraftServer server) {
 		instance = server.overworld().getDataStorage().computeIfAbsent(
-				MiniGameManager::load, 
-				() -> new MiniGameManager(), 
+				MiniGameManager::load,
+                MiniGameManager::new,
 				"minigames");
 	}
 	
