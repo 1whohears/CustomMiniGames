@@ -705,7 +705,7 @@ public abstract class MiniGameData {
 	}
 
 	public List<FlagEntity> getLivingFlags() {
-		return flags.stream().filter(LivingEntity::isAlive).toList();
+		return flags.stream().filter(flag -> flag.getHealth() > 0f).toList();
 	}
 
 	public void awardLivingFlagTeams() {
