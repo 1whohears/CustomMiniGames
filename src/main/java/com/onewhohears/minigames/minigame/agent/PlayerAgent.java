@@ -206,7 +206,7 @@ public class PlayerAgent extends GameAgent {
 	@Override
 	public void refillPlayerKit(MinecraftServer server) {
 		String kitName = getSelectedKit();
-		if (kitName == null || kitName.isEmpty()) return;
+		if (kitName.isEmpty()) return;
 		GameKit kit = MiniGameKitsManager.get().get(kitName);
 		if (kit == null) return;
 		ServerPlayer player = getPlayer(server);

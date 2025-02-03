@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 public abstract class GameAgent {
@@ -24,8 +25,8 @@ public abstract class GameAgent {
 	private double score;
 	private int lives;
 	private int money;
-	private Vec3 respawnPoint = null;
-	private String selectedKit = "";
+	@Nullable Vec3 respawnPoint = null;
+	@NotNull private String selectedKit = "";
 	
 	protected GameAgent(String id, MiniGameData gameData) {
 		this.id = id;
@@ -159,7 +160,9 @@ public abstract class GameAgent {
 		return respawnPoint != null;
 	}
 	
-	public String getSelectedKit() {
+	public @NotNull String getSelectedKit() {
+		if (selectedKit.isEmpty() && getAvailableKits().length > 0)
+			selectedKit = getAvailableKits()[0];
 		return selectedKit;
 	}
 	
