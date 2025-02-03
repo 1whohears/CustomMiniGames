@@ -1,5 +1,6 @@
 package com.onewhohears.minigames.minigame.phase.flag;
 
+import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.condition.*;
 import com.onewhohears.minigames.minigame.data.KillFlagData;
 import com.onewhohears.minigames.minigame.phase.buyattackrounds.BuyAttackBuyPhase;
@@ -22,5 +23,12 @@ public class KillFlagBuyPhase<T extends KillFlagData> extends BuyAttackBuyPhase<
     public void onStart(MinecraftServer server) {
         super.onStart(server);
         getGameData().resetFlags(server);
+    }
+
+    @Override
+    public boolean canAgentOpenShop(GameAgent agent, String shop) {
+        if (getGameData().isAttacker(agent.getId()) && getGameData().isAttackerShop(shop)) return true;
+        else if (getGameData().isDefender(agent.getId()) && getGameData().isDefenderShop(shop)) return true;
+        return getGameData().hasShop(shop);
     }
 }

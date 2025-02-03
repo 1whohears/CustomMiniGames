@@ -18,6 +18,7 @@ import com.onewhohears.minigames.minigame.agent.TeamAgent;
 import com.onewhohears.minigames.minigame.data.BuyAttackData;
 import com.onewhohears.minigames.minigame.data.KillFlagData;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
+import com.onewhohears.minigames.util.CommandUtil;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilGeometry;
 import net.minecraft.commands.CommandSourceStack;
@@ -174,6 +175,66 @@ public class SubComSetup {
 							context.getSource().sendSuccess(message, true);
 							return 1;
 						}, GameComArgs.suggestAgentNames()))
+						.then(setStringParamArg("add_attacker_shop", "shop", (context, gameData, string) -> {
+							if (!(gameData instanceof KillFlagData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							if (!data.addAttackerShop(string)) {
+								Component message = UtilMCText.literal("Could not add shop.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							Component message = UtilMCText.literal("Added Attacker Shop "+string);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, CommandUtil.suggestStrings(() -> MiniGameKitsManager.get().getAllIds())))
+						.then(setStringParamArg("add_defender_shop", "shop", (context, gameData, string) -> {
+							if (!(gameData instanceof KillFlagData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							if (!data.addDefenderShop(string)) {
+								Component message = UtilMCText.literal("Could not add shop.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							Component message = UtilMCText.literal("Added Defender Shop "+string);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, CommandUtil.suggestStrings(() -> MiniGameKitsManager.get().getAllIds())))
+						.then(setStringParamArg("remove_attacker_shop", "shop", (context, gameData, string) -> {
+							if (!(gameData instanceof KillFlagData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							if (!data.removeAttackerShop(string)) {
+								Component message = UtilMCText.literal("Could not remove shop.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							Component message = UtilMCText.literal("Removed Attacker Shop "+string);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, GameComArgs.suggestEnabledShops()))
+						.then(setStringParamArg("remove_defender_shop", "shop", (context, gameData, string) -> {
+							if (!(gameData instanceof KillFlagData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							if (!data.removeDefenderShop(string)) {
+								Component message = UtilMCText.literal("Could not remove shop.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							Component message = UtilMCText.literal("Removed Defender Shop "+string);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, GameComArgs.suggestEnabledShops()))
 			);
 	}
 

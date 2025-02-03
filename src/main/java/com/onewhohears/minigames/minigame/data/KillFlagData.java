@@ -33,6 +33,8 @@ public class KillFlagData extends BuyAttackData {
 
     private final Set<String> defenders = new HashSet<>();
     private final Set<String> attackers = new HashSet<>();
+    private final Set<String> attackerShops = new HashSet<>();
+    private final Set<String> defenderShops = new HashSet<>();
 
     public KillFlagData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);
@@ -81,6 +83,8 @@ public class KillFlagData extends BuyAttackData {
         CompoundTag nbt = super.save();
         UtilParse.writeStrings(nbt, "defenders", defenders);
         UtilParse.writeStrings(nbt, "attackers", attackers);
+        UtilParse.writeStrings(nbt, "attackerShops", attackerShops);
+        UtilParse.writeStrings(nbt, "defenderShops", defenderShops);
         return nbt;
     }
 
@@ -89,6 +93,8 @@ public class KillFlagData extends BuyAttackData {
         super.load(nbt);
         defenders.addAll(UtilParse.readStringSet(nbt, "defenders"));
         attackers.addAll(UtilParse.readStringSet(nbt, "attackers"));
+        attackerShops.addAll(UtilParse.readStringSet(nbt, "attackerShops"));
+        defenderShops.addAll(UtilParse.readStringSet(nbt, "defenderShops"));
     }
 
     @Override
@@ -118,6 +124,48 @@ public class KillFlagData extends BuyAttackData {
     public boolean removeDefender(String id) {
         defenders.remove(id);
         return true;
+    }
+
+    public boolean isAttacker(String id) {
+        return attackers.contains(id);
+    }
+
+    public boolean isDefender(String id) {
+        return defenders.contains(id);
+    }
+
+    public boolean addAttackerShop(String id) {
+        addShops(id);
+        defenderShops.remove(id);
+        attackerShops.add(id);
+        return true;
+    }
+
+    public boolean addDefenderShop(String id) {
+        addShops(id);
+        attackerShops.remove(id);
+        defenderShops.add(id);
+        return true;
+    }
+
+    public boolean removeAttackerShop(String id) {
+        removeShops(id);
+        attackerShops.remove(id);
+        return true;
+    }
+
+    public boolean removeDefenderShop(String id) {
+        removeShops(id);
+        defenderShops.remove(id);
+        return true;
+    }
+
+    public boolean isAttackerShop(String id) {
+        return attackerShops.contains(id);
+    }
+
+    public boolean isDefenderShop(String id) {
+        return defenderShops.contains(id);
     }
 
     @Override
