@@ -27,8 +27,8 @@ public class KillFlagBuyPhase<T extends KillFlagData> extends BuyAttackBuyPhase<
 
     @Override
     public boolean canAgentOpenShop(GameAgent agent, String shop) {
-        if (getGameData().isAttacker(agent.getId()) && getGameData().isAttackerShop(shop)) return true;
-        else if (getGameData().isDefender(agent.getId()) && getGameData().isDefenderShop(shop)) return true;
+        if (getGameData().isAttacker(agent.getId())) return getGameData().isAttackerShop(shop);
+        else if (getGameData().isDefender(agent.getId())) return getGameData().isDefenderShop(shop);
         return getGameData().hasShop(shop);
     }
 }
