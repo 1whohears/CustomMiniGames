@@ -54,8 +54,6 @@ public class FlagEntity extends Mob {
 
 	public static final List<ItemStack> EMPTY_LIST = Collections.emptyList();
 
-	private static final Logger LOGGER = LogUtils.getLogger();
-
 	private int gameResetCount = 0;
 
 	public FlagEntity(EntityType<? extends FlagEntity> entityType, Level level) {
@@ -78,7 +76,6 @@ public class FlagEntity extends Mob {
 		nbt.putString("gameInstanceId", getGameInstanceId());
 		nbt.putString("teamId", getTeamId());
 		nbt.putInt("gameResetCount", getGameResetCount());
-		System.out.println("saving flag");
 	}
 
 	@Override
@@ -87,8 +84,6 @@ public class FlagEntity extends Mob {
 		setGameInstanceId(nbt.getString("gameInstanceId"));
 		setTeamId(nbt.getString("teamId"));
 		setGameResetCount(nbt.getInt("gameResetCount"));
-		LOGGER.debug("gameInstanceId = {}", getGameInstanceId());
-		LOGGER.debug("manager exists = {}", MiniGameManager.get() != null);
 		if (getGameInstanceId().isEmpty()) return;
 		MiniGameData data = getGameData();
 		if (data == null || data.isStopped() || data.getNumResets() != getGameResetCount()) {

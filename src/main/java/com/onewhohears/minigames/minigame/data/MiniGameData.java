@@ -197,7 +197,7 @@ public abstract class MiniGameData {
 	
 	public boolean changePhase(MinecraftServer server, String phaseId) {
 		if (!phases.containsKey(phaseId)) return false;
-		LOGGER.debug("GAME CHANGE PHASE "+instanceId+" to "+phaseId);
+        LOGGER.debug("GAME CHANGE PHASE {} to {}", instanceId, phaseId);
 		currentPhase = phases.get(phaseId);
 		currentPhase.onReset(server);
 		currentPhase.onStart(server);
@@ -224,7 +224,7 @@ public abstract class MiniGameData {
 	}
 	
 	public void reset(MinecraftServer server) {
-		LOGGER.debug("GAME RESET "+instanceId);
+        LOGGER.debug("GAME RESET {}", instanceId);
 		isStarted = false;
 		isStopped = false;
 		age = 0;
@@ -244,14 +244,14 @@ public abstract class MiniGameData {
 	}
 	
 	public void start(MinecraftServer server) {
-		LOGGER.debug("GAME START "+instanceId);
+        LOGGER.debug("GAME START {}", instanceId);
 		isStarted = true;
 		isStopped = false;
 		changePhase(server, setupPhase.getId());
 	}
 	
 	public void stop(MinecraftServer server) {
-		LOGGER.debug("GAME STOP "+instanceId);
+        LOGGER.debug("GAME STOP {}", instanceId);
 		isStarted = true;
 		isStopped = true;
 		getCurrentPhase().onStop(server);

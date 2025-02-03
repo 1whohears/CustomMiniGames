@@ -44,7 +44,7 @@ public class GameShop extends JsonPresetStats {
 	}
 
 	@Override
-	public @org.jetbrains.annotations.Nullable JsonPresetInstance<?> createPresetInstance() {
+	public @Nullable JsonPresetInstance<?> createPresetInstance() {
 		return null;
 	}
 

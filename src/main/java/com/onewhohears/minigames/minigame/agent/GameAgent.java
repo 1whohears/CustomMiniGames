@@ -1,10 +1,9 @@
 package com.onewhohears.minigames.minigame.agent;
 
-import java.util.Arrays;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.mojang.logging.LogUtils;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 import com.onewhohears.onewholibs.util.UtilParse;
 
@@ -13,9 +12,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.phys.Vec3;
+import org.slf4j.Logger;
 
 public abstract class GameAgent {
-	
+
+	private static final Logger LOGGER = LogUtils.getLogger();
+
 	private final String id;
 	private final MiniGameData gameData;
 	private int age;
@@ -69,7 +71,7 @@ public abstract class GameAgent {
 	
 	public void onDeath(MinecraftServer server, @Nullable DamageSource source) {
 		lives = Math.max(lives-1, 0);
-		System.out.println("ON DEATH: "+id+" "+lives);
+        LOGGER.debug("ON DEATH: {} {}", id, lives);
 	}
 
 	public void onRespawn(MinecraftServer server) {
@@ -91,13 +93,13 @@ public abstract class GameAgent {
 		age = 0;
 		score = 0;
 		money = 0;
-		System.out.println("RESET AGENT: "+id+" "+lives);
+        LOGGER.debug("RESET AGENT: {} {}", id, lives);
 	}
 	
 	public void setupAgent() {
 		lives = getGameData().getInitialLives();
 		addMoney(getGameData().getMoneyPerRound());
-		System.out.println("SETUP AGENT: "+id+" "+lives);
+        LOGGER.debug("SETUP AGENT: {} {}", id, lives);
 	}
 	
 	public String getId() {

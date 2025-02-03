@@ -31,6 +31,4 @@ public class MiniGameKitsManager extends JsonPresetReloadListener<GameKit> {
 		addPresetType(GameKit.GAMEKIT);
 	}
 
-	// TODO 3.5.1 kit system
-
 }

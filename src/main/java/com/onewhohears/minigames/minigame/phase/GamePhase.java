@@ -1,5 +1,6 @@
 package com.onewhohears.minigames.minigame.phase;
 
+import com.mojang.logging.LogUtils;
 import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
@@ -17,11 +18,14 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.phys.Vec3;
+import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 
 public abstract class GamePhase<T extends MiniGameData> {
-	
+
+	private static final Logger LOGGER = LogUtils.getLogger();
+
 	private final String id;
 	private final T gameData;
 	private final PhaseExitCondition<T>[] exitConditions;
@@ -97,17 +101,17 @@ public abstract class GamePhase<T extends MiniGameData> {
 	}
 	
 	public void onReset(MinecraftServer server) {
-		System.out.println("PHASE RESET "+id);
+        LOGGER.debug("PHASE RESET {}", id);
 		age = 0;
 	}
 	
 	public void onStart(MinecraftServer server) {
-		System.out.println("PHASE START "+id);
+        LOGGER.debug("PHASE START {}", id);
 		updateWorldBorder(server);
 	}
 	
 	public void onStop(MinecraftServer server) {
-		System.out.println("PHASE STOP "+id);
+        LOGGER.debug("PHASE STOP {}", id);
 	}
 	
 	public void checkExitConditions(MinecraftServer server) {
