@@ -16,7 +16,7 @@ public class BuyAttackAttackEndPhase<T extends BuyAttackData> extends GamePhase<
 
     public BuyAttackAttackEndPhase(T gameData) {
         this("buy_attack_end_attack", gameData, new TimeoutPhaseExitCondition<>("buy_attack_attack_end",
-                "buy_attack_buy", gameData.getAttackEndTime()),
+                "buy_attack_buy", phase -> phase.getGameData().getAttackEndTime()),
                 new BuyAttackGameWinCondition<>());
     }
 
