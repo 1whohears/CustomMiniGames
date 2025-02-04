@@ -24,8 +24,7 @@ public class BuyAttackAttackPhase<T extends BuyAttackData> extends GamePhase<T> 
     @SafeVarargs
     public BuyAttackAttackPhase(String id, T gameData, PhaseExitCondition<T>...exitConditions) {
         super(id, gameData, exitConditions);
-        announceTimeLeft = true;
-        maxTime = gameData.getAttackTime();
+        setCountDown(BuyAttackData::getAttackTime);
     }
 
     @Override

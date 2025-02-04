@@ -14,7 +14,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -709,11 +708,14 @@ public abstract class MiniGameData {
 	}
 
 	public void awardLivingFlagTeams() {
+		Set<String> noRepeats = new HashSet<>();
 		getLivingFlags().forEach(flag -> {
 			String id = flag.getTeamId();
+			if (noRepeats.contains(id)) return;
 			GameAgent team = getAgentById(id);
 			if (team == null) return;
 			team.addScore(1);
+			noRepeats.add(id);
 		});
 	}
 

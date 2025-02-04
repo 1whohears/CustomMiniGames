@@ -12,7 +12,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
@@ -21,6 +20,7 @@ import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 public abstract class GamePhase<T extends MiniGameData> {
 
@@ -31,8 +31,8 @@ public abstract class GamePhase<T extends MiniGameData> {
 	private final PhaseExitCondition<T>[] exitConditions;
 	private int age;
 
-	protected boolean announceTimeLeft = false;
-	protected int maxTime = 0;
+	private boolean announceTimeLeft = false;
+	private Function<T, Integer> maxTime = data->0;
 	
 	@SafeVarargs
 	protected GamePhase(String id, T gameData, PhaseExitCondition<T>...exitConditions) {
@@ -59,7 +59,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 	}
 
 	public void announceTimeLeft(MinecraftServer server) {
-		int ticksRemaining = maxTime - age;
+		int ticksRemaining = maxTime.apply(getGameData()) - age;
 		if (ticksRemaining % 20 != 0) return;
 		int secondsRemaining = ticksRemaining / 20;
 		int minutes = -1, seconds = -1;
@@ -221,5 +221,10 @@ public abstract class GamePhase<T extends MiniGameData> {
 
 	public boolean allowPVP() {
 		return true;
+	}
+
+	protected void setCountDown(Function<T,Integer> maxPhaseAgeGetter) {
+		announceTimeLeft = true;
+		maxTime = maxPhaseAgeGetter;
 	}
 }
