@@ -16,7 +16,8 @@ import net.minecraft.sounds.SoundEvents;
 public class BuyAttackAttackPhase<T extends BuyAttackData> extends GamePhase<T> {
 
     public BuyAttackAttackPhase(T gameData) {
-        this("buy_attack_attack", gameData, new AttackPhaseTimeoutCondition<>(gameData.getAttackTime()),
+        this("buy_attack_attack", gameData,
+                new AttackPhaseTimeoutCondition<>(phase -> phase.getGameData().getAttackTime()),
                 new BuyAttackGameWinCondition<>(), new BuyAttackRoundWinCondition<>());
     }
 

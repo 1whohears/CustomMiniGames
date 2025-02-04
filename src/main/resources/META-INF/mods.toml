@@ -1,16 +1,16 @@
 modLoader="javafml"
 loaderVersion="[43,)"
 license="MIT License"
-#issueTrackerURL=""
+issueTrackerURL="https://github.com/1whohears/CustomMiniGames/issues"
 showAsResourcePack=false
 
 [[mods]]
 	modId="minigames"
 	version="${file.jarVersion}"
 	displayName="Custom Mini Games"
-	logoFile="dscombat.png"
-	#displayURL=""
-	#updateJSONURL=""
+	logoFile="minigames.png"
+    displayURL="https://modrinth.com/mod/custom-mini-games"
+    updateJSONURL="https://raw.githubusercontent.com/1whohears/ModVersions/main/CustomMiniGames/update.json"
 	displayTest = "MATCH_VERSION"
 	authors="1whohears"
 	credits="My Lizard"

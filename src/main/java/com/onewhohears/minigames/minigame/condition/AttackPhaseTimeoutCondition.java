@@ -4,13 +4,15 @@ import com.onewhohears.minigames.minigame.data.BuyAttackData;
 import com.onewhohears.minigames.minigame.phase.GamePhase;
 import net.minecraft.server.MinecraftServer;
 
+import java.util.function.Function;
+
 public class AttackPhaseTimeoutCondition<D extends BuyAttackData> extends TimeoutPhaseExitCondition<D> {
 
-    public AttackPhaseTimeoutCondition(int time, String timeEndTranslatable) {
+    public AttackPhaseTimeoutCondition(Function<GamePhase<D>, Integer> time, String timeEndTranslatable) {
         super("buy_attack_attack_end", "buy_attack_end_attack", time, timeEndTranslatable);
     }
 
-    public AttackPhaseTimeoutCondition(int time) {
+    public AttackPhaseTimeoutCondition(Function<GamePhase<D>, Integer> time) {
         this(time, null);
     }
 

@@ -7,7 +7,8 @@ import com.onewhohears.minigames.minigame.phase.buyattackrounds.BuyAttackAttackP
 public class KillFlagAttackPhase<T extends KillFlagData> extends BuyAttackAttackPhase<T> {
 
     public KillFlagAttackPhase(T gameData) {
-        this("buy_attack_attack", gameData, new KillFlagAttackTimeoutCondition<>(gameData.getAttackTime()),
+        this("buy_attack_attack", gameData,
+                new KillFlagAttackTimeoutCondition<>(phase -> phase.getGameData().getAttackTime()),
                 new BuyAttackGameWinCondition<>(), new KillFlagAttackersDeadCondition<>(),
                 new KillFlagFlagsDeadCondition<>());
     }
