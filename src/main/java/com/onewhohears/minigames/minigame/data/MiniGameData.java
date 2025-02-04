@@ -1,7 +1,6 @@
 package com.onewhohears.minigames.minigame.data;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -538,8 +537,11 @@ public abstract class MiniGameData {
         return new ArrayList<>(agents.values());
 	}
 
-	public Stream<GameAgent> getAgentsWithScore(int score) {
-		return agents.values().stream().filter(agent -> agent.getScore() >= score);
+	public List<GameAgent> getAgentsWithScore(int score) {
+		List<GameAgent> list = new ArrayList<>();
+		for (GameAgent agent : agents.values())
+			if (agent.getScore() >= score) list.add(agent);
+		return list;
 	}
 	
 	public void resetAllAgents() {
@@ -700,11 +702,26 @@ public abstract class MiniGameData {
 	}
 
 	public void onFlagSpawn(@NotNull FlagEntity flag) {
+		Iterator<FlagEntity> iter = flags.iterator();
+		while (iter.hasNext()) {
+			FlagEntity f = iter.next();
+			if (f.getTeamId().equals(flag.getTeamId())) {
+				f.discard();
+				iter.remove();
+			}
+		}
 		flags.add(flag);
 	}
 
+	public boolean verifyFlagSpawn(FlagEntity entity) {
+		return getNumResets() == entity.getGameResetCount();
+    }
+
 	public List<FlagEntity> getLivingFlags() {
-		return flags.stream().filter(flag -> flag.getHealth() > 0f).toList();
+		List<FlagEntity> list = new ArrayList<>();
+		for (FlagEntity flag : flags)
+			if (flag.getHealth() > 0.0F) list.add(flag);
+ 		return list;
 	}
 
 	public void awardLivingFlagTeams() {

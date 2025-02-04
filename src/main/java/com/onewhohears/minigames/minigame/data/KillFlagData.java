@@ -13,6 +13,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,7 +69,10 @@ public class KillFlagData extends BuyAttackData {
     }
 
     public List<GameAgent> getLivingAttackers() {
-        return getLivingAgents().stream().filter(agent -> attackers.contains(agent.getId())).toList();
+        List<GameAgent> list = new ArrayList<>();
+        for (GameAgent agent : getLivingAgents())
+            if (attackers.contains(agent.getId())) list.add(agent);
+        return list;
     }
 
     public void awardAllAttackers() {

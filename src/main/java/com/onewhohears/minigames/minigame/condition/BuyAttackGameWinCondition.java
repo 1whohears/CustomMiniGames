@@ -12,7 +12,7 @@ public class BuyAttackGameWinCondition<D extends BuyAttackData> extends PhaseExi
 
     @Override
     public boolean shouldExit(MinecraftServer server, GamePhase<D> currentPhase) {
-        return currentPhase.getGameData().getWinningAgent().isPresent();
+        return currentPhase.getGameData().hasWinningAgents();
     }
 
     @Override

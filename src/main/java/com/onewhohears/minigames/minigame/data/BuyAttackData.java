@@ -1,13 +1,10 @@
 package com.onewhohears.minigames.minigame.data;
 
-import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.phase.buyattackrounds.*;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-
-import java.util.Optional;
 
 public class BuyAttackData extends MiniGameData {
 
@@ -125,8 +122,8 @@ public class BuyAttackData extends MiniGameData {
         return UtilMCText.literal("Buy Attack Phase Game has Started!").setStyle(GOLD_BOLD);
     }
 
-    public Optional<GameAgent> getWinningAgent() {
-        return getAgentsWithScore(getRoundsToWin()).findFirst();
+    public boolean hasWinningAgents() {
+        return !getAgentsWithScore(getRoundsToWin()).isEmpty();
     }
 
     public int getBuyRadius() {
