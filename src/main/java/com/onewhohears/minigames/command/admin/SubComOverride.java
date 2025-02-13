@@ -35,13 +35,13 @@ public class SubComOverride {
 			for (ServerPlayer player : players) {
 				List<PlayerAgent> agents = MiniGameManager.get().getActiveGamePlayerAgents(player);
 				if (agents.isEmpty()) {
-					Component message = Component.literal(player.getDisplayName()+" is not in any active games!");
+					Component message = Component.literal(player.getScoreboardName()+" is not in any active games!");
 					context.getSource().sendFailure(message);
 					continue;
 				}
 				for (PlayerAgent agent : agents) {
 					agent.setLives(lives);
-					Component message = Component.literal("Set "+player.getDisplayName()+"'s lives to "+lives+"!");
+					Component message = Component.literal("Set "+player.getScoreboardName()+"'s lives to "+lives+"!");
 					context.getSource().sendSuccess(message, true);
 				}
 			}

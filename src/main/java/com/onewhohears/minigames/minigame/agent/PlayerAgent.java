@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.data.kits.GameKit;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
+import com.onewhohears.minigames.init.MiniGameItems;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
 import com.onewhohears.onewholibs.util.UtilMCText;
@@ -21,6 +22,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -95,7 +97,16 @@ public class PlayerAgent extends GameAgent {
 		super.onLogOut(server);
 		getGameData().onLogOut(this, server);
 	}
-	
+
+	@Override
+	public void giveMoneyItems(MinecraftServer server, int amount) {
+		ItemStack money = MiniGameItems.MONEY.get().getDefaultInstance();
+		money.setCount(amount);
+		ServerPlayer sp = getPlayer(server);
+		if (sp == null) return;
+		sp.addItem(money.copy());
+	}
+
 	@Override
 	public boolean canTickAgent(MinecraftServer server) {
 		return getPlayer(server) != null && player.isAddedToWorld();

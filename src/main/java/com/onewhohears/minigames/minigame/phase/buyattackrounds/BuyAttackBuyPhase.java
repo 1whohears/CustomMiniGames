@@ -13,8 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.damagesource.DamageSource;
-import org.jetbrains.annotations.Nullable;
 
 public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
 
@@ -68,7 +66,7 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
             getGameData().refillAllAgentKits(server);
             getGameData().resetAllPlayerHealth(server);
         }
-        getGameData().giveMoneyToTeams(server);
+        getGameData().giveMoneyToAgents(server);
         Component message = UtilMCText.literal("Buy Phase Start!").setStyle(MiniGameData.GOLD_BOLD);
         getGameData().chatToAllPlayers(server, message, SoundEvents.EXPERIENCE_ORB_PICKUP);
     }

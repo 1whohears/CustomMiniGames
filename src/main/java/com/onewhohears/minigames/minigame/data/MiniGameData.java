@@ -568,23 +568,11 @@ public abstract class MiniGameData {
 		moneyPerRound = money;
 	}
 	
-	public void giveMoneyToTeams(MinecraftServer server) {
-		List<TeamAgent> teams = getTeamAgents();
+	public void giveMoneyToAgents(MinecraftServer server) {
 		int totalPlayers = getAllPlayerAgents().size();
 		int totalMoney = totalPlayers * getMoneyPerRound();
-		int moneyPerTeam = (int)((double)totalMoney / (double)teams.size());
-		ItemStack money = MiniGameItems.MONEY.get().getDefaultInstance();
-		for (TeamAgent team : teams) {
-			Collection<?> players = team.getPlayerAgents();
-			int moneyPerPlayer = (int)((double)moneyPerTeam / (double)players.size());
-			money.setCount(moneyPerPlayer);
-			players.forEach((player) -> {
-				PlayerAgent pa = (PlayerAgent)player;
-				ServerPlayer sp = pa.getPlayer(server);
-				if (sp == null) return;
-				sp.addItem(money.copy());
-			});
-		}
+		int moneyPerTeam = (int)((double)totalMoney / (double)agents.size());
+		agents.forEach((id, agent) -> agent.giveMoneyItems(server, moneyPerTeam));
 	}
 	
 	public void spreadPlayers(MinecraftServer server) {

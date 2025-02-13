@@ -209,4 +209,6 @@ public abstract class GameAgent {
 
 	public void onLogOut(MinecraftServer server) {
 	}
+
+	public abstract void giveMoneyItems(MinecraftServer server, int amount);
 }

@@ -208,4 +208,11 @@ public class TeamAgent extends GameAgent {
 		return pt.getDisplayName();
 	}
 
+	@Override
+	public void giveMoneyItems(MinecraftServer server, int amount) {
+		Collection<PlayerAgent> players = getPlayerAgents();
+		int moneyPerPlayer = (int)(amount / (double)players.size());
+		players.forEach(player -> player.giveMoneyItems(server, moneyPerPlayer));
+	}
+
 }
