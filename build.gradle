@@ -105,12 +105,14 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     maven { url "https://repo.repsy.io/mvn/1whohears/1wholibs" }
+    maven { url "https://cursemaven.com" }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     // https://github.com/1whohears/1wholibs
     implementation fg.deobf("com.onewhohears.onewholibs:onewholibs-${minecraft_version}:${onewholibs_version}")
+    implementation fg.deobf("curse.maven:xaeros-minimap-fair-play-edition-${xaeros_minimap_fair_play_version}")
 }
 
 jar {
