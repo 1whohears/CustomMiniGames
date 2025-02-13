@@ -90,6 +90,10 @@ public class TeamAgent extends GameAgent {
 			}
 		}
 	}
+
+	public void removeOfflineMembers(MinecraftServer server) {
+		playerAgents.entrySet().removeIf(entry -> !entry.getValue().canTickAgent(server));
+	}
 	
 	@Nullable
 	public PlayerTeam getTeam(MinecraftServer server) {

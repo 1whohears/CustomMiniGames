@@ -661,6 +661,7 @@ public abstract class MiniGameData {
 	public abstract Component getStartGameMessage(MinecraftServer server);
 
 	public void onGameStart(MinecraftServer server) {
+		removeOfflineTeamPlayers(server);
 		tpPlayersToSpawnPosition(server);
 		if (isClearOnStart()) clearAllPlayerInventories(server);
 		refillAllAgentKits(server);
@@ -753,5 +754,9 @@ public abstract class MiniGameData {
 			return UtilAngles.getYaw(agent.getRespawnPoint().subtract(playerAgent.getRespawnPoint()));
 		}
 		return 0;
+	}
+
+	public void removeOfflineTeamPlayers(MinecraftServer server) {
+		getTeamAgents().forEach(teamAgent -> teamAgent.removeOfflineMembers(server));
 	}
 }
