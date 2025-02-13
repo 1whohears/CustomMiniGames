@@ -227,4 +227,8 @@ public abstract class GamePhase<T extends MiniGameData> {
 		announceTimeLeft = true;
 		maxTime = maxPhaseAgeGetter;
 	}
+
+	public boolean looseLiveOnDeath(GameAgent gameAgent, MinecraftServer server) {
+		return true;
+	}
 }

@@ -234,7 +234,36 @@ public class SubComSetup {
 							context.getSource().sendSuccess(message, true);
 							return 1;
 						}, GameComArgs.suggestEnabledShops()))
+						.then(setBoolParamArg("allow_respawn_during_buy", "allow", (context, gameData, value) -> {
+							if (!(gameData instanceof BuyAttackData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.setAllowRespawnInBuyPhase(value);
+							Component message;
+							if (value) message = UtilMCText.literal("Players CAN respawn during the buy phase!");
+							else message = UtilMCText.literal("Players can NOT respawn during the buy phase!");
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}))
 			);
+	}
+
+	private ArgumentBuilder<CommandSourceStack,?> setBoolParamArg(String argName, String valueName,
+																 TriFunction<CommandContext<CommandSourceStack>,
+																		 MiniGameData, Boolean, Integer> consumer) {
+		return Commands.literal(argName)
+				.then(Commands.argument(valueName, BoolArgumentType.bool())
+						.executes(commandBool(valueName, consumer)));
+	}
+
+	private GameSetupCom commandBool(String valueName, TriFunction<
+			CommandContext<CommandSourceStack>, MiniGameData, Boolean, Integer> consumer) {
+		return (context, gameData) -> {
+			boolean value = BoolArgumentType.getBool(context, valueName);
+			return consumer.apply(context, gameData, value);
+		};
 	}
 
 	private ArgumentBuilder<CommandSourceStack,?> setStringParamArg(String argName, String valueName,

@@ -1,5 +1,6 @@
 package com.onewhohears.minigames.minigame.phase.buyattackrounds;
 
+import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.condition.BuyAttackGameWinCondition;
 import com.onewhohears.minigames.minigame.condition.PhaseExitCondition;
@@ -12,6 +13,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
+import org.jetbrains.annotations.Nullable;
 
 public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
 
@@ -94,4 +97,8 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
         return false;
     }
 
+    @Override
+    public boolean looseLiveOnDeath(GameAgent gameAgent, MinecraftServer server) {
+        return !getGameData().isAllowRespawnInBuyPhase();
+    }
 }

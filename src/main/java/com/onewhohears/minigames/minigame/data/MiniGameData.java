@@ -750,4 +750,8 @@ public abstract class MiniGameData {
 	public String[] getAllAgentIds() {
 		return agents.keySet().toArray(new String[0]);
 	}
+
+	public boolean looseLiveOnDeath(GameAgent gameAgent, MinecraftServer server) {
+		return getCurrentPhase().looseLiveOnDeath(gameAgent, server);
+	}
 }

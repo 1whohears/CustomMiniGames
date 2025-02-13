@@ -71,8 +71,12 @@ public abstract class GameAgent {
 	}
 	
 	public void onDeath(MinecraftServer server, @Nullable DamageSource source) {
-		lives = Math.max(lives-1, 0);
+		if (looseLiveOnDeath(server)) lives = Math.max(lives-1, 0);
         LOGGER.debug("ON DEATH: {} {}", id, lives);
+	}
+
+	public boolean looseLiveOnDeath(MinecraftServer server) {
+		return getGameData().looseLiveOnDeath(this, server);
 	}
 
 	public void onRespawn(MinecraftServer server) {

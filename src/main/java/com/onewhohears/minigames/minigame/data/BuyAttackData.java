@@ -31,6 +31,7 @@ public class BuyAttackData extends MiniGameData {
     protected int attackEndTime = 200;
     protected int roundsToWin = 3;
     protected int buyRadius = 24;
+    protected boolean allowRespawnInBuyPhase = true;
 
     private int currentRound = 0;
 
@@ -53,6 +54,7 @@ public class BuyAttackData extends MiniGameData {
         nbt.putInt("currentRound", currentRound);
         nbt.putInt("attackEndTime", attackEndTime);
         nbt.putInt("buyRadius", buyRadius);
+        nbt.putBoolean("allowRespawnInBuyPhase", allowRespawnInBuyPhase);
         return nbt;
     }
 
@@ -65,6 +67,7 @@ public class BuyAttackData extends MiniGameData {
         currentRound = nbt.getInt("currentRound");
         attackEndTime = nbt.getInt("attackEndTime");
         buyRadius = nbt.getInt("buyRadius");
+        allowRespawnInBuyPhase = nbt.getBoolean("allowRespawnInBuyPhase");
     }
 
     @Override
@@ -115,6 +118,14 @@ public class BuyAttackData extends MiniGameData {
 
     public void setRoundsToWin(int roundsToWin) {
         this.roundsToWin = roundsToWin;
+    }
+
+    public void setAllowRespawnInBuyPhase(boolean allow) {
+        this.allowRespawnInBuyPhase = allow;
+    }
+
+    public boolean isAllowRespawnInBuyPhase() {
+        return allowRespawnInBuyPhase;
     }
 
     @Override
