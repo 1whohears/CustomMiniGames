@@ -5,7 +5,8 @@
       "item": "minecraft:diamond_sword",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "standard"
       },
       "num": 1
     },
@@ -13,7 +14,8 @@
       "item": "minecraft:iron_axe",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "standard"
       },
       "num": 1
     },
@@ -21,7 +23,8 @@
       "item": "minecraft:iron_pickaxe",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "standard"
       },
       "num": 1
     },
@@ -29,7 +32,8 @@
       "item": "minecraft:iron_shovel",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "standard"
       },
       "num": 1
     },
@@ -45,27 +49,21 @@
       "nbt": {
         "Potion": "minecraft:strong_healing"
       },
-      "num": 1,
-      "refill": true
-    },
-    {
-      "item": "minecraft:splash_potion",
-      "keep": true,
-      "nbt": {
-        "Potion": "minecraft:strong_healing"
-      },
-      "num": 1,
+      "num": 2,
       "refill": true
     },
     {
       "item": "minecraft:cobblestone",
-      "num": 64
+      "keep": true,
+      "num": 20,
+      "refill": true
     },
     {
       "item": "minecraft:shield",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "standard"
       },
       "num": 1
     },
@@ -73,7 +71,8 @@
       "item": "minecraft:iron_helmet",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "standard"
       },
       "num": 1
     },
@@ -81,7 +80,8 @@
       "item": "minecraft:iron_chestplate",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "standard"
       },
       "num": 1
     },
@@ -89,7 +89,8 @@
       "item": "minecraft:iron_leggings",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "standard"
       },
       "num": 1
     },
@@ -97,7 +98,8 @@
       "item": "minecraft:iron_boots",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "standard"
       },
       "num": 1
     }

@@ -5,7 +5,8 @@
       "item": "minecraft:diamond_axe",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "builder"
       },
       "num": 1
     },
@@ -13,7 +14,8 @@
       "item": "minecraft:diamond_pickaxe",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "builder"
       },
       "num": 1
     },
@@ -21,7 +23,8 @@
       "item": "minecraft:diamond_shovel",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "builder"
       },
       "num": 1
     },
@@ -34,25 +37,29 @@
     {
       "item": "minecraft:water_bucket",
       "keep": true,
+      "nbt": {
+        "kitOnly": "builder"
+      },
       "num": 1
     },
     {
-      "item": "minecraft:bricks",
-      "num": 64
-    },
-    {
-      "item": "minecraft:bricks",
-      "num": 64
+      "item": "minecraft:end_stone_bricks",
+      "keep": true,
+      "num": 64,
+      "refill": true
     },
     {
       "item": "minecraft:cobblestone",
-      "num": 64
+      "keep": true,
+      "num": 64,
+      "refill": true
     },
     {
       "item": "minecraft:shield",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "builder"
       },
       "num": 1
     },
@@ -60,7 +67,8 @@
       "item": "minecraft:leather_helmet",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "builder"
       },
       "num": 1
     },
@@ -68,7 +76,8 @@
       "item": "minecraft:leather_chestplate",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "builder"
       },
       "num": 1
     },
@@ -76,7 +85,8 @@
       "item": "minecraft:leather_leggings",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "builder"
       },
       "num": 1
     },
@@ -84,7 +94,8 @@
       "item": "minecraft:leather_boots",
       "keep": true,
       "nbt": {
-        "Unbreakable": true
+        "Unbreakable": true,
+        "kitOnly": "builder"
       },
       "num": 1
     }
