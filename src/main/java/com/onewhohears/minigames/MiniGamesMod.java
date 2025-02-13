@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -22,8 +23,18 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public class MiniGamesMod {
 	
 	public static final String MODID = "minigames";
-	
+
+	public static boolean XAERO_MINIMAP_LOADED = false;
+	public static boolean XAERO_MINIMAP_FAIRPLAY_LOADED = false;
+
+	public static boolean isXaeroMinimapLoaded() {
+		return XAERO_MINIMAP_LOADED || XAERO_MINIMAP_FAIRPLAY_LOADED;
+	}
+
 	public MiniGamesMod() {
+		XAERO_MINIMAP_LOADED = ModList.get().isLoaded("xaerominimap");
+		XAERO_MINIMAP_FAIRPLAY_LOADED = ModList.get().isLoaded("xaerominimapfair");
+
 		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		
 		MiniGameContainers.register(eventBus);

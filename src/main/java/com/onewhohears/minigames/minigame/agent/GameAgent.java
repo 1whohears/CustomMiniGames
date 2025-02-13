@@ -4,18 +4,26 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.mojang.logging.LogUtils;
+import com.onewhohears.minigames.MiniGamesMod;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
+import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.UtilParse;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 public abstract class GameAgent {
+
+	public static final Style YELLOW = Style.EMPTY.withColor(ChatFormatting.YELLOW);
 
 	private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -212,4 +220,20 @@ public abstract class GameAgent {
 
 	public abstract void giveMoneyItems(MinecraftServer server, int amount);
 	public abstract boolean isOnSameTeam(GameAgent agent);
+
+	public void chatSpawnPosition(MinecraftServer server) {
+		Vec3 pos = getRespawnPoint();
+		if (pos == null) return;
+		Component name = getDisplayName(server);
+		Component nameMessage = UtilMCText.empty().append(name).append("'s spawn is at " +
+				"x:"+(int)pos.x+",y:"+(int)pos.y+",z:"+(int)pos.z).setStyle(YELLOW);
+		getGameData().chatToAllPlayers(server, nameMessage);
+		if (MiniGamesMod.isXaeroMinimapLoaded()) {
+			int color = Mth.randomBetweenInclusive(server.overworld().getRandom(), 0, 15);
+			Component waypoint = UtilMCText.literal("xaero-waypoint:"+name.getString()+"'s Spawn:"+
+					name.getString().charAt(0)+":"+(int)pos.x+":"+(int)pos.y+":"+(int)pos.z+":"+color+
+					":false:0:Internal-overworld-waypoints");
+			getGameData().chatToAllPlayers(server, waypoint);
+		}
+	}
 }

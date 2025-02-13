@@ -18,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
-import com.onewhohears.minigames.init.MiniGameItems;
 import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
@@ -667,6 +666,7 @@ public abstract class MiniGameData {
 		refillAllAgentKits(server);
 		resetAllPlayerHealth(server);
 		chatToAllPlayers(server, getStartGameMessage(server));
+		if (requiresSetRespawnPos()) chatTeamSpawns(server);
 	}
 
 	public boolean canUseKit(GameAgent agent, String kit) {
@@ -758,5 +758,9 @@ public abstract class MiniGameData {
 
 	public void removeOfflineTeamPlayers(MinecraftServer server) {
 		getTeamAgents().forEach(teamAgent -> teamAgent.removeOfflineMembers(server));
+	}
+
+	public void chatTeamSpawns(MinecraftServer server) {
+		agents.forEach((id, agent) -> agent.chatSpawnPosition(server));
 	}
 }
