@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.entity.FlagEntity;
 import com.onewhohears.onewholibs.util.UtilMCText;
+import com.onewhohears.onewholibs.util.math.UtilAngles;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvent;
@@ -741,5 +742,15 @@ public abstract class MiniGameData {
 
 	public boolean looseLiveOnDeath(GameAgent gameAgent, MinecraftServer server) {
 		return getCurrentPhase().looseLiveOnDeath(gameAgent, server);
+	}
+
+	public float getSpawnYaw(PlayerAgent playerAgent) {
+		if (playerAgent.getRespawnPoint() == null) return 0;
+		for (GameAgent agent : agents.values()) {
+			if (playerAgent.isOnSameTeam(agent)) continue;
+			if (agent.getRespawnPoint() == null) continue;
+			return UtilAngles.getYaw(agent.getRespawnPoint().subtract(playerAgent.getRespawnPoint()));
+		}
+		return 0;
 	}
 }

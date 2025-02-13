@@ -211,4 +211,5 @@ public abstract class GameAgent {
 	}
 
 	public abstract void giveMoneyItems(MinecraftServer server, int amount);
+	public abstract boolean isOnSameTeam(GameAgent agent);
 }

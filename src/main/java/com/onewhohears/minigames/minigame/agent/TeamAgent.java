@@ -215,4 +215,13 @@ public class TeamAgent extends GameAgent {
 		players.forEach(player -> player.giveMoneyItems(server, moneyPerPlayer));
 	}
 
+	@Override
+	public boolean isOnSameTeam(GameAgent agent) {
+		if (getId().equals(agent.getId())) return true;
+		for (PlayerAgent player : getPlayerAgents())
+			if (player.isOnSameTeam(agent))
+				return true;
+		return false;
+	}
+
 }

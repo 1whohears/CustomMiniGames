@@ -114,6 +114,11 @@ public class PlayerAgent extends GameAgent {
 	}
 
 	@Override
+	public boolean isOnSameTeam(GameAgent agent) {
+		return getId().equals(agent.getId());
+	}
+
+	@Override
 	public boolean canTickAgent(MinecraftServer server) {
 		return getPlayer(server) != null && player.isAddedToWorld();
 	}
@@ -187,9 +192,8 @@ public class PlayerAgent extends GameAgent {
 		if (pos == null) pos = server.overworld().getSharedSpawnPos();
 		ResourceKey<Level> dim = player.getRespawnDimension();
 		ServerLevel level = server.getLevel(dim);
-		player.teleportTo(level,
-				pos.getX(), pos.getY(), pos.getZ(),
-				0, 0);
+		float yaw = getGameData().getSpawnYaw(this);
+		player.teleportTo(level, pos.getX(), pos.getY(), pos.getZ(), yaw, 0);
 	}
 
 	@Override
