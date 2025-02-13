@@ -14,10 +14,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
@@ -157,22 +154,22 @@ public class FlagEntity extends Mob {
 	}
 
 	@Override
-	public Iterable<ItemStack> getArmorSlots() {
+	public @NotNull Iterable<ItemStack> getArmorSlots() {
 		return EMPTY_LIST;
 	}
 
 	@Override
-	public ItemStack getItemBySlot(EquipmentSlot slot) {
+	public @NotNull ItemStack getItemBySlot(@NotNull EquipmentSlot slot) {
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public void setItemSlot(EquipmentSlot slot, ItemStack stack) {
+	public void setItemSlot(@NotNull EquipmentSlot slot, @NotNull ItemStack stack) {
 		
 	}
 
 	@Override
-	public HumanoidArm getMainArm() {
+	public @NotNull HumanoidArm getMainArm() {
 		return HumanoidArm.RIGHT;
 	}
 
@@ -182,7 +179,7 @@ public class FlagEntity extends Mob {
 	}
 
 	@Override
-	public Packet<?> getAddEntityPacket() {
+	public @NotNull Packet<?> getAddEntityPacket() {
 		return NetworkHooks.getEntitySpawningPacket(this);
 	}
 
@@ -193,6 +190,11 @@ public class FlagEntity extends Mob {
 
 	@Override
 	public boolean removeWhenFarAway(double distanceToClosestPlayer) {
+		return false;
+	}
+
+	@Override
+	protected boolean canRide(@NotNull Entity vehicle) {
 		return false;
 	}
 }
