@@ -63,6 +63,7 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
         getGameData().setupAllAgents();
         if (getGameData().isFirstRound()) getGameData().onGameStart(server);
         else {
+            getGameData().applyAllAgentRespawnPoints(server);
             getGameData().tpPlayersToSpawnPosition(server);
             getGameData().refillAllAgentKits(server);
             getGameData().resetAllPlayerHealth(server);
