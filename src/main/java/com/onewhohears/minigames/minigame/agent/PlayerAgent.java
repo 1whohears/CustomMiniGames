@@ -32,7 +32,8 @@ public class PlayerAgent extends GameAgent {
 	private ServerPlayer player;
 	private TeamAgent teamAgent;
 	@Nullable private Vec3 deathPosition = null;
-	
+	private float deathLookX, deathLookY;
+
 	public PlayerAgent(String uuid, MiniGameData gameData) {
 		super(uuid, gameData);
 	}
@@ -73,6 +74,11 @@ public class PlayerAgent extends GameAgent {
 		return deathPosition;
 	}
 
+	public void setDeathLookDirection(float deathLookX, float deathLookY) {
+		this.deathLookX = deathLookX;
+		this.deathLookY = deathLookY;
+	}
+
 	@Override
 	public void onRespawn(MinecraftServer server) {
 		super.onRespawn(server);
@@ -82,7 +88,7 @@ public class PlayerAgent extends GameAgent {
 			if (pos == null) return;
 			ServerPlayer sp = getPlayer(server);
 			if (sp == null) return;
-			sp.teleportTo(pos.x(), pos.y(), pos.z());
+			sp.connection.teleport(pos.x(), pos.y(), pos.z(), deathLookY, deathLookX);
 		}
 	}
 

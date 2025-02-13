@@ -51,6 +51,7 @@ public class CommonForgeEvents {
 		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player)) {
 			if (agent.shouldRunOnDeath()) {
 				agent.setDeathPosition(player.position());
+				agent.setDeathLookDirection(player.getXRot(), player.getYRot());
 				agent.onDeath(player.getServer(), event.getSource());
 			}
 		}
