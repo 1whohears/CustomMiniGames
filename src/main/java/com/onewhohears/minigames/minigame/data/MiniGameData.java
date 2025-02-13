@@ -32,7 +32,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
@@ -88,6 +87,7 @@ public abstract class MiniGameData {
 		nbt.putBoolean("requiresSetRespawnPos", requiresSetRespawnPos);
 		nbt.putBoolean("worldBorderDuringGame", worldBorderDuringGame);
 		nbt.putInt("initialLives", initialLives);
+		nbt.putInt("moneyPerRound", moneyPerRound);
 		nbt.putDouble("gameBorderSize", gameBorderSize);
 		nbt.putBoolean("clearOnStart", clearOnStart);
 		UtilParse.writeVec3(nbt, gameCenter, "gameCenter");
@@ -108,6 +108,7 @@ public abstract class MiniGameData {
 		requiresSetRespawnPos = nbt.getBoolean("requiresSetRespawnPos");
 		worldBorderDuringGame = nbt.getBoolean("worldBorderDuringGame");
 		initialLives = nbt.getInt("initialLives");
+		moneyPerRound = nbt.getInt("moneyPerRound");
 		gameBorderSize = nbt.getDouble("gameBorderSize");
 		gameCenter = UtilParse.readVec3(nbt, "gameCenter");
 		clearOnStart = nbt.getBoolean("clearOnStart");
