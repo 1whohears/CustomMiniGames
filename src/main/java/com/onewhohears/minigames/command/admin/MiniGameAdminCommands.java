@@ -12,11 +12,13 @@ public class MiniGameAdminCommands {
 				.then(new SubComSetup().setup())
 				.then(new SubComCreateNew().createNew())
 				.then(new SubComReset().reset())
-				.then(new SubComRemove().remove())
+				.then(new SubComPause().pause())
+				.then(new SubComResume().resume())
 				.then(new SubComInfo().info())
 				.then(new SubComKit().kit())
 				.then(new SubComShop().shop())
 				.then(new SubComOverride().override())
+				.then(new SubComRemove().remove())
 		);
 	}
 	

@@ -61,7 +61,7 @@ public abstract class MiniGameData {
 	private GamePhase<?> nextPhase;
 	private GamePhase<?> currentPhase;
 	private int age, resets;
-	private boolean isStarted, isStopped, firstTick = true;
+	private boolean isStarted, isStopped, isPaused, firstTick = true;
 	
 	protected boolean canAddIndividualPlayers;
 	protected boolean canAddTeams;
@@ -85,6 +85,7 @@ public abstract class MiniGameData {
 		nbt.putInt("resets", resets);
 		nbt.putBoolean("isStarted", isStarted);
 		nbt.putBoolean("isStopped", isStopped);
+		nbt.putBoolean("isPaused", isPaused);
 		nbt.putBoolean("canAddIndividualPlayers", canAddIndividualPlayers);
 		nbt.putBoolean("canAddTeams", canAddTeams);
 		nbt.putBoolean("requiresSetRespawnPos", requiresSetRespawnPos);
@@ -106,6 +107,7 @@ public abstract class MiniGameData {
 		resets = nbt.getInt("resets");
 		isStarted = nbt.getBoolean("isStarted");
 		isStopped = nbt.getBoolean("isStopped");
+		isPaused = nbt.getBoolean("isPaused");
 		canAddIndividualPlayers = nbt.getBoolean("canAddIndividualPlayers");
 		canAddTeams = nbt.getBoolean("canAddTeams");
 		requiresSetRespawnPos = nbt.getBoolean("requiresSetRespawnPos");
@@ -237,6 +239,30 @@ public abstract class MiniGameData {
 		discardAllFlags();
 	}
 
+	public boolean pause(MinecraftServer server) {
+		if (!canPause(server)) return false;
+		isPaused = true;
+		return true;
+	}
+
+	public boolean canPause(MinecraftServer server) {
+		return isStarted() && !isStopped();
+	}
+
+	public boolean resume(MinecraftServer server) {
+		if (!canResume(server)) return false;
+		isPaused = false;
+		return true;
+	}
+
+	public boolean canResume(MinecraftServer server) {
+		return isStarted() && !isStopped();
+	}
+
+	public boolean isPaused() {
+		return isPaused;
+	}
+
 	public void discardAllFlags() {
 		flags.forEach(Entity::discard);
 		flags.clear();
@@ -261,7 +287,7 @@ public abstract class MiniGameData {
 	}
 	
 	public boolean shouldTickGame(MinecraftServer server) {
-		return isStarted() && !isStopped();
+		return isStarted() && !isPausedOrStopped();
 	}
 	
 	public boolean isSetupPhase() {
@@ -282,6 +308,10 @@ public abstract class MiniGameData {
 	
 	public boolean isStopped() {
 		return isStopped;
+	}
+
+	public boolean isPausedOrStopped() {
+		return isPaused() || isStopped();
 	}
 	
 	public String getInstanceId() {
