@@ -138,9 +138,9 @@ public class GameKit extends JsonPresetStats {
 		private final int num;
 		private final CompoundTag nbt;
 		private final boolean keep, refill, ignoreNbt;
-		private final String checkCountByNBT;
+		private final String checkCountByNBT, distinguishByNBT;
 		protected KitItem(Item item, int num, CompoundTag nbt, boolean keep, boolean refill,
-						  boolean ignoreNbt, String checkCountByNBT) {
+                          boolean ignoreNbt, String checkCountByNBT, String distinguishByNBT) {
 			this.item = item;
 			this.num = num;
 			this.nbt = nbt;
@@ -148,6 +148,7 @@ public class GameKit extends JsonPresetStats {
 			this.refill = refill;
 			this.ignoreNbt = ignoreNbt;
             this.checkCountByNBT = checkCountByNBT;
+            this.distinguishByNBT = distinguishByNBT;
         }
 		protected KitItem(JsonObject json) {
 			String itemKey = UtilParse.getStringSafe(json, "item", "");
@@ -162,6 +163,7 @@ public class GameKit extends JsonPresetStats {
 			refill = UtilParse.getBooleanSafe(json, "refill", false);
 			ignoreNbt = UtilParse.getBooleanSafe(json, "ignoreNbt", false);
 			checkCountByNBT = UtilParse.getStringSafe(json, "checkCountByNBT", "");
+			distinguishByNBT = UtilParse.getStringSafe(json, "distinguishByNBT", "");
 		}
 		public ItemStack getItem() {
 			ItemStack stack = new ItemStack(item, num);
@@ -179,6 +181,10 @@ public class GameKit extends JsonPresetStats {
 		}
 		public boolean isSameItem(ItemStack stack) {
 			if (stack.isEmpty()) return false;
+			if (!distinguishByNBT.isEmpty()) {
+				if (stack.getTag() == null || nbt == null) return false;
+				return stack.getTag().getString(distinguishByNBT).equals(nbt.getString(distinguishByNBT));
+ 			}
 			if (sameCheckIgnoreNbt()) return ItemStack.isSameIgnoreDurability(getItem(), stack);
 			return ItemStack.isSameItemSameTags(getItem(), stack);
 		}
@@ -217,7 +223,8 @@ public class GameKit extends JsonPresetStats {
 			return new Builder(namespace, id);
 		}
 		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt, 
-				boolean keep, boolean refill, boolean ignoreNbt, boolean kitOnly, String checkCountByNBT) {
+				boolean keep, boolean refill, boolean ignoreNbt, boolean kitOnly,
+							   String checkCountByNBT, String distinguishByNBT) {
 			if (num < 1) num = 1;
 			else if (num > 64) num = 64;
 			JsonObject json = new JsonObject();
@@ -236,44 +243,50 @@ public class GameKit extends JsonPresetStats {
 			if (refill) json.addProperty("refill", refill);
 			if (ignoreNbt) json.addProperty("ignoreNbt", ignoreNbt);
 			if (!checkCountByNBT.isEmpty()) json.addProperty("checkCountByNBT", checkCountByNBT);
+			if (!distinguishByNBT.isEmpty()) json.addProperty("distinguishByNBT", distinguishByNBT);
 			getData().get("kitItems").getAsJsonArray().add(json);
 			return this;
 		}
+		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt,
+							   boolean keep, boolean refill, boolean kitOnly,
+							   String checkCountByNBT, String distinguishByNBT) {
+			return addItem(itemkey, num, unbreakable, nbt, keep, refill, false, kitOnly, checkCountByNBT, distinguishByNBT);
+		}
 		public Builder addItemKeep(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly, String checkCountByNBT) {
-			return addItem(itemkey, num, unbreakable, nbt, true, false, false, kitOnly, checkCountByNBT);
+			return addItem(itemkey, num, unbreakable, nbt, true, false, false, kitOnly, checkCountByNBT, "");
 		}
 		public Builder addItemRefill(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly, String checkCountByNBT) {
-			return addItem(itemkey, num, unbreakable, nbt, true, true, false, kitOnly, checkCountByNBT);
+			return addItem(itemkey, num, unbreakable, nbt, true, true, false, kitOnly, checkCountByNBT, "");
 		}
 		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly, String checkCountByNBT) {
-			return addItem(itemkey, num, unbreakable, nbt, false, false, false, kitOnly, checkCountByNBT);
+			return addItem(itemkey, num, unbreakable, nbt, false, false, false, kitOnly, checkCountByNBT, "");
 		}
 		public Builder addItemKeep(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly) {
-			return addItem(itemkey, num, unbreakable, nbt, true, false, false, kitOnly, "");
+			return addItem(itemkey, num, unbreakable, nbt, true, false, false, kitOnly, "", "");
 		}
 		public Builder addItemRefill(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly) {
-			return addItem(itemkey, num, unbreakable, nbt, true, true, false, kitOnly, "");
+			return addItem(itemkey, num, unbreakable, nbt, true, true, false, kitOnly, "", "");
 		}
 		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly) {
-			return addItem(itemkey, num, unbreakable, nbt, false, false, false, kitOnly, "");
+			return addItem(itemkey, num, unbreakable, nbt, false, false, false, kitOnly, "", "");
 		}
 		public Builder addItemKeep(String itemkey, boolean unbreakable, boolean ignoreNbt, boolean kitOnly) {
-			return addItem(itemkey, 1, unbreakable, null, true, false, ignoreNbt, kitOnly, "");
+			return addItem(itemkey, 1, unbreakable, null, true, false, ignoreNbt, kitOnly, "", "");
 		}
 		public Builder addItemKeep(String itemkey, int num, boolean unbreakable, JsonObject nbt) {
-			return addItem(itemkey, num, unbreakable, nbt, true, false, false, true, "");
+			return addItem(itemkey, num, unbreakable, nbt, true, false, false, true, "", "");
 		}
 		public Builder addItemRefill(String itemkey, int num, boolean unbreakable, JsonObject nbt) {
-			return addItem(itemkey, num, unbreakable, nbt, true, true, false, false, "");
+			return addItem(itemkey, num, unbreakable, nbt, true, true, false, false, "", "");
 		}
 		public Builder addItemRefill(String itemkey, int num, boolean unbreakable, JsonObject nbt, String checkCountByNBT) {
-			return addItem(itemkey, num, unbreakable, nbt, true, true, false, false, checkCountByNBT);
+			return addItem(itemkey, num, unbreakable, nbt, true, true, false, false, checkCountByNBT, "");
 		}
 		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt) {
-			return addItem(itemkey, num, unbreakable, nbt, false, false, false, false, "");
+			return addItem(itemkey, num, unbreakable, nbt, false, false, false, false, "", "");
 		}
 		public Builder addItemKeep(String itemkey, boolean unbreakable, boolean ignoreNbt) {
-			return addItem(itemkey, 1, unbreakable, null, true, false, ignoreNbt, true, "");
+			return addItem(itemkey, 1, unbreakable, null, true, false, ignoreNbt, true, "", "");
 		}
 		public Builder addItemKeep(String itemkey, boolean unbreakable) {
 			return addItemKeep(itemkey, 1, unbreakable, null);
