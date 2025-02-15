@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.minigame.data;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
@@ -8,12 +9,14 @@ import com.onewhohears.minigames.entity.FlagEntity;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilAngles;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -43,6 +46,7 @@ public abstract class MiniGameData {
 	public static final Style GREEN_BOLD = Style.EMPTY.withBold(true)
 			.withUnderlined(true).withColor(ChatFormatting.DARK_GREEN);
 	public static final Style GREEN = Style.EMPTY.withColor(ChatFormatting.GREEN);
+	public static final Style RED = Style.EMPTY.withColor(ChatFormatting.RED);
 
 	protected static final Logger LOGGER = LogUtils.getLogger();
 	
@@ -762,5 +766,13 @@ public abstract class MiniGameData {
 
 	public void chatTeamSpawns(MinecraftServer server) {
 		agents.forEach((id, agent) -> agent.chatSpawnPosition(server));
+	}
+
+	public boolean allowBlockPlace(PlayerAgent agent, MinecraftServer server, BlockPos pos, Block placedBlock) {
+		return true;
+	}
+
+	public void forEachFlag(Consumer<FlagEntity> consumer) {
+		flags.forEach(consumer);
 	}
 }

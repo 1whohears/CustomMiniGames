@@ -8,6 +8,7 @@ import com.onewhohears.minigames.minigame.condition.PhaseExitCondition;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
 import com.onewhohears.onewholibs.util.UtilMCText;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -15,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
@@ -230,5 +232,9 @@ public abstract class GamePhase<T extends MiniGameData> {
 
 	public boolean looseLiveOnDeath(GameAgent gameAgent, MinecraftServer server) {
 		return true;
+	}
+
+	public boolean allowBlockPlace(PlayerAgent agent, MinecraftServer server, BlockPos pos, Block placedBlock) {
+		return getGameData().allowBlockPlace(agent, server, pos, placedBlock);
 	}
 }

@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.minigame.agent;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
@@ -226,6 +227,11 @@ public class TeamAgent extends GameAgent {
 			if (player.isOnSameTeam(agent))
 				return true;
 		return false;
+	}
+
+	@Override
+	public void consumeForPlayer(MinecraftServer server, Consumer<ServerPlayer> consumer) {
+		getPlayerAgents().forEach(agent -> agent.consumeForPlayer(server, consumer));
 	}
 
 }

@@ -1,9 +1,13 @@
 package com.onewhohears.minigames.common.event;
 
 import com.onewhohears.minigames.entity.FlagEntity;
+import com.onewhohears.minigames.util.CMGUtil;
 import com.onewhohears.onewholibs.common.event.GetJsonPresetListenersEvent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.BlockItem;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -53,6 +57,30 @@ public class CommonForgeEvents {
 				agent.setDeathPosition(player.position());
 				agent.setDeathLookDirection(player.getXRot(), player.getYRot());
 				agent.onDeath(player.getServer(), event.getSource());
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void playerPlaceBlock(BlockEvent.EntityPlaceEvent event) {
+		if (event.getEntity() == null) return;
+		if (event.getEntity().getLevel().isClientSide()) return;
+		if (!(event.getEntity() instanceof ServerPlayer player)) return;
+		BlockItem blockItem = null;
+		InteractionHand hand = InteractionHand.MAIN_HAND;
+		if (player.getUsedItemHand() == InteractionHand.MAIN_HAND &&
+				player.getMainHandItem().getItem() instanceof BlockItem item) {
+			blockItem = item;
+		} else if (player.getOffhandItem().getItem() instanceof BlockItem item) {
+			blockItem = item;
+			hand = InteractionHand.OFF_HAND;
+		}
+		if (blockItem == null) return;
+		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player)) {
+			if (!agent.allowBlockPlace(player.getServer(), event.getPos(), blockItem.getBlock())) {
+				event.setCanceled(true);
+				CMGUtil.forceHeldItemSync(player, hand);
+				return;
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import com.onewhohears.minigames.client.screen.ShopScreen;
 import com.onewhohears.minigames.common.network.PacketHandler;
 import com.onewhohears.minigames.data.kits.MiniGameKitsGenerator;
 import com.onewhohears.minigames.data.shops.MiniGameShopsGenerator;
+import com.onewhohears.minigames.init.CMGTags;
 import com.onewhohears.minigames.init.MiniGameContainers;
 import com.onewhohears.minigames.init.MiniGameEntities;
 import com.onewhohears.minigames.init.MiniGameItems;
@@ -40,6 +41,7 @@ public class MiniGamesMod {
 		MiniGameContainers.register(eventBus);
 		MiniGameEntities.register(eventBus);
 		MiniGameItems.register(eventBus);
+		CMGTags.init();
 		
 		eventBus.addListener(this::commonSetup);
     	eventBus.addListener(this::clientSetup);

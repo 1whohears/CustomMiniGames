@@ -14,12 +14,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+
+import java.util.function.Consumer;
 
 public abstract class GameAgent {
 
@@ -236,4 +238,6 @@ public abstract class GameAgent {
 			getGameData().chatToAllPlayers(server, waypoint);
 		}
 	}
+
+	public abstract void consumeForPlayer(MinecraftServer server, Consumer<ServerPlayer> consumer);
 }

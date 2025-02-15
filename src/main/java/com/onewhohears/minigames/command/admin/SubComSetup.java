@@ -247,6 +247,39 @@ public class SubComSetup {
 							context.getSource().sendSuccess(message, true);
 							return 1;
 						}))
+						.then(setIntParamArg("no_blocks_flag_radius", "blocks", (context, gameData, num) -> {
+							if (!(gameData instanceof KillFlagData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.banAllBlocksRadius = num;
+							Component message = UtilMCText.literal("Set No Blocks Flag Radius to "+num);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, 0, 10000))
+						.then(setIntParamArg("block_whitelist_flag_radius", "blocks", (context, gameData, num) -> {
+							if (!(gameData instanceof KillFlagData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.blockWhiteListRadius = num;
+							Component message = UtilMCText.literal("Set Block White List Flag Radius to "+num);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, 0, 10000))
+						.then(setIntParamArg("block_blacklist_flag_radius", "blocks", (context, gameData, num) -> {
+							if (!(gameData instanceof KillFlagData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.blockBlackListRadius = num;
+							Component message = UtilMCText.literal("Set Block Black List Flag Radius to "+num);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, 0, 10000))
 			);
 	}
 

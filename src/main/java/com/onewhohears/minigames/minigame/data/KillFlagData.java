@@ -1,22 +1,30 @@
 package com.onewhohears.minigames.minigame.data;
 
 import com.onewhohears.minigames.entity.FlagEntity;
+import com.onewhohears.minigames.init.CMGTags;
 import com.onewhohears.minigames.minigame.agent.GameAgent;
+import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.phase.buyattackrounds.*;
 import com.onewhohears.minigames.minigame.phase.flag.KillFlagAttackPhase;
 import com.onewhohears.minigames.minigame.phase.flag.KillFlagBuyPhase;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.UtilParse;
+import com.onewhohears.onewholibs.util.math.UtilGeometry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class KillFlagData extends BuyAttackData {
 
@@ -37,6 +45,10 @@ public class KillFlagData extends BuyAttackData {
     private final Set<String> attackers = new HashSet<>();
     private final Set<String> attackerShops = new HashSet<>();
     private final Set<String> defenderShops = new HashSet<>();
+
+    public int banAllBlocksRadius = 2; // 0 to disable
+    public int blockBlackListRadius = 0; // 0 to disable
+    public int blockWhiteListRadius = 0; // 0 to disable
 
     public KillFlagData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);
@@ -90,6 +102,9 @@ public class KillFlagData extends BuyAttackData {
         UtilParse.writeStrings(nbt, "attackers", attackers);
         UtilParse.writeStrings(nbt, "attackerShops", attackerShops);
         UtilParse.writeStrings(nbt, "defenderShops", defenderShops);
+        nbt.putInt("banAllBlocksRadius", banAllBlocksRadius);
+        nbt.putInt("blockBlackListRadius", blockBlackListRadius);
+        nbt.putInt("blockWhiteListRadius", blockWhiteListRadius);
         return nbt;
     }
 
@@ -100,6 +115,9 @@ public class KillFlagData extends BuyAttackData {
         attackers.addAll(UtilParse.readStringSet(nbt, "attackers"));
         attackerShops.addAll(UtilParse.readStringSet(nbt, "attackerShops"));
         defenderShops.addAll(UtilParse.readStringSet(nbt, "defenderShops"));
+        banAllBlocksRadius = nbt.getInt("banAllBlocksRadius");
+        blockBlackListRadius = nbt.getInt("blockBlackListRadius");
+        blockWhiteListRadius = nbt.getInt("blockWhiteListRadius");
     }
 
     @Override
@@ -181,4 +199,38 @@ public class KillFlagData extends BuyAttackData {
         if (attackers.isEmpty()) return "There must be at least one attackers team!";
         return null;
     }
+
+    @Override
+    public boolean allowBlockPlace(PlayerAgent agent, MinecraftServer server, BlockPos pos, Block block) {
+        int all = banAllBlocksRadius * banAllBlocksRadius;
+        int white = blockWhiteListRadius * blockWhiteListRadius;
+        int black = blockBlackListRadius * blockBlackListRadius;
+        AtomicBoolean allow = new AtomicBoolean(true);
+        Vec3 vpos = UtilGeometry.toVec3(pos);
+        Holder.Reference<Block> holder = block.builtInRegistryHolder();
+        forEachFlag(flag -> {
+            if (!allow.get()) return;
+            double distSqr = flag.distanceToSqr(vpos);
+            if (distSqr < all) {
+                allow.set(false);
+                agent.consumeForPlayer(server, player -> player.sendSystemMessage(UtilMCText.literal(
+                        "Cannot place blocks in the NO BLOCKS range of the flag!").setStyle(RED)));
+                return;
+            }
+            if (distSqr < white && !holder.is(CMGTags.Blocks.FLAG_PLACE_WHITE_LIST)) {
+                allow.set(false);
+                agent.consumeForPlayer(server, player -> player.sendSystemMessage(UtilMCText.literal(
+                        "Cannot place this block in the WHITE LIST range of the flag!").setStyle(RED)));
+                return;
+            }
+            if (distSqr < black && holder.is(CMGTags.Blocks.FLAG_PLACE_BLACK_LIST)) {
+                allow.set(false);
+                agent.consumeForPlayer(server, player -> player.sendSystemMessage(UtilMCText.literal(
+                        "Cannot place this block in the BLACK LIST range of the flag!").setStyle(RED)));
+                return;
+            }
+        });
+        return allow.get();
+    }
+
 }

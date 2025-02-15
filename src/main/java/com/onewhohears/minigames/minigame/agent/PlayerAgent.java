@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.minigame.agent;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
@@ -24,6 +25,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
 
 public class PlayerAgent extends GameAgent {
@@ -246,5 +248,14 @@ public class PlayerAgent extends GameAgent {
 	public void resetAgent() {
 		super.resetAgent();
 		deathPosition = null;
+	}
+
+	public boolean allowBlockPlace(MinecraftServer server, BlockPos pos, Block placedBlock) {
+		return getGameData().getCurrentPhase().allowBlockPlace(this, server, pos, placedBlock);
+	}
+
+	public void consumeForPlayer(MinecraftServer server, Consumer<ServerPlayer> consumer) {
+		ServerPlayer player = getPlayer(server);
+		if (player != null) consumer.accept(player);
 	}
 }
