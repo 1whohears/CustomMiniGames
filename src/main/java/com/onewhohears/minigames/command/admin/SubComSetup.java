@@ -280,6 +280,14 @@ public class SubComSetup {
 							context.getSource().sendSuccess(message, true);
 							return 1;
 						}, 0, 10000))
+						.then(setBoolParamArg("force_non_member_spectator", "force", (context, gameData, value) -> {
+							gameData.forceNonMemberSpectator = value;
+							Component message;
+							if (value) message = UtilMCText.literal("Players will be put in spectator if they have not been added to the game!");
+							else message = UtilMCText.literal("Players will NOT be put in spectator if they have not been added to the game!");
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}))
 			);
 	}
 

@@ -11,13 +11,11 @@ import com.onewhohears.minigames.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-import java.util.Arrays;
-
 public class GameComArgs {
 	
 	public static ArgumentBuilder<CommandSourceStack,?> runningGameIdArgument() {
 		return Commands.argument("instance_id", StringArgumentType.word())
-				.suggests(CommandUtil.suggestStrings(() -> MiniGameManager.get().getRunningeGameIds()));
+				.suggests(CommandUtil.suggestStrings(() -> MiniGameManager.get().getRunningGameIds()));
 	}
 	
 	public static ArgumentBuilder<CommandSourceStack,?> gameTypeIdArgument() {

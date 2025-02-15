@@ -62,7 +62,8 @@ public abstract class MiniGameData {
 	private GamePhase<?> currentPhase;
 	private int age, resets;
 	private boolean isStarted, isStopped, isPaused, firstTick = true;
-	
+
+	public boolean forceNonMemberSpectator;
 	protected boolean canAddIndividualPlayers;
 	protected boolean canAddTeams;
 
@@ -94,6 +95,7 @@ public abstract class MiniGameData {
 		nbt.putInt("moneyPerRound", moneyPerRound);
 		nbt.putDouble("gameBorderSize", gameBorderSize);
 		nbt.putBoolean("clearOnStart", clearOnStart);
+		nbt.putBoolean("forceNonMemberSpectator", forceNonMemberSpectator);
 		UtilParse.writeVec3(nbt, gameCenter, "gameCenter");
 		saveAgents(nbt);
 		savePhases(nbt);
@@ -117,6 +119,7 @@ public abstract class MiniGameData {
 		gameBorderSize = nbt.getDouble("gameBorderSize");
 		gameCenter = UtilParse.readVec3(nbt, "gameCenter");
 		clearOnStart = nbt.getBoolean("clearOnStart");
+		forceNonMemberSpectator = nbt.getBoolean("forceNonMemberSpectator");
 		loadAgents(nbt);
 		loadPhases(nbt);
 		kits.clear(); shops.clear();
@@ -804,5 +807,9 @@ public abstract class MiniGameData {
 
 	public void forEachFlag(Consumer<FlagEntity> consumer) {
 		flags.forEach(consumer);
+	}
+
+	public boolean isForceNonMemberSpectator() {
+		return forceNonMemberSpectator;
 	}
 }

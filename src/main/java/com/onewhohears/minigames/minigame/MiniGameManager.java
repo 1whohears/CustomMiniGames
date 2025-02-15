@@ -26,7 +26,7 @@ public class MiniGameManager extends SavedData {
 	
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static MiniGameManager instance;
-	private static Map<String, GameGenerator> gameGenerators = new HashMap<>();
+	private static final Map<String, GameGenerator> gameGenerators = new HashMap<>();
 	
 	/**
 	 * @return null if before Server Started!
@@ -114,7 +114,7 @@ public class MiniGameManager extends SavedData {
 		return nbt;
 	}
 	
-	private Map<String, MiniGameData> runningGames = new HashMap<>();
+	private final Map<String, MiniGameData> runningGames = new HashMap<>();
 	
 	/**
 	 * add a new game to the list of running games
@@ -143,7 +143,7 @@ public class MiniGameManager extends SavedData {
 		setDirty();
 	}
 	
-	public String[] getRunningeGameIds() {
+	public String[] getRunningGameIds() {
 		return runningGames.keySet().toArray(new String[runningGames.size()]);
 	}
 	
@@ -159,7 +159,14 @@ public class MiniGameManager extends SavedData {
 	public boolean removeGame(String gameInstanceId) {
 		return runningGames.remove(gameInstanceId) != null;
 	}
-	
+
+	public boolean isForceNonMemberSpectator() {
+		for (MiniGameData game : runningGames.values())
+			if (!game.isStopped() && !game.isSetupPhase() && game.isForceNonMemberSpectator())
+				return true;
+		return false;
+	}
+
 	public interface GameGenerator {
 		MiniGameData create(String gameInstanceId, String gameTypeId);
 	}

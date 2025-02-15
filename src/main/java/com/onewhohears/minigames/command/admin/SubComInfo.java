@@ -73,7 +73,7 @@ public class SubComInfo {
 	
 	private ArgumentBuilder<CommandSourceStack,?> listRunning() {
 		return Commands.literal("list_running").executes((context) -> {
-			String[] ids = MiniGameManager.get().getRunningeGameIds();
+			String[] ids = MiniGameManager.get().getRunningGameIds();
 			Component message;
 			if (ids.length == 0) message = Component.literal("There are currently no games running.");
 			else message = Component.literal(Arrays.deepToString(ids));

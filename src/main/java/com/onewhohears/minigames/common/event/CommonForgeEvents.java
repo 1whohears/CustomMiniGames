@@ -5,6 +5,7 @@ import com.onewhohears.minigames.util.CMGUtil;
 import com.onewhohears.onewholibs.common.event.GetJsonPresetListenersEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.GameType;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
@@ -26,6 +27,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = MiniGamesMod.MODID, bus = Bus.FORGE)
 public class CommonForgeEvents {
@@ -98,9 +101,14 @@ public class CommonForgeEvents {
 	public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
 		if (event.getEntity().getLevel().isClientSide()) return;
 		if (!(event.getEntity() instanceof ServerPlayer player)) return;
-		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player))
-			if (agent.shouldRunOnRespawn())
-				agent.onLogIn(player.getServer());
+		List<PlayerAgent> agents = MiniGameManager.get().getActiveGamePlayerAgents(player);
+		if (agents.isEmpty() && MiniGameManager.get().isForceNonMemberSpectator()) {
+			player.setGameMode(GameType.SPECTATOR);
+		} else {
+			for (PlayerAgent agent : agents)
+				if (agent.shouldRunOnRespawn())
+					agent.onLogIn(player.getServer());
+		}
 	}
 
 	@SubscribeEvent
