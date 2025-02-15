@@ -10,7 +10,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.onewhohears.minigames.data.MiniGamePresetType;
 import com.onewhohears.onewholibs.util.JsonToNBTUtil;
-import com.onewhohears.onewholibs.util.UtilItem;
 import com.onewhohears.onewholibs.util.UtilParse;
 
 import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetInstance;
@@ -27,9 +26,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.common.data.ForgeItemTagsProvider;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class GameKit extends JsonPresetStats {
@@ -100,7 +97,7 @@ public class GameKit extends JsonPresetStats {
 	protected void givePlayerItem(ServerPlayer player, KitItem item, int num) {
 		if (num == 0) return;
 		ItemStack stack = item.getItem();
-		if (num > 0) stack.setCount(num);
+		if (num > 0) item.setCount(stack, num);
 		Item i = stack.getItem();
 		if (i instanceof ArmorItem armorItem && !player.hasItemInSlot(armorItem.getSlot())) {
 			player.setItemSlot(armorItem.getSlot(), stack);
@@ -141,14 +138,17 @@ public class GameKit extends JsonPresetStats {
 		private final int num;
 		private final CompoundTag nbt;
 		private final boolean keep, refill, ignoreNbt;
-		protected KitItem(Item item, int num, CompoundTag nbt, boolean keep, boolean refill, boolean ignoreNbt) {
+		private final String checkCountByNBT;
+		protected KitItem(Item item, int num, CompoundTag nbt, boolean keep, boolean refill,
+						  boolean ignoreNbt, String checkCountByNBT) {
 			this.item = item;
 			this.num = num;
 			this.nbt = nbt;
 			this.keep = keep;
 			this.refill = refill;
 			this.ignoreNbt = ignoreNbt;
-		}
+            this.checkCountByNBT = checkCountByNBT;
+        }
 		protected KitItem(JsonObject json) {
 			String itemKey = UtilParse.getStringSafe(json, "item", "");
 			ResourceLocation rl = new ResourceLocation(itemKey);
@@ -161,6 +161,7 @@ public class GameKit extends JsonPresetStats {
 			keep = UtilParse.getBooleanSafe(json, "keep", false);
 			refill = UtilParse.getBooleanSafe(json, "refill", false);
 			ignoreNbt = UtilParse.getBooleanSafe(json, "ignoreNbt", false);
+			checkCountByNBT = UtilParse.getStringSafe(json, "checkCountByNBT", "");
 		}
 		public ItemStack getItem() {
 			ItemStack stack = new ItemStack(item, num);
@@ -188,10 +189,26 @@ public class GameKit extends JsonPresetStats {
 			int count = 0;
 			for (int i = 0; i < inv.getContainerSize(); ++i) {
 				ItemStack stack = inv.getItem(i);
-				if (isSameItem(stack)) count += stack.getCount();
+				if (isSameItem(stack)) {
+					if (isGetItemCountByNBT() && stack.getTag() != null) {
+						count += stack.getTag().getInt(checkCountByNBT);
+					} else {
+						count += stack.getCount();
+					}
+				}
 				if (count >= num) return 0;
 			}
 			return num - count;
+		}
+		public boolean isGetItemCountByNBT() {
+			return !checkCountByNBT.isEmpty();
+		}
+		public void setCount(ItemStack stack, int num) {
+			if (isGetItemCountByNBT() && stack.getTag() != null) {
+				stack.getTag().putInt(checkCountByNBT, num);
+			} else {
+				stack.setCount(num);
+			}
 		}
 	}
 	
@@ -200,7 +217,7 @@ public class GameKit extends JsonPresetStats {
 			return new Builder(namespace, id);
 		}
 		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt, 
-				boolean keep, boolean refill, boolean ignoreNbt, boolean kitOnly) {
+				boolean keep, boolean refill, boolean ignoreNbt, boolean kitOnly, String checkCountByNBT) {
 			if (num < 1) num = 1;
 			else if (num > 64) num = 64;
 			JsonObject json = new JsonObject();
@@ -218,32 +235,45 @@ public class GameKit extends JsonPresetStats {
 			if (keep) json.addProperty("keep", keep);
 			if (refill) json.addProperty("refill", refill);
 			if (ignoreNbt) json.addProperty("ignoreNbt", ignoreNbt);
+			if (!checkCountByNBT.isEmpty()) json.addProperty("checkCountByNBT", checkCountByNBT);
 			getData().get("kitItems").getAsJsonArray().add(json);
 			return this;
 		}
+		public Builder addItemKeep(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly, String checkCountByNBT) {
+			return addItem(itemkey, num, unbreakable, nbt, true, false, false, kitOnly, checkCountByNBT);
+		}
+		public Builder addItemRefill(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly, String checkCountByNBT) {
+			return addItem(itemkey, num, unbreakable, nbt, true, true, false, kitOnly, checkCountByNBT);
+		}
+		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly, String checkCountByNBT) {
+			return addItem(itemkey, num, unbreakable, nbt, false, false, false, kitOnly, checkCountByNBT);
+		}
 		public Builder addItemKeep(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly) {
-			return addItem(itemkey, num, unbreakable, nbt, true, false, false, kitOnly);
+			return addItem(itemkey, num, unbreakable, nbt, true, false, false, kitOnly, "");
 		}
 		public Builder addItemRefill(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly) {
-			return addItem(itemkey, num, unbreakable, nbt, true, true, false, kitOnly);
+			return addItem(itemkey, num, unbreakable, nbt, true, true, false, kitOnly, "");
 		}
 		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly) {
-			return addItem(itemkey, num, unbreakable, nbt, false, false, false, kitOnly);
+			return addItem(itemkey, num, unbreakable, nbt, false, false, false, kitOnly, "");
 		}
 		public Builder addItemKeep(String itemkey, boolean unbreakable, boolean ignoreNbt, boolean kitOnly) {
-			return addItem(itemkey, 1, unbreakable, null, true, false, ignoreNbt, kitOnly);
+			return addItem(itemkey, 1, unbreakable, null, true, false, ignoreNbt, kitOnly, "");
 		}
 		public Builder addItemKeep(String itemkey, int num, boolean unbreakable, JsonObject nbt) {
-			return addItem(itemkey, num, unbreakable, nbt, true, false, false, true);
+			return addItem(itemkey, num, unbreakable, nbt, true, false, false, true, "");
 		}
 		public Builder addItemRefill(String itemkey, int num, boolean unbreakable, JsonObject nbt) {
-			return addItem(itemkey, num, unbreakable, nbt, true, true, false, false);
+			return addItem(itemkey, num, unbreakable, nbt, true, true, false, false, "");
+		}
+		public Builder addItemRefill(String itemkey, int num, boolean unbreakable, JsonObject nbt, String checkCountByNBT) {
+			return addItem(itemkey, num, unbreakable, nbt, true, true, false, false, checkCountByNBT);
 		}
 		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt) {
-			return addItem(itemkey, num, unbreakable, nbt, false, false, false, false);
+			return addItem(itemkey, num, unbreakable, nbt, false, false, false, false, "");
 		}
 		public Builder addItemKeep(String itemkey, boolean unbreakable, boolean ignoreNbt) {
-			return addItem(itemkey, 1, unbreakable, null, true, false, ignoreNbt, true);
+			return addItem(itemkey, 1, unbreakable, null, true, false, ignoreNbt, true, "");
 		}
 		public Builder addItemKeep(String itemkey, boolean unbreakable) {
 			return addItemKeep(itemkey, 1, unbreakable, null);
@@ -263,6 +293,9 @@ public class GameKit extends JsonPresetStats {
 		public Builder addItemRefill(String itemkey, int num, JsonObject nbt) {
 			return addItemRefill(itemkey, num, false, nbt);
 		}
+		public Builder addItemRefill(String itemkey, int num, JsonObject nbt, String checkCountByNBT) {
+			return addItemRefill(itemkey, num, false, nbt, checkCountByNBT);
+		}
 		public Builder addItem(String itemkey, int num, JsonObject nbt) {
 			return addItem(itemkey, num, false, nbt);
 		}
@@ -280,6 +313,9 @@ public class GameKit extends JsonPresetStats {
 		}
 		public Builder addItemRefill(String itemkey, JsonObject nbt) {
 			return addItemRefill(itemkey, 1, nbt);
+		}
+		public Builder addItemRefill(String itemkey, JsonObject nbt, String checkCountByNBT) {
+			return addItemRefill(itemkey, 1, nbt, checkCountByNBT);
 		}
 		public Builder addItem(String itemkey, JsonObject nbt) {
 			return addItem(itemkey, 1, nbt);
