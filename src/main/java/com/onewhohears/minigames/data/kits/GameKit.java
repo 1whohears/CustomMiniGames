@@ -10,6 +10,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.onewhohears.minigames.data.MiniGamePresetType;
 import com.onewhohears.onewholibs.util.JsonToNBTUtil;
+import com.onewhohears.onewholibs.util.UtilItem;
 import com.onewhohears.onewholibs.util.UtilParse;
 
 import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetInstance;
@@ -95,19 +96,7 @@ public class GameKit extends JsonPresetStats {
 		}
 	}
 	protected void givePlayerItem(ServerPlayer player, KitItem item, int num) {
-		if (num == 0) return;
-		ItemStack stack = item.getItem();
-		if (num > 0) item.setCount(stack, num);
-		Item i = stack.getItem();
-		if (i instanceof ArmorItem armorItem && !player.hasItemInSlot(armorItem.getSlot())) {
-			player.setItemSlot(armorItem.getSlot(), stack);
-		} else if (stack.is(Items.ELYTRA) && !player.hasItemInSlot(EquipmentSlot.CHEST)) {
-			player.setItemSlot(EquipmentSlot.CHEST, stack);
-		} else if (stack.canPerformAction(ToolActions.SHIELD_BLOCK) && !player.hasItemInSlot(EquipmentSlot.OFFHAND)) {
-			player.setItemSlot(EquipmentSlot.OFFHAND, stack);
-		} else {
-			player.addItem(stack);
-		}
+		item.giveItem(player, num);
 	}
 	public boolean hasKitItem(ItemStack stack) {
 		if (stack.isEmpty()) return false;
@@ -153,7 +142,7 @@ public class GameKit extends JsonPresetStats {
 		protected KitItem(JsonObject json) {
 			String itemKey = UtilParse.getStringSafe(json, "item", "");
 			ResourceLocation rl = new ResourceLocation(itemKey);
-			item = ForgeRegistries.ITEMS.getDelegate(rl).get().get();
+			item = UtilItem.getItem(rl.toString(), Items.DIRT);
 			num = UtilParse.getIntSafe(json, "num", 1);
 			if (json.has("nbt")) {
 				JsonObject nbtJson = json.get("nbt").getAsJsonObject();
@@ -192,29 +181,52 @@ public class GameKit extends JsonPresetStats {
 			return this::isSameItem;
 		}
 		public int getRefillNum(Container inv) {
-			int count = 0;
+			int count = 0, max = num;
+			if (isGetItemCountByNBT() && nbt != null) {
+				max = nbt.getInt(checkCountByNBT);
+			}
 			for (int i = 0; i < inv.getContainerSize(); ++i) {
 				ItemStack stack = inv.getItem(i);
-				if (isSameItem(stack)) {
-					if (isGetItemCountByNBT() && stack.getTag() != null) {
-						count += stack.getTag().getInt(checkCountByNBT);
-					} else {
-						count += stack.getCount();
+				if (!isSameItem(stack)) continue;
+				if (isGetItemCountByNBT() && stack.getTag() != null) {
+					count += stack.getTag().getInt(checkCountByNBT);
+				} else {
+					count += stack.getCount();
+				}
+				if (count >= max) return 0;
+			}
+			return max - count;
+		}
+		public void giveItem(ServerPlayer player, int num) {
+			if (num == 0) return;
+			ItemStack stack = getItem();
+			if (num > 0) setCount(stack, num);
+			Item i = stack.getItem();
+			if (i instanceof ArmorItem armorItem && !player.hasItemInSlot(armorItem.getSlot())) {
+				player.setItemSlot(armorItem.getSlot(), stack);
+			} else if (stack.is(Items.ELYTRA) && !player.hasItemInSlot(EquipmentSlot.CHEST)) {
+				player.setItemSlot(EquipmentSlot.CHEST, stack);
+			} else if (stack.canPerformAction(ToolActions.SHIELD_BLOCK) && !player.hasItemInSlot(EquipmentSlot.OFFHAND)) {
+				player.setItemSlot(EquipmentSlot.OFFHAND, stack);
+			} else {
+				if (isGetItemCountByNBT()) {
+					Container inv = player.getInventory();
+					for (int j = 0; j < inv.getContainerSize(); ++j) {
+						ItemStack s = inv.getItem(j);
+						if (!isSameItem(s)) continue;
+						inv.setItem(j, stack);
+						return;
 					}
 				}
-				if (count >= num) return 0;
+				player.addItem(stack);
 			}
-			return num - count;
 		}
 		public boolean isGetItemCountByNBT() {
 			return !checkCountByNBT.isEmpty();
 		}
-		public void setCount(ItemStack stack, int num) {
-			if (isGetItemCountByNBT() && stack.getTag() != null) {
-				stack.getTag().putInt(checkCountByNBT, num);
-			} else {
-				stack.setCount(num);
-			}
+		protected void setCount(ItemStack stack, int num) {
+			if (isGetItemCountByNBT()) return;
+			stack.setCount(num);
 		}
 	}
 	
