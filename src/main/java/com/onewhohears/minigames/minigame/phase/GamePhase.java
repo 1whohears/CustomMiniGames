@@ -96,8 +96,11 @@ public abstract class GamePhase<T extends MiniGameData> {
 			if (!isSetupPhase() && agent.isDead()) player.setGameMode(GameType.SPECTATOR);
 			else player.setGameMode(GameType.ADVENTURE);
 		}
+		if (getGameData().getWaterFoodExhaustionRate() > 0 && player.isInWater() && hungerPlayersInWater()) {
+			player.causeFoodExhaustion(getGameData().getWaterFoodExhaustionRate());
+		}
 	}
-	
+
 	public void tickTeamAgent(MinecraftServer server, TeamAgent agent) {
 		
 	}
@@ -236,5 +239,9 @@ public abstract class GamePhase<T extends MiniGameData> {
 
 	public boolean allowBlockPlace(PlayerAgent agent, MinecraftServer server, BlockPos pos, Block placedBlock) {
 		return getGameData().allowBlockPlace(agent, server, pos, placedBlock);
+	}
+
+	public boolean hungerPlayersInWater() {
+		return true;
 	}
 }

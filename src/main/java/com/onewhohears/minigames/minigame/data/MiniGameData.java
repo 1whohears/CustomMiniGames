@@ -64,6 +64,8 @@ public abstract class MiniGameData {
 	private boolean isStarted, isStopped, isPaused, firstTick = true;
 
 	public boolean forceNonMemberSpectator;
+	public float waterFoodExhaustionRate;
+
 	protected boolean canAddIndividualPlayers;
 	protected boolean canAddTeams;
 
@@ -97,6 +99,7 @@ public abstract class MiniGameData {
 		nbt.putBoolean("clearOnStart", clearOnStart);
 		nbt.putBoolean("forceNonMemberSpectator", forceNonMemberSpectator);
 		nbt.putBoolean("allowAlwaysShop", allowAlwaysShop);
+		nbt.putFloat("waterFoodExhaustionRate", waterFoodExhaustionRate);
 		UtilParse.writeVec3(nbt, gameCenter, "gameCenter");
 		saveAgents(nbt);
 		savePhases(nbt);
@@ -122,6 +125,7 @@ public abstract class MiniGameData {
 		clearOnStart = nbt.getBoolean("clearOnStart");
 		forceNonMemberSpectator = nbt.getBoolean("forceNonMemberSpectator");
 		allowAlwaysShop = nbt.getBoolean("allowAlwaysShop");
+		waterFoodExhaustionRate = nbt.getFloat("waterFoodExhaustionRate");
 		loadAgents(nbt);
 		loadPhases(nbt);
 		kits.clear(); shops.clear();
@@ -841,5 +845,9 @@ public abstract class MiniGameData {
 
 	public void setAlwaysAllowOpenShop(boolean allow) {
 		allowAlwaysShop = allow;
+	}
+
+	public float getWaterFoodExhaustionRate() {
+		return waterFoodExhaustionRate;
 	}
 }

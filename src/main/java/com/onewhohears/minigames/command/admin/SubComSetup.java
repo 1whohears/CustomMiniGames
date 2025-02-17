@@ -2,10 +2,7 @@ package com.onewhohears.minigames.command.admin;
 
 import java.util.Collection;
 
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
@@ -296,7 +293,30 @@ public class SubComSetup {
 							context.getSource().sendSuccess(message, true);
 							return 1;
 						}))
+						.then(setFloatParamArg("water_food_exhaustion_rate", "hunger", (context, gameData, num) -> {
+							gameData.waterFoodExhaustionRate = num;
+							Component message = UtilMCText.literal("Set Water Food Exhaustion Rate to "+num);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, 0, 40))
 			);
+	}
+
+	private ArgumentBuilder<CommandSourceStack,?> setFloatParamArg(String argName, String valueName,
+																 TriFunction<CommandContext<CommandSourceStack>,
+																		 MiniGameData, Float, Integer> consumer,
+																 float min, float max) {
+		return Commands.literal(argName)
+				.then(Commands.argument(valueName, FloatArgumentType.floatArg(min, max))
+						.executes(commandFloat(valueName, consumer)));
+	}
+
+	private GameSetupCom commandFloat(String valueName, TriFunction<
+			CommandContext<CommandSourceStack>, MiniGameData, Float, Integer> consumer) {
+		return (context, gameData) -> {
+			float num = FloatArgumentType.getFloat(context, valueName);
+			return consumer.apply(context, gameData, num);
+		};
 	}
 
 	private ArgumentBuilder<CommandSourceStack,?> setBoolParamArg(String argName, String valueName,
