@@ -14,6 +14,7 @@ import com.onewhohears.minigames.minigame.agent.TeamAgent;
 
 import com.onewhohears.minigames.minigame.data.BuyAttackData;
 import com.onewhohears.minigames.minigame.data.KillFlagData;
+import com.onewhohears.minigames.minigame.data.LastStandData;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 import com.onewhohears.minigames.util.CommandUtil;
 import com.onewhohears.onewholibs.util.UtilMCText;
@@ -299,6 +300,17 @@ public class SubComSetup {
 							context.getSource().sendSuccess(message, true);
 							return 1;
 						}, 0, 40))
+						.then(setIntParamArg("set_attacker_lives", "lives", (context, gameData, num) -> {
+							if (!(gameData instanceof LastStandData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.initialAttackerLives = num;
+							Component message = UtilMCText.literal("Set Initial Attacker Lives to "+num);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, 0, 10000))
 			);
 	}
 

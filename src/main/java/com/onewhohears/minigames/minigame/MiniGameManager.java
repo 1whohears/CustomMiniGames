@@ -7,14 +7,11 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import com.onewhohears.minigames.minigame.data.BuyAttackData;
-import com.onewhohears.minigames.minigame.data.KillFlagData;
+import com.onewhohears.minigames.minigame.data.*;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
-import com.onewhohears.minigames.minigame.data.DeathMatchData;
-import com.onewhohears.minigames.minigame.data.MiniGameData;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -47,6 +44,7 @@ public class MiniGameManager extends SavedData {
 			DeathMatchData.createSimpleFFADeathMatch(instanceId, gameTypeId, 3));
 		registerGame("simple_buy_attack_phases", BuyAttackData::createBuyAttackPhaseMatch);
 		registerGame("simple_kill_flag", KillFlagData::createKillFlagMatch);
+		registerGame("last_stand", LastStandData::createLastStandMatch);
 		/*
 		 * TODO 3.1 create and register the following minigame modes
 		 * team capture the flag
@@ -55,7 +53,6 @@ public class MiniGameManager extends SavedData {
 		 * zombie apocalypse
 		 * bomb defuse
 		 * hostage rescue
-		 * last stand (team with infinite lives vs mortals)
 		 */
 		// TODO 3.6.1 load custom game presets from data packs
 		// TODO 3.2 clear an area of blocks before a game starts

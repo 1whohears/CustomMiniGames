@@ -2,9 +2,9 @@ package com.onewhohears.minigames.minigame.phase.flag;
 
 import com.onewhohears.minigames.minigame.condition.*;
 import com.onewhohears.minigames.minigame.data.KillFlagData;
-import com.onewhohears.minigames.minigame.phase.buyattackrounds.BuyAttackAttackPhase;
+import com.onewhohears.minigames.minigame.phase.attackdefend.AttackDefendAttackPhase;
 
-public class KillFlagAttackPhase<T extends KillFlagData> extends BuyAttackAttackPhase<T> {
+public class KillFlagAttackPhase<T extends KillFlagData> extends AttackDefendAttackPhase<T> {
 
     public KillFlagAttackPhase(T gameData) {
         this("buy_attack_attack", gameData,
