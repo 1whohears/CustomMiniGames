@@ -67,7 +67,7 @@ public abstract class MiniGameData {
 	protected boolean canAddIndividualPlayers;
 	protected boolean canAddTeams;
 
-	protected boolean clearOnStart;
+	protected boolean clearOnStart, allowAlwaysShop;
 	protected boolean requiresSetRespawnPos, worldBorderDuringGame;
 	protected int defaultInitialLives = 3, moneyPerRound = 10;
 	protected double gameBorderSize = 1000;
@@ -96,6 +96,7 @@ public abstract class MiniGameData {
 		nbt.putDouble("gameBorderSize", gameBorderSize);
 		nbt.putBoolean("clearOnStart", clearOnStart);
 		nbt.putBoolean("forceNonMemberSpectator", forceNonMemberSpectator);
+		nbt.putBoolean("allowAlwaysShop", allowAlwaysShop);
 		UtilParse.writeVec3(nbt, gameCenter, "gameCenter");
 		saveAgents(nbt);
 		savePhases(nbt);
@@ -120,6 +121,7 @@ public abstract class MiniGameData {
 		gameCenter = UtilParse.readVec3(nbt, "gameCenter");
 		clearOnStart = nbt.getBoolean("clearOnStart");
 		forceNonMemberSpectator = nbt.getBoolean("forceNonMemberSpectator");
+		allowAlwaysShop = nbt.getBoolean("allowAlwaysShop");
 		loadAgents(nbt);
 		loadPhases(nbt);
 		kits.clear(); shops.clear();
@@ -831,5 +833,13 @@ public abstract class MiniGameData {
 		for (int i = 0; i < agents.size(); ++i)
 			names[i] = agents.get(i).getId();
 		return names;
+	}
+
+	public boolean alwaysAllowOpenShop() {
+		return allowAlwaysShop;
+	}
+
+	public void setAlwaysAllowOpenShop(boolean allow) {
+		allowAlwaysShop = allow;
 	}
 }

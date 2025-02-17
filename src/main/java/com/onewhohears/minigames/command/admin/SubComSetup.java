@@ -288,6 +288,14 @@ public class SubComSetup {
 							context.getSource().sendSuccess(message, true);
 							return 1;
 						}))
+						.then(setBoolParamArg("always_allow_shop", "allow", (context, gameData, value) -> {
+							gameData.setAlwaysAllowOpenShop(value);
+							Component message;
+							if (value) message = UtilMCText.literal("Players will always be able to open shops!");
+							else message = UtilMCText.literal("Players will NOT always be able to open shops!");
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}))
 			);
 	}
 
