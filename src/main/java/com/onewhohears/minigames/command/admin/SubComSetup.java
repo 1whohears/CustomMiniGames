@@ -418,7 +418,20 @@ public class SubComSetup {
 	private ArgumentBuilder<CommandSourceStack,?> setLivesArg() {
 		return Commands.literal("set_lives")
 				.then(Commands.argument("lives", IntegerArgumentType.integer(1))
-				.executes(commandSetLives()));
+						.executes(commandSetLives())
+						.then(Commands.literal("player")
+								.then(Commands.argument("players", EntityArgument.players())
+										.suggests(GameComArgs.suggestPlayerAgentNames())
+										.executes(commandSetLivesPlayers())
+								)
+						)
+						.then(Commands.literal("team")
+								.then(Commands.argument("team", TeamArgument.team())
+										.suggests(GameComArgs.suggestTeamAgentNames())
+										.executes(commandSetLivesTeam())
+								)
+						)
+				);
 	}
 	
 	private ArgumentBuilder<CommandSourceStack,?> setUseBorderArg() {
@@ -460,8 +473,45 @@ public class SubComSetup {
 	private GameSetupCom commandSetLives() {
 		return (context, gameData) -> {
 			int lives = IntegerArgumentType.getInteger(context, "lives");
-			gameData.setInitialLives(lives);
-			Component message = Component.literal("Set "+gameData.getInstanceId()+" initial lives to "+lives);
+			gameData.setDefaultInitialLives(lives);
+			gameData.setAllAgentInitialLives(lives);
+			Component message = UtilMCText.literal("Set "+gameData.getInstanceId()+" default initial lives to "+lives);
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
+	}
+
+	private GameSetupCom commandSetLivesPlayers() {
+		return (context, gameData) -> {
+			int lives = IntegerArgumentType.getInteger(context, "lives");
+			Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+			for (ServerPlayer player : players) {
+				PlayerAgent agent = gameData.getPlayerAgentByUUID(player.getStringUUID());
+				if (agent == null) {
+					Component message = UtilMCText.literal("Player "+player.getScoreboardName()+" is not in game "+gameData.getInstanceId());
+					context.getSource().sendFailure(message);
+					continue;
+				}
+				agent.setInitialLives(lives);
+			}
+			Component message = UtilMCText.literal("Set initial lives to "+lives);
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
+	}
+
+	private GameSetupCom commandSetLivesTeam() {
+		return (context, gameData) -> {
+			int lives = IntegerArgumentType.getInteger(context, "lives");
+			PlayerTeam team = TeamArgument.getTeam(context, "team");
+			TeamAgent agent = gameData.getTeamAgentByName(team.getName());
+			if (agent == null) {
+				Component message = UtilMCText.literal("Team "+team.getName()+" is not in game "+gameData.getInstanceId());
+				context.getSource().sendFailure(message);
+				return 0;
+			}
+			agent.setInitialLives(lives);
+			Component message = UtilMCText.literal("Set initial lives to "+lives);
 			context.getSource().sendSuccess(message, true);
 			return 1;
 		};

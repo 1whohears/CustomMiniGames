@@ -55,7 +55,7 @@ public class KillFlagData extends BuyAttackData {
         this.canAddTeams = true;
         this.canAddIndividualPlayers = false;
         this.requiresSetRespawnPos = true;
-        this.initialLives = 1;
+        this.defaultInitialLives = 1;
         this.roundsToWin = 3;
         this.buyTime = 600;
     }

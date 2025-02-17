@@ -69,7 +69,7 @@ public abstract class MiniGameData {
 
 	protected boolean clearOnStart;
 	protected boolean requiresSetRespawnPos, worldBorderDuringGame;
-	protected int initialLives = 3, moneyPerRound = 10;
+	protected int defaultInitialLives = 3, moneyPerRound = 10;
 	protected double gameBorderSize = 1000;
 	protected Vec3 gameCenter = Vec3.ZERO;
 	
@@ -91,7 +91,7 @@ public abstract class MiniGameData {
 		nbt.putBoolean("canAddTeams", canAddTeams);
 		nbt.putBoolean("requiresSetRespawnPos", requiresSetRespawnPos);
 		nbt.putBoolean("worldBorderDuringGame", worldBorderDuringGame);
-		nbt.putInt("initialLives", initialLives);
+		nbt.putInt("initialLives", defaultInitialLives);
 		nbt.putInt("moneyPerRound", moneyPerRound);
 		nbt.putDouble("gameBorderSize", gameBorderSize);
 		nbt.putBoolean("clearOnStart", clearOnStart);
@@ -114,7 +114,7 @@ public abstract class MiniGameData {
 		canAddTeams = nbt.getBoolean("canAddTeams");
 		requiresSetRespawnPos = nbt.getBoolean("requiresSetRespawnPos");
 		worldBorderDuringGame = nbt.getBoolean("worldBorderDuringGame");
-		initialLives = nbt.getInt("initialLives");
+		defaultInitialLives = nbt.getInt("initialLives");
 		moneyPerRound = nbt.getInt("moneyPerRound");
 		gameBorderSize = nbt.getDouble("gameBorderSize");
 		gameCenter = UtilParse.readVec3(nbt, "gameCenter");
@@ -337,12 +337,12 @@ public abstract class MiniGameData {
 		return canAddTeams;
 	}
 	
-	public int getInitialLives() {
-		return initialLives;
+	public int getDefaultInitialLives() {
+		return defaultInitialLives;
 	}
 	
-	public void setInitialLives(int lives) {
-		this.initialLives = lives;
+	public void setDefaultInitialLives(int lives) {
+		this.defaultInitialLives = lives;
 	}
 	
 	public void setGameCenter(Vec3 center) {
@@ -811,5 +811,25 @@ public abstract class MiniGameData {
 
 	public boolean isForceNonMemberSpectator() {
 		return forceNonMemberSpectator;
+	}
+
+	public void setAllAgentInitialLives(int lives) {
+		agents.forEach((id, agent) -> agent.setInitialLives(lives));
+	}
+
+	public String[] getAllPlayerAgentNames() {
+		List<PlayerAgent> agents = getAllPlayerAgents();
+		String[] names = new String[agents.size()];
+		for (int i = 0; i < agents.size(); ++i)
+			names[i] = agents.get(i).getScoreboardName();
+		return names;
+	}
+
+	public String[] getAllTeamAgentNames() {
+		List<TeamAgent> agents = getTeamAgents();
+		String[] names = new String[agents.size()];
+		for (int i = 0; i < agents.size(); ++i)
+			names[i] = agents.get(i).getId();
+		return names;
 	}
 }

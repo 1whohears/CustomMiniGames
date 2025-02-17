@@ -12,7 +12,7 @@ public class SubComResume {
 	}
 	
 	public ArgumentBuilder<CommandSourceStack,?> resume() {
-		return Commands.literal("reset")
+		return Commands.literal("resume")
 			.then(GameComArgs.runningGameIdArgument()
 				.executes(commandResume())
 			);

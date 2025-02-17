@@ -66,5 +66,21 @@ public class GameComArgs {
 			return builder.buildFuture();
 		};
 	}
+
+	public static PlayerAgentSuggestion suggestPlayerAgentNames() {
+		return (context, builder, agents) -> {
+			for (PlayerAgent agent : agents)
+				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getAllPlayerAgentNames());
+			return builder.buildFuture();
+		};
+	}
+
+	public static PlayerAgentSuggestion suggestTeamAgentNames() {
+		return (context, builder, agents) -> {
+			for (PlayerAgent agent : agents)
+				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getAllTeamAgentNames());
+			return builder.buildFuture();
+		};
+	}
 	
 }

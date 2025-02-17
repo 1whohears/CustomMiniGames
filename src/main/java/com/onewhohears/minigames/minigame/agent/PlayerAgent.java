@@ -35,6 +35,7 @@ public class PlayerAgent extends GameAgent {
 	private TeamAgent teamAgent;
 	@Nullable private Vec3 deathPosition = null;
 	private float deathLookX, deathLookY;
+	private String scoreboardName = "";
 
 	public PlayerAgent(String uuid, MiniGameData gameData) {
 		super(uuid, gameData);
@@ -43,12 +44,14 @@ public class PlayerAgent extends GameAgent {
 	@Override
 	public CompoundTag save() {
 		CompoundTag nbt = super.save();
+		nbt.putString("scoreboardName", scoreboardName);
 		return nbt;
 	}
 	
 	@Override
 	public void load(CompoundTag tag) {
 		super.load(tag);
+		scoreboardName = tag.getString("scoreboardName");
 	}
 	
 	@Override
@@ -131,6 +134,7 @@ public class PlayerAgent extends GameAgent {
 		UUID uuid = getPlayerId();
 		if (uuid == null) return null;
 		player = server.getPlayerList().getPlayer(uuid);
+		if (player != null) scoreboardName = player.getScoreboardName();
 		return player;
 	}
 	
@@ -257,5 +261,15 @@ public class PlayerAgent extends GameAgent {
 	public void consumeForPlayer(MinecraftServer server, Consumer<ServerPlayer> consumer) {
 		ServerPlayer player = getPlayer(server);
 		if (player != null) consumer.accept(player);
+	}
+
+	@Override
+	public int getInitialLives() {
+		if (getTeamAgent() != null) return getTeamAgent().getInitialLives();
+		return super.getInitialLives();
+	}
+
+	public String getScoreboardName() {
+		return scoreboardName;
 	}
 }

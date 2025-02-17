@@ -55,8 +55,10 @@ public class MiniGameManager extends SavedData {
 		 * zombie apocalypse
 		 * bomb defuse
 		 * hostage rescue
+		 * last stand (team with infinite lives vs mortals)
 		 */
 		// TODO 3.6.1 load custom game presets from data packs
+		// TODO 3.2 clear an area of blocks before a game starts
 	}
 	
 	/**

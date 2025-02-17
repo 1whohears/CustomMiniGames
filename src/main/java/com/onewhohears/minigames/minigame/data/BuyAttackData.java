@@ -19,7 +19,7 @@ public class BuyAttackData extends MiniGameData {
         game.canAddTeams = true;
         game.requiresSetRespawnPos = true;
         game.worldBorderDuringGame = true;
-        game.initialLives = 1;
+        game.defaultInitialLives = 1;
         game.roundsToWin = 3;
         game.addKits("standard", "builder", "archer");
         game.addShops("survival");

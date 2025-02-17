@@ -33,7 +33,7 @@ public abstract class GameAgent {
 	private final MiniGameData gameData;
 	private int age;
 	private double score;
-	private int lives;
+	private int lives, initialLives;
 	private int money;
 	@Nullable Vec3 respawnPoint = null;
 	@NotNull private String selectedKit = "";
@@ -41,6 +41,7 @@ public abstract class GameAgent {
 	protected GameAgent(String id, MiniGameData gameData) {
 		this.id = id;
 		this.gameData = gameData;
+		this.initialLives = getGameData().getDefaultInitialLives();
 	}
 	
 	public CompoundTag save() {
@@ -55,6 +56,7 @@ public abstract class GameAgent {
 		if (respawnPoint != null)
 			UtilParse.writeVec3(nbt, respawnPoint, "respawnPoint");
 		nbt.putString("selectedKit", selectedKit);
+		nbt.putInt("initialLives", initialLives);
 		return nbt;
 	}
 	
@@ -66,6 +68,8 @@ public abstract class GameAgent {
 		if (tag.contains("respawnPoint"))
 			respawnPoint = UtilParse.readVec3(tag, "respawnPoint");
 		selectedKit = tag.getString("selectedKit");
+		if (tag.contains("initialLives"))
+			initialLives = tag.getInt("initialLives");
 	}
 	
 	public void tickAgent(MinecraftServer server) {
@@ -112,9 +116,17 @@ public abstract class GameAgent {
 	}
 	
 	public void setupAgent() {
-		lives = getGameData().getInitialLives();
+		lives = getInitialLives();
 		addMoney(getGameData().getMoneyPerRound());
         LOGGER.debug("SETUP AGENT: {} {}", id, lives);
+	}
+
+	public int getInitialLives() {
+		return initialLives;
+	}
+
+	public void setInitialLives(int lives) {
+		initialLives = lives;
 	}
 	
 	public String getId() {

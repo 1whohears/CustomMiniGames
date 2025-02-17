@@ -234,4 +234,9 @@ public class TeamAgent extends GameAgent {
 		getPlayerAgents().forEach(agent -> agent.consumeForPlayer(server, consumer));
 	}
 
+	@Override
+	public void setInitialLives(int lives) {
+		super.setInitialLives(lives);
+		getPlayerAgents().forEach(agent -> agent.setInitialLives(lives));
+	}
 }
