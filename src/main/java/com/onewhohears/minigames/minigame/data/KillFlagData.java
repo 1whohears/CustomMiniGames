@@ -17,7 +17,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class KillFlagData extends AttackDefendData {
@@ -91,12 +93,14 @@ public class KillFlagData extends AttackDefendData {
 
     @Override
     public boolean allowBlockPlace(PlayerAgent agent, MinecraftServer server, BlockPos pos, Block block) {
+        Optional<Holder.Reference<Block>> optional = ForgeRegistries.BLOCKS.getDelegate(block);
+        if (optional.isEmpty()) return true;
+        Holder.Reference<Block> holder = optional.get();
         int all = banAllBlocksRadius * banAllBlocksRadius;
         int white = blockWhiteListRadius * blockWhiteListRadius;
         int black = blockBlackListRadius * blockBlackListRadius;
         AtomicBoolean allow = new AtomicBoolean(true);
         Vec3 vpos = UtilGeometry.toVec3(pos);
-        Holder.Reference<Block> holder = block.builtInRegistryHolder();
         forEachFlag(flag -> {
             if (!allow.get()) return;
             double distSqr = flag.distanceToSqr(vpos);

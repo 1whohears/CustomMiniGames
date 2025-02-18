@@ -151,7 +151,7 @@ public class AttackDefendData extends BuyAttackData {
 
     public List<GameAgent> getDefenders() {
         List<GameAgent> list = new ArrayList<>();
-        for (String id : attackers) {
+        for (String id : defenders) {
             GameAgent agent = getAgentById(id);
             if (agent == null) continue;
             list.add(agent);

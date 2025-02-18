@@ -60,6 +60,7 @@ public class FlagEntity extends Mob {
 		setPersistenceRequired();
 		this.blocksBuilding = true;
 		this.noPhysics = true;
+		// FIXME fix immortal flag
 	}
 
 	@Override
