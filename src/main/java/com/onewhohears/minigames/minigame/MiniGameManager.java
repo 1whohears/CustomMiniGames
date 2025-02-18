@@ -8,12 +8,10 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.minigame.data.*;
-import com.onewhohears.onewholibs.util.UtilEntity;
+import com.onewhohears.minigames.minigame.event.SummonEvent;
 import com.onewhohears.onewholibs.util.UtilMCText;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.function.TriFunction;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -24,8 +22,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
-
-import static com.onewhohears.minigames.minigame.data.MiniGameData.RED;
 
 public class MiniGameManager extends SavedData {
 	
@@ -77,38 +73,15 @@ public class MiniGameManager extends SavedData {
 		if (generator == null) return false;
 		if (gameGenerators.containsKey(gameTypeId)) return false;
 		gameGenerators.put(gameTypeId, generator);
-		LOGGER.debug("Registered Game "+gameTypeId);
+        LOGGER.debug("Registered Game {}", gameTypeId);
 		return true;
 	}
 
 	public static void registerItemEvents() {
-		registerItemEvent("basic_summon", (player, agent, params) -> {
-			String entityTypeKey = params.getString("entity");
-			EntityType<?> type = UtilEntity.getEntityType(entityTypeKey, null);
-			if (type == null) {
-				sendError(player, "Entity Type "+entityTypeKey+" does not exist.");
-				return false;
-			}
-			Entity entity = type.create(player.getLevel());
-			if (entity == null) {
-				sendError(player, "Entity couldn't be created.");
-				return false;
-			}
-			entity.setPos(player.position());
-			if (!player.getLevel().addFreshEntity(entity)) {
-				sendError(player, "Entity couldn't be added to the world.");
-				return false;
-			}
-			return true;
-		});
-	}
-
-	public static void sendError(Player player, String msg) {
-		player.sendSystemMessage(UtilMCText.literal(msg).setStyle(RED));
+		registerItemEvent("summon", (SummonEvent)((player, agent, params, entity) -> true));
 	}
 
 	/**
-	 *
 	 * @param eventId a unique item event id
 	 * @param consumer function should return true if the item is consumable
 	 * @return true if no other event has this id
@@ -116,7 +89,7 @@ public class MiniGameManager extends SavedData {
 	public static boolean registerItemEvent(String eventId, TriFunction<ServerPlayer, PlayerAgent, CompoundTag, Boolean> consumer) {
 		if (hasItemEvent(eventId)) return false;
 		itemEvents.put(eventId, consumer);
-		LOGGER.debug("Registered Item Event "+eventId);
+        LOGGER.debug("Registered Item Event {}", eventId);
 		return true;
 	}
 
@@ -159,7 +132,7 @@ public class MiniGameManager extends SavedData {
 			CompoundTag tag = list.getCompound(i);
 			String gameTypeId = tag.getString("gameTypeId");
 			if (!hasGameType(gameTypeId)) {
-				LOGGER.error("The game type "+gameTypeId+" is not registered. Mini Game Data will be lost.");
+                LOGGER.error("The game type {} is not registered. Mini Game Data will be lost.", gameTypeId);
 				continue;
 			}
 			String gameInstanceId = tag.getString("instanceId");
@@ -171,7 +144,7 @@ public class MiniGameManager extends SavedData {
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag nbt) {
+	public @NotNull CompoundTag save(CompoundTag nbt) {
 		ListTag list = new ListTag();
 		runningGames.forEach((id, game) -> list.add(game.save()));
 		nbt.put("runningGames", list);
@@ -208,7 +181,7 @@ public class MiniGameManager extends SavedData {
 	}
 	
 	public String[] getRunningGameIds() {
-		return runningGames.keySet().toArray(new String[runningGames.size()]);
+		return runningGames.keySet().toArray(new String[0]);
 	}
 	
 	public boolean isGameRunning(String gameInstanceId) {
