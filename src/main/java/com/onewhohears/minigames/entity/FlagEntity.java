@@ -32,11 +32,7 @@ public class FlagEntity extends Mob {
 		if (flag == null) return false;
 		flag.setPos(team.getRespawnPoint());
 		flag.linkGame(data, team);
-		if (level.addFreshEntity(flag)) {
-			data.onFlagSpawn(flag);
-			return true;
-		}
-		return false;
+		return level.addFreshEntity(flag);
 	}
 
 	public static final EntityDataAccessor<String> GAME_INSTANCE_ID = SynchedEntityData.defineId(FlagEntity.class, EntityDataSerializers.STRING);
@@ -60,7 +56,6 @@ public class FlagEntity extends Mob {
 		setPersistenceRequired();
 		this.blocksBuilding = true;
 		this.noPhysics = true;
-		// FIXME fix immortal flag
 	}
 
 	@Override
@@ -84,7 +79,12 @@ public class FlagEntity extends Mob {
 		setGameInstanceId(nbt.getString("gameInstanceId"));
 		setTeamId(nbt.getString("teamId"));
 		setGameResetCount(nbt.getInt("gameResetCount"));
-		verifySelf();
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		if (!getLevel().isClientSide() && tickCount == 1) verifySelf();
 	}
 
 	protected void verifySelf() {
