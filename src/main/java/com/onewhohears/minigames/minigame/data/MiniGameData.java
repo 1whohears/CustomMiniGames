@@ -877,7 +877,7 @@ public abstract class MiniGameData {
 	/**
 	 * @return true if item should be consumed
 	 */
-	public boolean handleEvent(PlayerAgent agent, String event, CompoundTag params) {
-		return MiniGameManager.handleItemEvent(event, agent, params);
+	public boolean handleEvent(ServerPlayer player, PlayerAgent agent, String event, CompoundTag params) {
+		return MiniGameManager.handleItemEvent(event, player, agent, params);
 	}
 }

@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.minigame.data.*;
+import com.onewhohears.onewholibs.util.UtilEntity;
 import com.onewhohears.onewholibs.util.UtilMCText;
-import org.apache.logging.log4j.core.jmx.Server;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import org.apache.commons.lang3.function.TriFunction;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -22,12 +25,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
 
+import static com.onewhohears.minigames.minigame.data.MiniGameData.RED;
+
 public class MiniGameManager extends SavedData {
 	
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static MiniGameManager instance;
 	private static final Map<String, GameGenerator> gameGenerators = new HashMap<>();
-	private static final Map<String, BiFunction<PlayerAgent, CompoundTag, Boolean>> itemEvents = new HashMap<>();
+	private static final Map<String, TriFunction<ServerPlayer, PlayerAgent, CompoundTag, Boolean>> itemEvents = new HashMap<>();
 	
 	/**
 	 * @return null if before Server Started!
@@ -77,7 +82,29 @@ public class MiniGameManager extends SavedData {
 	}
 
 	public static void registerItemEvents() {
+		registerItemEvent("basic_summon", (player, agent, params) -> {
+			String entityTypeKey = params.getString("entity");
+			EntityType<?> type = UtilEntity.getEntityType(entityTypeKey, null);
+			if (type == null) {
+				sendError(player, "Entity Type "+entityTypeKey+" does not exist.");
+				return false;
+			}
+			Entity entity = type.create(player.getLevel());
+			if (entity == null) {
+				sendError(player, "Entity couldn't be created.");
+				return false;
+			}
+			entity.setPos(player.position());
+			if (!player.getLevel().addFreshEntity(entity)) {
+				sendError(player, "Entity couldn't be added to the world.");
+				return false;
+			}
+			return true;
+		});
+	}
 
+	public static void sendError(Player player, String msg) {
+		player.sendSystemMessage(UtilMCText.literal(msg).setStyle(RED));
 	}
 
 	/**
@@ -86,7 +113,7 @@ public class MiniGameManager extends SavedData {
 	 * @param consumer function should return true if the item is consumable
 	 * @return true if no other event has this id
 	 */
-	public static boolean registerItemEvent(String eventId, BiFunction<PlayerAgent, CompoundTag, Boolean> consumer) {
+	public static boolean registerItemEvent(String eventId, TriFunction<ServerPlayer, PlayerAgent, CompoundTag, Boolean> consumer) {
 		if (hasItemEvent(eventId)) return false;
 		itemEvents.put(eventId, consumer);
 		LOGGER.debug("Registered Item Event "+eventId);
@@ -102,12 +129,12 @@ public class MiniGameManager extends SavedData {
 	}
 
 	@Nullable
-	public static BiFunction<PlayerAgent, CompoundTag, Boolean> getEventConsumer(String eventId) {
+	public static TriFunction<ServerPlayer, PlayerAgent, CompoundTag, Boolean> getEventConsumer(String eventId) {
 		return itemEvents.get(eventId);
 	}
 
-	public static boolean handleItemEvent(String eventId, PlayerAgent player, CompoundTag params) {
-		return itemEvents.getOrDefault(eventId, (agent, p) -> false).apply(player, params);
+	public static boolean handleItemEvent(String eventId, ServerPlayer player, PlayerAgent agent, CompoundTag params) {
+		return itemEvents.getOrDefault(eventId, (p, a, tag) -> false).apply(player, agent, params);
 	}
 	
 	public static boolean hasGameType(String gameTypeId) {
@@ -230,7 +257,7 @@ public class MiniGameManager extends SavedData {
 						+agent.getGameData().getInstanceId()+" does not use event type "+event));
 				continue;
 			}
-			if (agent.getGameData().handleEvent(agent, event, tag)) {
+			if (agent.getGameData().handleEvent(player, agent, event, tag)) {
 				consume = true;
 			}
 		}
