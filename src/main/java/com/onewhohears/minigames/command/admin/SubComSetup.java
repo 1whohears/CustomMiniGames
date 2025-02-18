@@ -9,6 +9,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
+import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 
@@ -311,6 +312,18 @@ public class SubComSetup {
 							context.getSource().sendSuccess(message, true);
 							return 1;
 						}, 0, 10000))
+						.then(setStringParamArg("add_event", "event", (context, gameData, string) -> {
+							gameData.addEvents(string);
+							Component message = UtilMCText.literal("Added event "+string);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, CommandUtil.suggestStrings(MiniGameManager::getAllEventIds)))
+						.then(setStringParamArg("remove_event", "event", (context, gameData, string) -> {
+							gameData.removeEvents(string);
+							Component message = UtilMCText.literal("Remove event "+string);
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}, GameComArgs.suggestEnabledShops()))
 			);
 	}
 

@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.entity.FlagEntity;
+import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilAngles;
 import net.minecraft.ChatFormatting;
@@ -17,6 +18,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -57,6 +59,7 @@ public abstract class MiniGameData {
 	private final Set<FlagEntity> flags = new HashSet<>();
 	private final Set<String> kits = new HashSet<>();
 	private final Set<String> shops = new HashSet<>();
+	private final Set<String> events = new HashSet<>();
 	private SetupPhase<?> setupPhase;
 	private GamePhase<?> nextPhase;
 	private GamePhase<?> currentPhase;
@@ -105,6 +108,7 @@ public abstract class MiniGameData {
 		savePhases(nbt);
 		UtilParse.writeStrings(nbt, "kits", kits);
 		UtilParse.writeStrings(nbt, "shops", shops);
+		UtilParse.writeStrings(nbt, "events", events);
 		return nbt;
 	}
 	
@@ -128,9 +132,10 @@ public abstract class MiniGameData {
 		waterFoodExhaustionRate = nbt.getFloat("waterFoodExhaustionRate");
 		loadAgents(nbt);
 		loadPhases(nbt);
-		kits.clear(); shops.clear();
+		kits.clear(); shops.clear(); events.clear();
 		kits.addAll(UtilParse.readStringSet(nbt, "kits"));
 		shops.addAll(UtilParse.readStringSet(nbt, "shops"));
+		events.addAll(UtilParse.readStringSet(nbt, "events"));
 	}
 	
 	protected void saveAgents(CompoundTag nbt) {
@@ -284,6 +289,7 @@ public abstract class MiniGameData {
 	public void start(MinecraftServer server) {
         LOGGER.debug("GAME START {}", instanceId);
 		isStarted = true;
+		isPaused = false;
 		isStopped = false;
 		changePhase(server, setupPhase.getId());
 	}
@@ -291,6 +297,7 @@ public abstract class MiniGameData {
 	public void stop(MinecraftServer server) {
         LOGGER.debug("GAME STOP {}", instanceId);
 		isStarted = true;
+		isPaused = false;
 		isStopped = true;
 		getCurrentPhase().onStop(server);
 	}
@@ -849,5 +856,28 @@ public abstract class MiniGameData {
 
 	public float getWaterFoodExhaustionRate() {
 		return waterFoodExhaustionRate;
+	}
+
+	public void addEvents(String... ids) {
+		Collections.addAll(events, ids);
+	}
+
+	public void removeEvents(String... ids) {
+		for (String id : ids) events.remove(id);
+	}
+
+	public String[] getHandleableEvents() {
+		return events.toArray(new String[0]);
+	}
+
+    public boolean canHandleEvent(String event) {
+		return events.contains(event);
+    }
+
+	/**
+	 * @return true if item should be consumed
+	 */
+	public boolean handleEvent(PlayerAgent agent, String event, CompoundTag params) {
+		return MiniGameManager.handleItemEvent(event, agent, params);
 	}
 }

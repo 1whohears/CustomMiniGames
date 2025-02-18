@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.minigame.data.*;
+import com.onewhohears.onewholibs.util.UtilMCText;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -24,6 +27,7 @@ public class MiniGameManager extends SavedData {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static MiniGameManager instance;
 	private static final Map<String, GameGenerator> gameGenerators = new HashMap<>();
+	private static final Map<String, BiFunction<PlayerAgent, CompoundTag, Boolean>> itemEvents = new HashMap<>();
 	
 	/**
 	 * @return null if before Server Started!
@@ -71,13 +75,47 @@ public class MiniGameManager extends SavedData {
 		LOGGER.debug("Registered Game "+gameTypeId);
 		return true;
 	}
+
+	public static void registerItemEvents() {
+
+	}
+
+	/**
+	 *
+	 * @param eventId a unique item event id
+	 * @param consumer function should return true if the item is consumable
+	 * @return true if no other event has this id
+	 */
+	public static boolean registerItemEvent(String eventId, BiFunction<PlayerAgent, CompoundTag, Boolean> consumer) {
+		if (hasItemEvent(eventId)) return false;
+		itemEvents.put(eventId, consumer);
+		LOGGER.debug("Registered Item Event "+eventId);
+		return true;
+	}
+
+	public static boolean hasItemEvent(String eventId) {
+		return itemEvents.containsKey(eventId);
+	}
+
+	public static String[] getAllEventIds() {
+		return itemEvents.keySet().toArray(new String[0]);
+	}
+
+	@Nullable
+	public static BiFunction<PlayerAgent, CompoundTag, Boolean> getEventConsumer(String eventId) {
+		return itemEvents.get(eventId);
+	}
+
+	public static boolean handleItemEvent(String eventId, PlayerAgent player, CompoundTag params) {
+		return itemEvents.getOrDefault(eventId, (agent, p) -> false).apply(player, params);
+	}
 	
 	public static boolean hasGameType(String gameTypeId) {
 		return gameGenerators.containsKey(gameTypeId);
 	}
 	
 	public static String[] getNewGameTypeIds() {
-		return gameGenerators.keySet().toArray(new String[gameGenerators.size()]);
+		return gameGenerators.keySet().toArray(new String[0]);
 	}
 	
 	public static void serverStarted(MinecraftServer server) {
@@ -178,6 +216,25 @@ public class MiniGameManager extends SavedData {
 			if (agent != null) agents.add(agent);
 		}
 		return agents;
+	}
+
+	/**
+	 * @return true if items should be consumed
+	 */
+	public boolean onEventItemUse(ServerPlayer player, String event, CompoundTag tag) {
+		boolean consume = false;
+		List<PlayerAgent> agents = getActiveGamePlayerAgents(player);
+		for (PlayerAgent agent : agents) {
+			if (!agent.getGameData().canHandleEvent(event)) {
+				player.sendSystemMessage(UtilMCText.literal("The game "
+						+agent.getGameData().getInstanceId()+" does not use event type "+event));
+				continue;
+			}
+			if (agent.getGameData().handleEvent(agent, event, tag)) {
+				consume = true;
+			}
+		}
+		return consume;
 	}
 	
 }

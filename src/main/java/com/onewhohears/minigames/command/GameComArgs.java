@@ -82,5 +82,13 @@ public class GameComArgs {
 			return builder.buildFuture();
 		};
 	}
+
+	public static PlayerAgentSuggestion suggestHandleableEvents() {
+		return (context, builder, agents) -> {
+			for (PlayerAgent agent : agents)
+				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getHandleableEvents());
+			return builder.buildFuture();
+		};
+	}
 	
 }

@@ -2,6 +2,7 @@ package com.onewhohears.minigames.init;
 
 import com.onewhohears.minigames.MiniGamesMod;
 
+import com.onewhohears.minigames.item.EventItem;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -19,7 +20,10 @@ public class MiniGameItems {
 	public static void register(IEventBus eventBus) {
 		ITEMS.register(eventBus);
 	}
-	
+
+	public static final RegistryObject<EventItem> EVENT_ITEM = ITEMS.register("event",
+			() -> new EventItem(new Item.Properties().stacksTo(64)));
+
 	public static final RegistryObject<Item> MONEY = ITEMS.register("money", 
 			() -> new Item(new Item.Properties().stacksTo(64).tab(CreativeModeTab.TAB_MISC).food(
 					new FoodProperties.Builder().nutrition(-1).alwaysEat()
