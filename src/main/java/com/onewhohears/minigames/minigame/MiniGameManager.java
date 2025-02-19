@@ -77,6 +77,10 @@ public class MiniGameManager extends SavedData {
 		return true;
 	}
 
+	/**
+	 * called in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
+	 * register item event types here
+	 */
 	public static void registerItemEvents() {
 		registerItemEvent("summon", (SummonEvent)((player, agent, params, entity) -> true));
 	}

@@ -32,6 +32,7 @@ public class BuyAttackData extends MiniGameData {
     protected int roundsToWin = 3;
     protected int buyRadius = 24;
     protected boolean allowRespawnInBuyPhase = true;
+    protected boolean allowPvpInBuyPhase = false;
 
     private int currentRound = 0;
 
@@ -55,6 +56,7 @@ public class BuyAttackData extends MiniGameData {
         nbt.putInt("attackEndTime", attackEndTime);
         nbt.putInt("buyRadius", buyRadius);
         nbt.putBoolean("allowRespawnInBuyPhase", allowRespawnInBuyPhase);
+        nbt.putBoolean("allowPvpInBuyPhase", allowPvpInBuyPhase);
         return nbt;
     }
 
@@ -68,6 +70,7 @@ public class BuyAttackData extends MiniGameData {
         attackEndTime = nbt.getInt("attackEndTime");
         buyRadius = nbt.getInt("buyRadius");
         allowRespawnInBuyPhase = nbt.getBoolean("allowRespawnInBuyPhase");
+        allowPvpInBuyPhase = nbt.getBoolean("allowPvpInBuyPhase");
     }
 
     @Override
@@ -147,6 +150,14 @@ public class BuyAttackData extends MiniGameData {
 
     public void announceWinnersByScore(MinecraftServer server) {
         getAgentsWithScore(getRoundsToWin()).forEach(agent -> agent.onWin(server));
+    }
+
+    public boolean allowPvpInBuyPhase() {
+        return allowPvpInBuyPhase;
+    }
+
+    public void setAllowPvpInBuyPhase(boolean allowPvpInBuyPhase) {
+        this.allowPvpInBuyPhase = allowPvpInBuyPhase;
     }
 
 }

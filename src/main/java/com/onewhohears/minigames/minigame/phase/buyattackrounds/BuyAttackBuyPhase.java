@@ -93,7 +93,7 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
 
     @Override
     public boolean allowPVP() {
-        return false;
+        return getGameData().allowPvpInBuyPhase();
     }
 
     @Override

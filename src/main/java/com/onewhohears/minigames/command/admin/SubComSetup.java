@@ -324,6 +324,19 @@ public class SubComSetup {
 							context.getSource().sendSuccess(message, true);
 							return 1;
 						}, GameComArgs.suggestEnabledShops()))
+						.then(setBoolParamArg("allow_pvp_buy_phase", "allow", (context, gameData, value) -> {
+							if (!(gameData instanceof BuyAttackData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.setAllowPvpInBuyPhase(value);
+							Component message;
+							if (value) message = UtilMCText.literal("Players will take damage during the buy phase!");
+							else message = UtilMCText.literal("Players will NOT take damage during the buy phase!");
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}))
 			);
 	}
 
