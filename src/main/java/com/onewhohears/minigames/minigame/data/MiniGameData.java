@@ -2,6 +2,7 @@ package com.onewhohears.minigames.minigame.data;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -745,6 +746,7 @@ public abstract class MiniGameData {
 		resetAllPlayerHealth(server);
 		chatToAllPlayers(server, getStartGameMessage(server));
 		if (requiresSetRespawnPos()) chatTeamSpawns(server);
+		forAllPOIs(server, (serv, poi) -> poi.onGameStart(serv));
 	}
 
 	public boolean canUseKit(GameAgent agent, String kit) {
@@ -936,11 +938,31 @@ public abstract class MiniGameData {
 		return false;
 	}
 
-	public void forPOIsOfType(String typeId, BiConsumer<MinecraftServer, GamePOI<?>> consumer,
-							  MinecraftServer server) {
+	public void forPOIsOfType(String typeId, MinecraftServer server,
+							  BiConsumer<MinecraftServer, GamePOI<?>> consumer) {
 		pois.forEach((id, poi) -> {
 			if (poi.getTypeId().equals(typeId))
 				consumer.accept(server, poi);
 		});
+	}
+
+	public void forAllPOIs(MinecraftServer server, BiConsumer<MinecraftServer, GamePOI<?>> consumer) {
+		pois.forEach((id, poi) -> consumer.accept(server, poi));
+	}
+
+	public List<GamePOI<?>> getPOIs(MinecraftServer server, BiPredicate<MinecraftServer, GamePOI<?>> predicate) {
+		List<GamePOI<?>> list = new ArrayList<>();
+		for (GamePOI<?> poi : pois.values())
+			if (predicate.test(server, poi))
+				list.add(poi);
+		return list;
+	}
+
+	public List<GamePOI<?>> getPOIsOfType(MinecraftServer server, String typeId) {
+		return getPOIs(server, (serv, poi) -> poi.getTypeId().equals(typeId));
+	}
+
+	public String[] getPOIInstanceIds() {
+		return pois.keySet().toArray(new String[0]);
 	}
 }

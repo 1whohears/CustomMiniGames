@@ -52,6 +52,7 @@ public class MiniGamesMod {
 		PacketHandler.register();
 		MiniGameManager.registerGames();
 		MiniGameManager.registerItemEvents();
+		MiniGameManager.registerPOIGens();
 	}
 	
 	private void clientSetup(FMLClientSetupEvent event) {

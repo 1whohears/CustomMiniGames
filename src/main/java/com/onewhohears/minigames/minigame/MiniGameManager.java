@@ -251,8 +251,13 @@ public class MiniGameManager extends SavedData {
 		return gamePoiGenerators.containsKey(typeId);
 	}
 
+	public static void registerPOIGens() {
+
+	}
+
 	/**
 	 * call this in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
+	 * @return false if a poi with that typeId was already registered
 	 */
 	public static boolean registerPOIGen(String typeId, GamePOIGenerator gen) {
 		if (hasPOIType(typeId)) return false;
