@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.minigame.data.*;
 import com.onewhohears.minigames.minigame.event.SummonEvent;
+import com.onewhohears.minigames.minigame.poi.GamePOI;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,8 @@ public class MiniGameManager extends SavedData {
 	private static MiniGameManager instance;
 	private static final Map<String, GameGenerator> gameGenerators = new HashMap<>();
 	private static final Map<String, TriFunction<ServerPlayer, PlayerAgent, CompoundTag, Boolean>> itemEvents = new HashMap<>();
-	
+	private static final Map<String, GamePOIGenerator> gamePoiGenerators = new HashMap<>();
+
 	/**
 	 * @return null if before Server Started!
 	 */
@@ -66,7 +68,7 @@ public class MiniGameManager extends SavedData {
 	/**
 	 * add a game to the list of games players can play
 	 * @param gameTypeId must be unique
-	 * @param generator
+	 * @param generator the game generator
 	 * @return false if gameTypeId already exists
 	 */
 	public static boolean registerGame(String gameTypeId, GameGenerator generator) {
@@ -209,7 +211,7 @@ public class MiniGameManager extends SavedData {
 	}
 
 	public interface GameGenerator {
-		MiniGameData create(String gameInstanceId, String gameTypeId);
+		@NotNull MiniGameData create(String gameInstanceId, String gameTypeId);
 	}
 	
 	public List<PlayerAgent> getActiveGamePlayerAgents(ServerPlayer player) {
@@ -239,6 +241,36 @@ public class MiniGameManager extends SavedData {
 			}
 		}
 		return consume;
+	}
+
+	public interface GamePOIGenerator {
+		@NotNull <G extends MiniGameData> GamePOI<G> create(String typeId, String instanceId, G gameData);
+	}
+
+	public static boolean hasPOIType(String typeId) {
+		return gamePoiGenerators.containsKey(typeId);
+	}
+
+	/**
+	 * call this in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
+	 */
+	public static boolean registerPOIGen(String typeId, GamePOIGenerator gen) {
+		if (hasPOIType(typeId)) return false;
+		gamePoiGenerators.put("typeId", gen);
+		LOGGER.debug("Registered game POI Type {}", typeId);
+		return true;
+	}
+
+	@Nullable
+	public static GamePOIGenerator getPOIGen(String typeId) {
+		return gamePoiGenerators.get(typeId);
+	}
+
+	@Nullable
+	public static <G extends MiniGameData> GamePOI<G> createGamePOI(String typeId, String instanceId, G gameData) {
+		GamePOIGenerator gen = getPOIGen(typeId);
+		if (gen == null) return null;
+		return gen.create(typeId, instanceId, gameData);
 	}
 	
 }

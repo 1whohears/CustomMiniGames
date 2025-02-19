@@ -1,12 +1,15 @@
 package com.onewhohears.minigames.minigame.data;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.entity.FlagEntity;
 import com.onewhohears.minigames.minigame.MiniGameManager;
+import com.onewhohears.minigames.minigame.poi.GamePOI;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilAngles;
 import net.minecraft.ChatFormatting;
@@ -18,7 +21,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -56,6 +58,7 @@ public abstract class MiniGameData {
 	private final String instanceId;
 	private final Map<String, GameAgent> agents = new HashMap<>();
 	private final Map<String, GamePhase<?>> phases = new HashMap<>();
+	private final Map<String, GamePOI<?>> pois = new HashMap<>();
 	private final Set<FlagEntity> flags = new HashSet<>();
 	private final Set<String> kits = new HashSet<>();
 	private final Set<String> shops = new HashSet<>();
@@ -106,6 +109,7 @@ public abstract class MiniGameData {
 		UtilParse.writeVec3(nbt, gameCenter, "gameCenter");
 		saveAgents(nbt);
 		savePhases(nbt);
+		savePois(nbt);
 		UtilParse.writeStrings(nbt, "kits", kits);
 		UtilParse.writeStrings(nbt, "shops", shops);
 		UtilParse.writeStrings(nbt, "events", events);
@@ -132,12 +136,32 @@ public abstract class MiniGameData {
 		waterFoodExhaustionRate = nbt.getFloat("waterFoodExhaustionRate");
 		loadAgents(nbt);
 		loadPhases(nbt);
+		loadPois(nbt);
 		kits.clear(); shops.clear(); events.clear();
 		kits.addAll(UtilParse.readStringSet(nbt, "kits"));
 		shops.addAll(UtilParse.readStringSet(nbt, "shops"));
 		events.addAll(UtilParse.readStringSet(nbt, "events"));
 	}
-	
+
+	protected void savePois(CompoundTag nbt) {
+		ListTag agentList = new ListTag();
+		pois.forEach((id, poi) -> agentList.add(poi.save()));
+		nbt.put("poiList", agentList);
+	}
+
+	protected void loadPois(CompoundTag nbt) {
+		ListTag agentList = nbt.getList("poiList", 10);
+		for (int i = 0; i < agentList.size(); ++i) {
+			CompoundTag tag = agentList.getCompound(i);
+			String typeId = tag.getString("typeId");
+			String instanceId = tag.getString("instanceId");
+			GamePOI<?> poi = MiniGameManager.createGamePOI(typeId, instanceId, this);
+			if (poi == null) continue;
+			poi.load(tag);
+			pois.put(instanceId, poi);
+		}
+	}
+
 	protected void saveAgents(CompoundTag nbt) {
 		ListTag agentList = new ListTag();
 		agents.forEach((id, agent) -> agentList.add(agent.save()));
@@ -205,6 +229,10 @@ public abstract class MiniGameData {
 		agents.forEach((id, agent) -> { 
 			if (agent.canTickAgent(server)) 
 				tickAgent(server, agent); 
+		});
+		pois.forEach((id, poi) -> {
+			if (poi.canTick(server))
+				poi.tick(server);
 		});
 	}
 	
@@ -879,5 +907,40 @@ public abstract class MiniGameData {
 	 */
 	public boolean handleEvent(ServerPlayer player, PlayerAgent agent, String event, CompoundTag params) {
 		return MiniGameManager.handleItemEvent(event, player, agent, params);
+	}
+
+	public boolean isBuyPhase() {
+		return getCurrentPhase().isBuyPhase();
+	}
+
+	public boolean isAttackPhase() {
+		return getCurrentPhase().isAttackPhase();
+	}
+
+	public void putPOI(GamePOI<?> poi) {
+		pois.put(poi.getInstanceId(), poi);
+	}
+
+	public void removePOI(String instanceId) {
+		pois.remove(instanceId);
+	}
+
+	public boolean hasPOI(String instanceId) {
+		return pois.containsKey(instanceId);
+	}
+
+	public boolean hasPOI(Predicate<GamePOI<?>> check) {
+		for (GamePOI<?> poi : pois.values())
+			if (check.test(poi))
+				return true;
+		return false;
+	}
+
+	public void forPOIsOfType(String typeId, BiConsumer<MinecraftServer, GamePOI<?>> consumer,
+							  MinecraftServer server) {
+		pois.forEach((id, poi) -> {
+			if (poi.getTypeId().equals(typeId))
+				consumer.accept(server, poi);
+		});
 	}
 }

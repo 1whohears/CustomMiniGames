@@ -54,4 +54,8 @@ public class DeathMatchPlayPhase<T extends DeathMatchData> extends GamePhase<T> 
 		return getGameData().getGameBorderSize();
 	}
 
+	@Override
+	public boolean isAttackPhase() {
+		return true;
+	}
 }

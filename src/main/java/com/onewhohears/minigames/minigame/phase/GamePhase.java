@@ -244,4 +244,12 @@ public abstract class GamePhase<T extends MiniGameData> {
 	public boolean hungerPlayersInWater() {
 		return true;
 	}
+
+    public boolean isBuyPhase() {
+		return false;
+    }
+
+	public boolean isAttackPhase() {
+		return false;
+	}
 }

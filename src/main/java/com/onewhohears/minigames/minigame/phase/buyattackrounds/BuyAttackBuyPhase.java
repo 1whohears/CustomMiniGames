@@ -100,4 +100,9 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
     public boolean looseLiveOnDeath(GameAgent gameAgent, MinecraftServer server) {
         return !getGameData().isAllowRespawnInBuyPhase();
     }
+
+    @Override
+    public boolean isBuyPhase() {
+        return true;
+    }
 }
