@@ -80,7 +80,7 @@ public abstract class MiniGameData {
 	protected boolean requiresSetRespawnPos, worldBorderDuringGame;
 	protected int defaultInitialLives = 3, moneyPerRound = 10;
 	protected double gameBorderSize = 1000;
-	protected Vec3 gameCenter = Vec3.ZERO;
+	@NotNull protected Vec3 gameCenter = Vec3.ZERO;
 	
 	protected MiniGameData(String instanceId, String gameTypeId) {
 		this.instanceId = instanceId;
@@ -387,15 +387,16 @@ public abstract class MiniGameData {
 		this.defaultInitialLives = lives;
 	}
 	
-	public void setGameCenter(Vec3 center) {
+	public void setGameCenter(@NotNull Vec3 center) {
 		gameCenter = center;
 	}
 	
-	public void setGameCenter(Vec3 center, MinecraftServer server) {
+	public void setGameCenter(@NotNull Vec3 center, MinecraftServer server) {
 		setGameCenter(center);
 		getCurrentPhase().updateWorldBorder(server);
 	}
-	
+
+	@NotNull
 	public Vec3 getGameCenter() {
 		return gameCenter;
 	}
