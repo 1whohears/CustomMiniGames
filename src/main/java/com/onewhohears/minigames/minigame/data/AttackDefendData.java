@@ -18,6 +18,8 @@ public class AttackDefendData extends BuyAttackData {
     private final Set<String> attackerShops = new HashSet<>();
     private final Set<String> defenderShops = new HashSet<>();
 
+    public boolean attackersShareLives = true;
+
     public AttackDefendData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);
     }
@@ -29,6 +31,7 @@ public class AttackDefendData extends BuyAttackData {
         UtilParse.writeStrings(nbt, "attackers", attackers);
         UtilParse.writeStrings(nbt, "attackerShops", attackerShops);
         UtilParse.writeStrings(nbt, "defenderShops", defenderShops);
+        nbt.putBoolean("attackersShareLives", attackersShareLives);
         return nbt;
     }
 
@@ -39,6 +42,7 @@ public class AttackDefendData extends BuyAttackData {
         attackers.addAll(UtilParse.readStringSet(nbt, "attackers"));
         attackerShops.addAll(UtilParse.readStringSet(nbt, "attackerShops"));
         defenderShops.addAll(UtilParse.readStringSet(nbt, "defenderShops"));
+        attackersShareLives = nbt.getBoolean("attackersShareLives");
     }
 
     public List<GameAgent> getLivingAttackers() {
@@ -68,6 +72,9 @@ public class AttackDefendData extends BuyAttackData {
         if (!hasAgentById(id)) return false;
         defenders.remove(id);
         attackers.add(id);
+        GameAgent agent = getAgentById(id);
+        if (agent == null) return false;
+        agent.setShareLives(attackersShareLives);
         return true;
     }
 

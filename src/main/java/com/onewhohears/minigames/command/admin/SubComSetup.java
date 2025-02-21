@@ -13,10 +13,7 @@ import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 
-import com.onewhohears.minigames.minigame.data.BuyAttackData;
-import com.onewhohears.minigames.minigame.data.KillFlagData;
-import com.onewhohears.minigames.minigame.data.LastStandData;
-import com.onewhohears.minigames.minigame.data.MiniGameData;
+import com.onewhohears.minigames.minigame.data.*;
 import com.onewhohears.minigames.util.CommandUtil;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilGeometry;
@@ -331,6 +328,19 @@ public class SubComSetup {
 								return 0;
 							}
 							data.setAllowPvpInBuyPhase(value);
+							Component message;
+							if (value) message = UtilMCText.literal("Players will take damage during the buy phase!");
+							else message = UtilMCText.literal("Players will NOT take damage during the buy phase!");
+							context.getSource().sendSuccess(message, true);
+							return 1;
+						}))
+						.then(setBoolParamArg("attackers_share_lives", "share", (context, gameData, value) -> {
+							if (!(gameData instanceof AttackDefendData data)) {
+								Component message = UtilMCText.literal("This game doesn't use this parameter.");
+								context.getSource().sendFailure(message);
+								return 0;
+							}
+							data.attackersShareLives = value;
 							Component message;
 							if (value) message = UtilMCText.literal("Players will take damage during the buy phase!");
 							else message = UtilMCText.literal("Players will NOT take damage during the buy phase!");

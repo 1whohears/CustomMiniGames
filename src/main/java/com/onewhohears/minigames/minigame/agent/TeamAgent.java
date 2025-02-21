@@ -196,4 +196,9 @@ public abstract class TeamAgent extends GameAgent {
 		super.setInitialLives(lives);
 		getPlayerAgents().forEach(agent -> agent.setInitialLives(lives));
 	}
+
+	@Override
+	public void teamSyncLives() {
+		getPlayerAgents().forEach(agent -> agent.setLives(getLives()));
+	}
 }

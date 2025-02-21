@@ -37,6 +37,7 @@ public abstract class GameAgent {
 	private int money;
 	@Nullable Vec3 respawnPoint = null;
 	@NotNull private String selectedKit = "";
+	private boolean shareLives = false;
 	
 	protected GameAgent(String type, String id, MiniGameData gameData) {
 		this.type = type;
@@ -57,6 +58,7 @@ public abstract class GameAgent {
 			UtilParse.writeVec3(nbt, respawnPoint, "respawnPoint");
 		nbt.putString("selectedKit", selectedKit);
 		nbt.putInt("initialLives", initialLives);
+		nbt.putBoolean("shareLives", shareLives);
 		return nbt;
 	}
 	
@@ -70,6 +72,7 @@ public abstract class GameAgent {
 		selectedKit = tag.getString("selectedKit");
 		if (tag.contains("initialLives"))
 			initialLives = tag.getInt("initialLives");
+		shareLives = tag.getBoolean("shareLives");
 	}
 	
 	public void tickAgent(MinecraftServer server) {
@@ -85,9 +88,14 @@ public abstract class GameAgent {
 	}
 	
 	public void onDeath(MinecraftServer server, @Nullable DamageSource source) {
-		if (looseLiveOnDeath(server)) lives = Math.max(lives-1, 0);
+		if (looseLiveOnDeath(server)) {
+			lives = Math.max(lives-1, 0);
+			if (isShareLives()) teamSyncLives();
+		}
         LOGGER.debug("ON DEATH: {} {}", id, lives);
 	}
+
+	public abstract void teamSyncLives();
 
 	public boolean looseLiveOnDeath(MinecraftServer server) {
 		return getGameData().looseLiveOnDeath(this, server);
@@ -256,4 +264,12 @@ public abstract class GameAgent {
 	}
 
 	public abstract void consumeForPlayer(MinecraftServer server, Consumer<ServerPlayer> consumer);
+
+	public void setShareLives(boolean share) {
+		shareLives = share;
+	}
+
+	public boolean isShareLives() {
+		return shareLives;
+	}
 }

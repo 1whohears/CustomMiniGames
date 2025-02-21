@@ -70,6 +70,9 @@ public class PlayerAgent extends GameAgent {
 		getGameData().onPlayerDeath(this, server, source);
 	}
 
+	@Override
+	public void teamSyncLives() {}
+
 	public void setDeathPosition(@Nullable Vec3 pos) {
 		deathPosition = pos;
 	}
