@@ -18,7 +18,7 @@ public class AttackDefendData extends BuyAttackData {
     private final Set<String> attackerShops = new HashSet<>();
     private final Set<String> defenderShops = new HashSet<>();
 
-    public boolean attackersShareLives = true;
+    public boolean attackersShareLives = false;
 
     public AttackDefendData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);

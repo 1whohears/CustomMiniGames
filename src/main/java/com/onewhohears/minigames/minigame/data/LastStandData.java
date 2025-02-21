@@ -23,6 +23,7 @@ public class LastStandData extends AttackDefendData {
         game.roundsToWin = 3;
         game.buyTime = 1200;
         game.attackTime = 7200;
+        game.attackersShareLives = true;
         return game;
     }
 
