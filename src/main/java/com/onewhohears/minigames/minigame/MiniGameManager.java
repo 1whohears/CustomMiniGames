@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.onewhohears.minigames.minigame.agent.GameAgent;
+import com.onewhohears.minigames.minigame.agent.VanillaTeamAgent;
 import com.onewhohears.minigames.minigame.data.*;
 import com.onewhohears.minigames.minigame.event.SummonEvent;
 import com.onewhohears.minigames.minigame.poi.GamePOI;
@@ -31,6 +33,7 @@ public class MiniGameManager extends SavedData {
 	private static final Map<String, GameGenerator> gameGenerators = new HashMap<>();
 	private static final Map<String, TriFunction<ServerPlayer, PlayerAgent, CompoundTag, Boolean>> itemEvents = new HashMap<>();
 	private static final Map<String, GamePOIGenerator> gamePoiGenerators = new HashMap<>();
+	private static final Map<String, GameAgentGenerator> gameAgentGenerators = new HashMap<>();
 
 	/**
 	 * @return null if before Server Started!
@@ -261,7 +264,7 @@ public class MiniGameManager extends SavedData {
 	 */
 	public static boolean registerPOIGen(String typeId, GamePOIGenerator gen) {
 		if (hasPOIType(typeId)) return false;
-		gamePoiGenerators.put("typeId", gen);
+		gamePoiGenerators.put(typeId, gen);
 		LOGGER.debug("Registered game POI Type {}", typeId);
 		return true;
 	}
@@ -277,5 +280,39 @@ public class MiniGameManager extends SavedData {
 		if (gen == null) return null;
 		return gen.create(typeId, instanceId, gameData);
 	}
-	
+
+	public interface GameAgentGenerator {
+		GameAgent create(String type, String id, MiniGameData gameData);
+	}
+
+	public static void registerGameAgentGens() {
+		registerGameAgentGen("player", PlayerAgent::new);
+		registerGameAgentGen("vanilla_team", VanillaTeamAgent::new);
+	}
+
+	/**
+	 * call this in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
+	 * @return false if a poi with that typeId was already registered
+	 */
+	public static boolean registerGameAgentGen(String typeId, GameAgentGenerator gen) {
+		if (hasGameAgentType(typeId)) return false;
+		gameAgentGenerators.put(typeId, gen);
+		LOGGER.debug("Registered game agent Type {}", typeId);
+		return true;
+	}
+
+	private static boolean hasGameAgentType(String typeId) {
+		return gameAgentGenerators.containsKey(typeId);
+	}
+
+	@Nullable
+	public static GameAgent createGameAgent(String type, String id, MiniGameData miniGameData) {
+		GameAgentGenerator gen = gameAgentGenerators.get(type);
+		if (gen == null) {
+            LOGGER.error("The Game Agent Type {} has not been registered. Skipping agent with id {}", type, id);
+			return null;
+		}
+		return gen.create(type, id, miniGameData);
+	}
+
 }

@@ -53,6 +53,7 @@ public class MiniGamesMod {
 		MiniGameManager.registerGames();
 		MiniGameManager.registerItemEvents();
 		MiniGameManager.registerPOIGens();
+		MiniGameManager.registerGameAgentGens();
 	}
 	
 	private void clientSetup(FMLClientSetupEvent event) {

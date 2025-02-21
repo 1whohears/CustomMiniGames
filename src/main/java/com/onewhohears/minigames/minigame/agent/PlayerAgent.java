@@ -37,8 +37,8 @@ public class PlayerAgent extends GameAgent {
 	private float deathLookX, deathLookY;
 	private String scoreboardName = "";
 
-	public PlayerAgent(String uuid, MiniGameData gameData) {
-		super(uuid, gameData);
+	public PlayerAgent(String type, String uuid, MiniGameData gameData) {
+		super(type, uuid, gameData);
 	}
 	
 	@Override

@@ -18,12 +18,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.scores.PlayerTeam;
 
-public class TeamAgent extends GameAgent {
+public abstract class TeamAgent extends GameAgent {
 	
-	private final Map<String, PlayerAgent> playerAgents = new HashMap<>();
+	protected final Map<String, PlayerAgent> playerAgents = new HashMap<>();
 	
-	public TeamAgent(String teamName, MiniGameData gameData) {
-		super(teamName, gameData);
+	public TeamAgent(String type, String teamName, MiniGameData gameData) {
+		super(type, teamName, gameData);
 	}
 	
 	@Override
@@ -62,12 +62,14 @@ public class TeamAgent extends GameAgent {
 		updatePlayerAgentMap(server);
 		tickPlayerAgents(server);
 	}
-	
+
 	@Override
 	public boolean canTickAgent(MinecraftServer server) {
-		return getTeam(server) != null;
+		return teamExists(server);
 	}
-	
+
+	public abstract boolean teamExists(MinecraftServer server);
+
 	protected void tickPlayerAgents(MinecraftServer server) {
 		playerAgents.forEach((username, player) -> {
 			player.tickAgent(server);
@@ -75,34 +77,10 @@ public class TeamAgent extends GameAgent {
 		});
 	}
 	
-	protected void updatePlayerAgentMap(MinecraftServer server) {
-		PlayerTeam team = getTeam(server);
-		if (team == null) return;
-		Collection<String> usernames = team.getPlayers();
-        playerAgents.entrySet().removeIf(entry ->
-				!usernames.contains(entry.getKey()) && entry.getValue().canTickAgent(server));
-		for (String username : usernames) {
-			if (playerAgents.containsKey(username)) continue;
-			ServerPlayer player = server.getPlayerList().getPlayerByName(username);
-			if (player != null) {
-				PlayerAgent agent = getGameData().createPlayerAgent(player);
-				agent.setTeamAgent(this);
-				playerAgents.put(username, agent);
-			}
-		}
-	}
+	protected abstract void updatePlayerAgentMap(MinecraftServer server);
 
 	public void removeOfflineMembers(MinecraftServer server) {
 		playerAgents.entrySet().removeIf(entry -> !entry.getValue().canTickAgent(server));
-	}
-	
-	@Nullable
-	public PlayerTeam getTeam(MinecraftServer server) {
-		Collection<PlayerTeam> teams = server.getScoreboard().getPlayerTeams();
-		for (PlayerTeam team : teams) 
-			if (team.getName().equals(getId())) 
-				return team;
-		return null;
 	}
 	
 	@Nullable
@@ -186,32 +164,11 @@ public class TeamAgent extends GameAgent {
 		playerAgents.forEach((username, player) -> player.clearPlayerInventory(server));
 	}
 
-	@Override
-	public void onWin(MinecraftServer server) {
-		PlayerTeam team = getTeam(server);
-		if (team == null) return;
-		Style style = team.getDisplayName().getStyle().withBold(true).withUnderlined(true);
-		Component message = Component.empty().append(team.getFormattedDisplayName())
-				.append(" is the winning team!").setStyle(style);
-		getGameData().chatToAllPlayers(server, message, SoundEvents.FIREWORK_ROCKET_LAUNCH);
-	}
+	public abstract void onWin(MinecraftServer server);
 
-	@Override
-	public Component getDebugInfo(MinecraftServer server) {
-		MutableComponent message = Component.literal("[");
-		PlayerTeam pt = getTeam(server);
-		if (pt == null) message.append(getId());
-		else message.append(pt.getDisplayName());
-		message.append("]");
-		return message;
-	}
+	public abstract Component getDebugInfo(MinecraftServer server);
 
-	@Override
-	public Component getDisplayName(MinecraftServer server) {
-		PlayerTeam pt = getTeam(server);
-		if (pt == null) return UtilMCText.literal(getId());
-		return pt.getDisplayName();
-	}
+	public abstract Component getDisplayName(MinecraftServer server);
 
 	@Override
 	public void giveMoneyItems(MinecraftServer server, int amount) {

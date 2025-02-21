@@ -29,7 +29,7 @@ public abstract class GameAgent {
 
 	private static final Logger LOGGER = LogUtils.getLogger();
 
-	private final String id;
+	private final String id, type;
 	private final MiniGameData gameData;
 	private int age;
 	private double score;
@@ -38,7 +38,8 @@ public abstract class GameAgent {
 	@Nullable Vec3 respawnPoint = null;
 	@NotNull private String selectedKit = "";
 	
-	protected GameAgent(String id, MiniGameData gameData) {
+	protected GameAgent(String type, String id, MiniGameData gameData) {
+		this.type = type;
 		this.id = id;
 		this.gameData = gameData;
 		this.initialLives = getGameData().getDefaultInitialLives();
@@ -46,8 +47,7 @@ public abstract class GameAgent {
 	
 	public CompoundTag save() {
 		CompoundTag nbt = new CompoundTag();
-		nbt.putBoolean("isPlayer", isPlayer());
-		nbt.putBoolean("isTeam", isTeam());
+		nbt.putString("type", type);
 		nbt.putString("id", id);
 		nbt.putInt("age", age);
 		nbt.putDouble("score", score);
@@ -128,7 +128,11 @@ public abstract class GameAgent {
 	public void setInitialLives(int lives) {
 		initialLives = lives;
 	}
-	
+
+	public String getType() {
+		return type;
+	}
+
 	public String getId() {
 		return id;
 	}

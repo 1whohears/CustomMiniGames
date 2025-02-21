@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.entity.FlagEntity;
 import com.onewhohears.minigames.minigame.MiniGameManager;
+import com.onewhohears.minigames.minigame.agent.VanillaTeamAgent;
 import com.onewhohears.minigames.minigame.poi.GamePOI;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilAngles;
@@ -173,11 +174,15 @@ public abstract class MiniGameData {
 		ListTag agentList = nbt.getList("agentList", 10);
 		for (int i = 0; i < agentList.size(); ++i) {
 			CompoundTag tag = agentList.getCompound(i);
+			String type = tag.getString("type");
+			if (type.isEmpty()) {
+				if (tag.getBoolean("isPlayer")) type = "player";
+				else if (tag.getBoolean("isTeam")) type = "vanilla_team";
+				else continue;
+			}
 			String id = tag.getString("id");
-			GameAgent agent;
-			if (tag.getBoolean("isPlayer")) agent = createPlayerAgent(id);	
-			else if (tag.getBoolean("isTeam")) agent = createTeamAgent(id);
-			else continue;
+			GameAgent agent = MiniGameManager.createGameAgent(type, id, this);
+			if (agent == null) continue;
 			agent.load(tag);
 			agents.put(id, agent);
 		}
@@ -481,8 +486,16 @@ public abstract class MiniGameData {
 		return info;
 	}
 
+	public String getDefaultPlayerAgentType() {
+		return "player";
+	}
+
+	public String getDefaultTeamAgentType() {
+		return "vanilla_team";
+	}
+
 	public PlayerAgent createPlayerAgent(String uuid) {
-		return new PlayerAgent(uuid, this);
+		return new PlayerAgent(getDefaultPlayerAgentType(), uuid, this);
 	}
 	
 	public PlayerAgent createPlayerAgent(ServerPlayer player) {
@@ -490,7 +503,7 @@ public abstract class MiniGameData {
 	}
 
 	public TeamAgent createTeamAgent(String teamName) {
-		return new TeamAgent(teamName, this);
+		return new VanillaTeamAgent(getDefaultTeamAgentType(), teamName, this);
 	}
 	
 	public TeamAgent createTeamAgent(PlayerTeam team) {
@@ -523,7 +536,27 @@ public abstract class MiniGameData {
 	public TeamAgent getAddTeam(PlayerTeam team) {
 		return getAddTeam(team, false);
 	}
-	
+
+	@Nullable
+	public GameAgent getAddAgent(String type, String name) {
+		GameAgent agent = getAgentById(name);
+		if (agent == null) {
+			agent = MiniGameManager.createGameAgent(type, name, this);
+			if (agent == null) return null;
+			if (agent.isTeam() && !canAddTeams()) return null;
+			else if (agent.isPlayer() && !canAddIndividualPlayers()) return null;
+			agents.put(agent.getId(), agent);
+		}
+		return agent;
+	}
+
+	@Nullable
+	public TeamAgent getAddTeam(String type, String name) {
+		GameAgent agent = getAddAgent(type, name);
+		if (agent == null || !agent.isTeam()) return null;
+		return (TeamAgent) agent;
+	}
+
 	public boolean hasAgentById(String id) {
 		return agents.containsKey(id);
 	}
