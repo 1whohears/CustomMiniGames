@@ -663,7 +663,7 @@ public class SubComSetup {
 			String reason  = gameData.getStartFailedReason(context.getSource().getServer());
 			if (reason != null) {
 				MutableComponent message = Component.literal(gameData.getInstanceId()+" is currently unable to finish setup!");
-				message.append("\nUse /game setup "+gameData.getInstanceId()+" to finish setting up the game.");
+				message.append("\nUse /minigame setup "+gameData.getInstanceId()+" to finish setting up the game.");
 				message.append("\n"+reason);
 				context.getSource().sendFailure(message);
 				return 0;

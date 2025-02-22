@@ -27,7 +27,7 @@ public abstract class GameAgent {
 
 	public static final Style YELLOW = Style.EMPTY.withColor(ChatFormatting.YELLOW);
 
-	private static final Logger LOGGER = LogUtils.getLogger();
+	protected static final Logger LOGGER = LogUtils.getLogger();
 
 	private final String id, type;
 	private final MiniGameData gameData;

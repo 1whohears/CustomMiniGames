@@ -71,7 +71,12 @@ public class PlayerAgent extends GameAgent {
 	}
 
 	@Override
-	public void teamSyncLives() {}
+	public void teamSyncLives() {
+		if (isPlayerOnTeam()) {
+			teamAgent.setLives(getLives());
+			teamAgent.teamSyncLives();
+		}
+	}
 
 	public void setDeathPosition(@Nullable Vec3 pos) {
 		deathPosition = pos;
@@ -274,5 +279,10 @@ public class PlayerAgent extends GameAgent {
 
 	public String getScoreboardName() {
 		return scoreboardName;
+	}
+
+	@Override
+	public boolean isShareLives() {
+		return teamAgent != null && teamAgent.isShareLives();
 	}
 }
