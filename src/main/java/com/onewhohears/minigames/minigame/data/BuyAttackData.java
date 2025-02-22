@@ -38,7 +38,7 @@ public class BuyAttackData extends MiniGameData {
 
     public BuyAttackData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);
-        this.moneyPerRound = 24;
+        this.moneyPerRound = 20;
     }
 
     @Override

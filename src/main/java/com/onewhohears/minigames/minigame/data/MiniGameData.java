@@ -263,7 +263,7 @@ public abstract class MiniGameData {
 		if (agents.size() < 2) return "There must be at least 2 players!";
 		if (!areAgentRespawnPosSet()) return "Must set respawn positions for each team!";
 		String other = getAdditionalStartFailReasons(server);
-		if (other != null) return null;
+		if (other != null) return other;
 		getCurrentPhase().onStop(server);
 		setupAllAgents();
 		if (requiresSetRespawnPos()) applyAllAgentRespawnPoints(server);

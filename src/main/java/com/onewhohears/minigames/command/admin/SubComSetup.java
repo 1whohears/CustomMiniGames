@@ -111,7 +111,7 @@ public class SubComSetup {
 							return 1;
 						}, -1, 10000))
 						.then(setStringParamArg("add_attacker", "team", (context, gameData, string) -> {
-							if (!(gameData instanceof KillFlagData data)) {
+							if (!(gameData instanceof AttackDefendData data)) {
 								Component message = UtilMCText.literal("This game doesn't use this parameter.");
 								context.getSource().sendFailure(message);
 								return 0;
@@ -126,7 +126,7 @@ public class SubComSetup {
 							return 1;
 						}, GameComArgs.suggestAgentNames()))
 						.then(setStringParamArg("add_defender", "team", (context, gameData, string) -> {
-							if (!(gameData instanceof KillFlagData data)) {
+							if (!(gameData instanceof AttackDefendData data)) {
 								Component message = UtilMCText.literal("This game doesn't use this parameter.");
 								context.getSource().sendFailure(message);
 								return 0;
@@ -141,7 +141,7 @@ public class SubComSetup {
 							return 1;
 						}, GameComArgs.suggestAgentNames()))
 						.then(setStringParamArg("remove_attacker", "team", (context, gameData, string) -> {
-							if (!(gameData instanceof KillFlagData data)) {
+							if (!(gameData instanceof AttackDefendData data)) {
 								Component message = UtilMCText.literal("This game doesn't use this parameter.");
 								context.getSource().sendFailure(message);
 								return 0;
@@ -156,7 +156,7 @@ public class SubComSetup {
 							return 1;
 						}, GameComArgs.suggestAgentNames()))
 						.then(setStringParamArg("remove_defender", "team", (context, gameData, string) -> {
-							if (!(gameData instanceof KillFlagData data)) {
+							if (!(gameData instanceof AttackDefendData data)) {
 								Component message = UtilMCText.literal("This game doesn't use this parameter.");
 								context.getSource().sendFailure(message);
 								return 0;
@@ -171,7 +171,7 @@ public class SubComSetup {
 							return 1;
 						}, GameComArgs.suggestAgentNames()))
 						.then(setStringParamArg("add_attacker_shop", "shop", (context, gameData, string) -> {
-							if (!(gameData instanceof KillFlagData data)) {
+							if (!(gameData instanceof AttackDefendData data)) {
 								Component message = UtilMCText.literal("This game doesn't use this parameter.");
 								context.getSource().sendFailure(message);
 								return 0;
@@ -186,7 +186,7 @@ public class SubComSetup {
 							return 1;
 						}, CommandUtil.suggestStrings(() -> MiniGameKitsManager.get().getAllIds())))
 						.then(setStringParamArg("add_defender_shop", "shop", (context, gameData, string) -> {
-							if (!(gameData instanceof KillFlagData data)) {
+							if (!(gameData instanceof AttackDefendData data)) {
 								Component message = UtilMCText.literal("This game doesn't use this parameter.");
 								context.getSource().sendFailure(message);
 								return 0;
@@ -201,7 +201,7 @@ public class SubComSetup {
 							return 1;
 						}, CommandUtil.suggestStrings(() -> MiniGameKitsManager.get().getAllIds())))
 						.then(setStringParamArg("remove_attacker_shop", "shop", (context, gameData, string) -> {
-							if (!(gameData instanceof KillFlagData data)) {
+							if (!(gameData instanceof AttackDefendData data)) {
 								Component message = UtilMCText.literal("This game doesn't use this parameter.");
 								context.getSource().sendFailure(message);
 								return 0;
@@ -216,7 +216,7 @@ public class SubComSetup {
 							return 1;
 						}, GameComArgs.suggestEnabledShops()))
 						.then(setStringParamArg("remove_defender_shop", "shop", (context, gameData, string) -> {
-							if (!(gameData instanceof KillFlagData data)) {
+							if (!(gameData instanceof AttackDefendData data)) {
 								Component message = UtilMCText.literal("This game doesn't use this parameter.");
 								context.getSource().sendFailure(message);
 								return 0;
