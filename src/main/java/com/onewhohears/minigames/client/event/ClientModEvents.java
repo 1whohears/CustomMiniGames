@@ -15,7 +15,7 @@ public class ClientModEvents {
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(MiniGameEntities.FLAG.get(), context -> new RendererObjEntity<>(
-                context, new ObjEntityModel<>("minigames_flag")
+                context, new ObjEntityModel<>("computa_flag")
         ));
     }
 
