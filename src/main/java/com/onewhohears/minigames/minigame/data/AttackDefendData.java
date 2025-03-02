@@ -105,14 +105,12 @@ public class AttackDefendData extends BuyAttackData {
 
     public boolean addAttackerShop(String id) {
         addShops(id);
-        defenderShops.remove(id);
         attackerShops.add(id);
         return true;
     }
 
     public boolean addDefenderShop(String id) {
         addShops(id);
-        attackerShops.remove(id);
         defenderShops.add(id);
         return true;
     }
