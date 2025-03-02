@@ -184,7 +184,7 @@ public class SubComSetup {
 							Component message = UtilMCText.literal("Added Attacker Shop "+string);
 							context.getSource().sendSuccess(message, true);
 							return 1;
-						}, CommandUtil.suggestStrings(() -> MiniGameKitsManager.get().getAllIds())))
+						}, CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds())))
 						.then(setStringParamArg("add_defender_shop", "shop", (context, gameData, string) -> {
 							if (!(gameData instanceof AttackDefendData data)) {
 								Component message = UtilMCText.literal("This game doesn't use this parameter.");
@@ -199,7 +199,7 @@ public class SubComSetup {
 							Component message = UtilMCText.literal("Added Defender Shop "+string);
 							context.getSource().sendSuccess(message, true);
 							return 1;
-						}, CommandUtil.suggestStrings(() -> MiniGameKitsManager.get().getAllIds())))
+						}, CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds())))
 						.then(setStringParamArg("remove_attacker_shop", "shop", (context, gameData, string) -> {
 							if (!(gameData instanceof AttackDefendData data)) {
 								Component message = UtilMCText.literal("This game doesn't use this parameter.");
