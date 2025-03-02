@@ -431,13 +431,13 @@ public class SubComSetup {
 
 	private ArgumentBuilder<CommandSourceStack,?> addShopArg() {
 		return Commands.literal("add_shop")
-				.then(GameComArgs.allKitNameArgument()
+				.then(GameComArgs.allShopNameArgument()
 						.executes(commandAddShop()));
 	}
 
 	private ArgumentBuilder<CommandSourceStack,?> removeShopArg() {
 		return Commands.literal("remove_shop")
-				.then(GameComArgs.enabledKitNameArgument()
+				.then(GameComArgs.enabledShopNameArgument()
 						.executes(commandRemoveShop()));
 	}
 
