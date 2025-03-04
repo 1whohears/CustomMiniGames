@@ -273,6 +273,15 @@ public class GameKit extends JsonPresetStats {
 		public Builder addItemRefill(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly, String checkCountByNBT) {
 			return addItem(itemkey, num, unbreakable, nbt, true, true, false, kitOnly, checkCountByNBT, "");
 		}
+		public Builder addItemRefill(String itemkey, int num, JsonObject nbt, boolean kitOnly, String checkCountByNBT) {
+			return addItem(itemkey, num, false, nbt, true, true, false, kitOnly, checkCountByNBT, "");
+		}
+		public Builder addItemRefill(String itemkey, int num, JsonObject nbt, boolean kitOnly) {
+			return addItem(itemkey, num, false, nbt, true, true, false, kitOnly, "", "");
+		}
+		public Builder addItemRefill(String itemkey, int num, boolean kitOnly) {
+			return addItem(itemkey, num, false, null, true, true, false, kitOnly, "", "");
+		}
 		public Builder addItem(String itemkey, int num, boolean unbreakable, JsonObject nbt, boolean kitOnly, String checkCountByNBT) {
 			return addItem(itemkey, num, unbreakable, nbt, false, false, false, kitOnly, checkCountByNBT, "");
 		}

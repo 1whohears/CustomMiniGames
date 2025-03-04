@@ -42,7 +42,7 @@ public class SubComKit {
 		else if (clearOther) kit.giveItemsClearOther(player);
 		else if (clearAll) kit.giveItemsClearAll(player);
 		else kit.giveItems(player);
-		Component message = Component.literal("You recieved kit "+kit.getId());
+		Component message = Component.literal("You received kit "+kit.getId());
 		player.displayClientMessage(message, false);
 	}
 	
