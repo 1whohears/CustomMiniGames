@@ -3,6 +3,8 @@
     "minecraft:bedrock",
     "minecraft:obsidian",
     "minecraft:crying_obsidian",
-    "#forge:obsidian"
+    "#forge:obsidian",
+    "minecraft:water",
+    "minecraft:lava"
   ]
 }
