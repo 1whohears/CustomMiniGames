@@ -17,7 +17,7 @@ plugins {
 
 apply plugin: 'org.spongepowered.mixin'
 
-version = '0.2.3'
+version = mod_version
 group = "com.1whohears.${mod_id}"
 archivesBaseName = "${mod_id}-${minecraft_version}"
 
@@ -113,6 +113,7 @@ dependencies {
     // https://github.com/1whohears/1wholibs
     implementation fg.deobf("com.onewhohears.onewholibs:onewholibs-${minecraft_version}:${onewholibs_version}")
     implementation fg.deobf("curse.maven:xaeros-minimap-fair-play-edition-${xaeros_minimap_fair_play_version}")
+    implementation fg.deobf("curse.maven:timeless-and-classics-zero-${tacz_version}")
 }
 
 jar {

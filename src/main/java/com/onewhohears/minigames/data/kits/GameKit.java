@@ -87,16 +87,12 @@ public class GameKit extends JsonPresetStats {
 		}
 		for (KitItem item : items) {
 			if (item.canKeep() && !inv.hasAnyMatching(item.sameChecker())) {
-				givePlayerItem(player, item, -1);
+				item.giveItem(player, -1);
 			}
 			if (item.canRefill()) {
-				int refill = item.getRefillNum(inv);
-				if (refill > 0) givePlayerItem(player, item, refill);
+				item.refillItem(player);
 			}
 		}
-	}
-	protected void givePlayerItem(ServerPlayer player, KitItem item, int num) {
-		item.giveItem(player, num);
 	}
 	public boolean hasKitItem(ItemStack stack) {
 		if (stack.isEmpty()) return false;
@@ -120,9 +116,8 @@ public class GameKit extends JsonPresetStats {
 			String itemKey = UtilParse.getStringSafe(json, "item", "");
 			if (itemKey.isEmpty()) return false;
 			ResourceLocation rl = new ResourceLocation(itemKey);
-			if (!ForgeRegistries.ITEMS.containsKey(rl)) return false;
-			return true;
-		}
+            return ForgeRegistries.ITEMS.containsKey(rl);
+        }
 		private final Item item;
 		private final int num;
 		private final CompoundTag nbt;
@@ -180,11 +175,12 @@ public class GameKit extends JsonPresetStats {
 		public Predicate<ItemStack> sameChecker() {
 			return this::isSameItem;
 		}
-		public int getRefillNum(Container inv) {
+		public void refillItem(ServerPlayer player) {
 			int count = 0, max = num;
 			if (isGetItemCountByNBT() && nbt != null) {
 				max = nbt.getInt(checkCountByNBT);
 			}
+			Container inv = player.getInventory();
 			for (int i = 0; i < inv.getContainerSize(); ++i) {
 				ItemStack stack = inv.getItem(i);
 				if (!isSameItem(stack)) continue;
@@ -193,9 +189,22 @@ public class GameKit extends JsonPresetStats {
 				} else {
 					count += stack.getCount();
 				}
-				if (count >= max) return 0;
+				if (count >= max) return;
 			}
-			return max - count;
+			int refill = max - count;
+			if (isGetItemCountByNBT()) {
+				for (int i = 0; i < inv.getContainerSize(); ++i) {
+					ItemStack stack = inv.getItem(i);
+					if (stack.getTag() == null || !isSameItem(stack)) continue;
+					int currentCount = stack.getTag().getInt(checkCountByNBT);
+					stack = stack.copy();
+					setCount(stack, currentCount + refill);
+					inv.setItem(i, stack);
+					return;
+				}
+			} else {
+				giveItem(player, refill);
+			}
 		}
 		public void giveItem(ServerPlayer player, int num) {
 			if (num == 0) return;
@@ -209,15 +218,6 @@ public class GameKit extends JsonPresetStats {
 			} else if (stack.canPerformAction(ToolActions.SHIELD_BLOCK) && !player.hasItemInSlot(EquipmentSlot.OFFHAND)) {
 				player.setItemSlot(EquipmentSlot.OFFHAND, stack);
 			} else {
-				if (isGetItemCountByNBT()) {
-					Container inv = player.getInventory();
-					for (int j = 0; j < inv.getContainerSize(); ++j) {
-						ItemStack s = inv.getItem(j);
-						if (!isSameItem(s)) continue;
-						inv.setItem(j, stack);
-						return;
-					}
-				}
 				player.addItem(stack);
 			}
 		}
@@ -225,7 +225,10 @@ public class GameKit extends JsonPresetStats {
 			return !checkCountByNBT.isEmpty();
 		}
 		protected void setCount(ItemStack stack, int num) {
-			if (isGetItemCountByNBT()) return;
+			if (stack.getTag() != null && isGetItemCountByNBT()) {
+				stack.getTag().putInt(checkCountByNBT, num);
+				return;
+			}
 			stack.setCount(num);
 		}
 	}
