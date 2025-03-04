@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.common.event;
 
 import com.onewhohears.minigames.entity.FlagEntity;
+import com.onewhohears.minigames.minigame.data.MiniGameData;
 import com.onewhohears.minigames.util.CMGUtil;
 import com.onewhohears.onewholibs.common.event.GetJsonPresetListenersEvent;
 import net.minecraft.world.InteractionHand;
@@ -38,11 +39,18 @@ public class CommonForgeEvents {
 	@SubscribeEvent
 	public static void livingHurtEvent(LivingHurtEvent event) {
 		if (event.getEntity().getLevel().isClientSide()) return;
-		if (!(event.getEntity() instanceof ServerPlayer player)) return;
-		for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player)) {
-			if (!agent.getGameData().getCurrentPhase().allowPVP()) {
+		if (event.getEntity() instanceof ServerPlayer player) {
+			for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player)) {
+				if (!agent.getGameData().getCurrentPhase().allowPVP()) {
+					event.setCanceled(true);
+					return;
+				}
+			}
+		} else if (event.getEntity() instanceof FlagEntity flag) {
+			MiniGameData data = flag.getGameData();
+			if (data == null) return;
+			if (data.getCurrentPhase().allowPVP()) {
 				event.setCanceled(true);
-				return;
 			}
 		}
 	}
