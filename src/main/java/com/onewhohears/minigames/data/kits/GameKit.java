@@ -56,7 +56,7 @@ public class GameKit extends JsonPresetStats {
 	}
 
 	public void giveItems(ServerPlayer player) {
-		for (KitItem item : items) player.addItem(item.getItem());
+		for (KitItem item : items) item.giveItem(player, -1);
 	}
 	public void giveItemsClearAll(ServerPlayer player) {
 		player.getInventory().clearContent();
