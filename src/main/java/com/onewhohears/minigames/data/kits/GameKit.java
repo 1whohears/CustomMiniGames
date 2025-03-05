@@ -86,10 +86,9 @@ public class GameKit extends JsonPresetStats {
 			inv.removeItem(stack);
 		}
 		for (KitItem item : items) {
-			if (item.canKeep() && !inv.hasAnyMatching(item.sameChecker())) {
+			if (!inv.hasAnyMatching(item.sameChecker())) {
 				item.giveItem(player, -1);
-			}
-			if (item.canRefill()) {
+			} else if (item.canRefill()) {
 				item.refillItem(player);
 			}
 		}
