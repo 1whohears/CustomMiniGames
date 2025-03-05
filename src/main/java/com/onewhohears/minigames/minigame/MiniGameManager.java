@@ -1,9 +1,6 @@
 package com.onewhohears.minigames.minigame;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Nullable;
 
@@ -11,6 +8,7 @@ import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.agent.VanillaTeamAgent;
 import com.onewhohears.minigames.minigame.data.*;
 import com.onewhohears.minigames.minigame.event.SummonEvent;
+import com.onewhohears.minigames.minigame.param.MiniGameParamType;
 import com.onewhohears.minigames.minigame.poi.GamePOI;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import org.apache.commons.lang3.function.TriFunction;
@@ -34,6 +32,7 @@ public class MiniGameManager extends SavedData {
 	private static final Map<String, TriFunction<ServerPlayer, PlayerAgent, CompoundTag, Boolean>> itemEvents = new HashMap<>();
 	private static final Map<String, GamePOIGenerator> gamePoiGenerators = new HashMap<>();
 	private static final Map<String, GameAgentGenerator> gameAgentGenerators = new HashMap<>();
+	private static final Map<String, MiniGameParamType<?>> gameParamTypes = new HashMap<>();
 
 	/**
 	 * @return null if before Server Started!
@@ -313,6 +312,18 @@ public class MiniGameManager extends SavedData {
 			return null;
 		}
 		return gen.create(type, id, miniGameData);
+	}
+
+	/**
+	 * register game param types to automatically add it to the setup commands and config GUI
+	 */
+	public static void registerGameParamType(MiniGameParamType<?> type) {
+		gameParamTypes.put(type.getId(), type);
+		LOGGER.debug("Registered Game Param Type {}", type.getId());
+	}
+
+	public static Collection<MiniGameParamType<?>> getGameParamTypes() {
+		return gameParamTypes.values();
 	}
 
 }

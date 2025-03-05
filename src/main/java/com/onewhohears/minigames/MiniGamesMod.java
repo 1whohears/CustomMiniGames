@@ -10,6 +10,7 @@ import com.onewhohears.minigames.init.MiniGameEntities;
 import com.onewhohears.minigames.init.MiniGameItems;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 
+import com.onewhohears.minigames.minigame.param.MiniGameParamTypes;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.data.event.GatherDataEvent;
@@ -50,6 +51,7 @@ public class MiniGamesMod {
 	
 	private void commonSetup(FMLCommonSetupEvent event) {
 		PacketHandler.register();
+		MiniGameParamTypes.registerGameParamTypes();
 		MiniGameManager.registerGames();
 		MiniGameManager.registerItemEvents();
 		MiniGameManager.registerPOIGens();

@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import com.onewhohears.minigames.entity.FlagEntity;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.VanillaTeamAgent;
+import com.onewhohears.minigames.minigame.param.MiniGameParamType;
 import com.onewhohears.minigames.minigame.poi.GamePOI;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilAngles;
@@ -998,5 +999,15 @@ public abstract class MiniGameData {
 
 	public String[] getPOIInstanceIds() {
 		return pois.keySet().toArray(new String[0]);
+	}
+
+	public <E> boolean setParam(MiniGameParamType<E> type, E value) {
+
+		return true;
+	}
+
+	public <E> E getParam(MiniGameParamType<E> type) {
+
+		return null;
 	}
 }

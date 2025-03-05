@@ -14,6 +14,7 @@ import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 
 import com.onewhohears.minigames.minigame.data.*;
+import com.onewhohears.minigames.minigame.param.MiniGameParamType;
 import com.onewhohears.minigames.util.CommandUtil;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilGeometry;
@@ -35,319 +36,319 @@ public class SubComSetup {
 	}
 	
 	public ArgumentBuilder<CommandSourceStack,?> setup() {
-		return Commands.literal("setup")
-				.then(GameComArgs.runningGameIdArgument()
-						.then(Commands.literal("start").executes(commandStartGame()))
-						.then(addTeamArg()).then(removeTeamArg())
-						.then(addPlayerArg()).then(removePlayerArg())
-						.then(setCenterArg())
-						.then(setSizeArg())
-						.then(setSpawnPlayerArg())
-						.then(setSpawnTeamArg())
-						.then(setLivesArg())
-						.then(setUseBorderArg())
-						.then(setClearOnStartArg())
-						.then(addKitArg()).then(removeKitArg())
-						.then(addShopArg()).then(removeShopArg())
-						.then(setIntParamArg("buy_time", "ticks", (context, gameData, num) -> {
-							if (!(gameData instanceof BuyAttackData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.setBuyTime(num);
-							Component message = UtilMCText.literal("Set Buy Time to "+num+" ticks!");
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, 0, 2000000))
-						.then(setIntParamArg("attack_time", "ticks", (context, gameData, num) -> {
-							if (!(gameData instanceof BuyAttackData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.setAttackTime(num);
-							Component message = UtilMCText.literal("Set Attack Time to "+num+" ticks!");
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, 0, 2000000))
-						.then(setIntParamArg("attack_end_time", "ticks", (context, gameData, num) -> {
-							if (!(gameData instanceof BuyAttackData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.setAttackEndTime(num);
-							Component message = UtilMCText.literal("Set Attack End Time to "+num+" ticks!");
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, 0, 2000000))
-						.then(setIntParamArg("rounds_to_win", "rounds", (context, gameData, num) -> {
-							if (!(gameData instanceof BuyAttackData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.setRoundsToWin(num);
-							Component message = UtilMCText.literal("Set Rounds to Win to "+num+" rounds!");
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, 1, 1000000))
-						.then(setIntParamArg("money_per_round", "money", (context, gameData, num) -> {
-							gameData.setMoneyPerRound(num);
-							Component message = UtilMCText.literal("Set money per round to "+num);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, 1, 10000))
-						.then(setIntParamArg("buy_radius", "blocks", (context, gameData, num) -> {
-							if (!(gameData instanceof BuyAttackData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.setBuyRadius(num);
-							Component message = UtilMCText.literal("Set Buy Radius to "+num);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, -1, 10000))
-						.then(setStringParamArg("add_attacker", "team", (context, gameData, string) -> {
-							if (!(gameData instanceof AttackDefendData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							if (!data.addAttacker(string)) {
-								Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							Component message = UtilMCText.literal("Added attacker "+string);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, GameComArgs.suggestAgentNames()))
-						.then(setStringParamArg("add_defender", "team", (context, gameData, string) -> {
-							if (!(gameData instanceof AttackDefendData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							if (!data.addDefender(string)) {
-								Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							Component message = UtilMCText.literal("Added defender "+string);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, GameComArgs.suggestAgentNames()))
-						.then(setStringParamArg("remove_attacker", "team", (context, gameData, string) -> {
-							if (!(gameData instanceof AttackDefendData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							if (!data.removeAttacker(string)) {
-								Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							Component message = UtilMCText.literal("Removed attacker "+string);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, GameComArgs.suggestAgentNames()))
-						.then(setStringParamArg("remove_defender", "team", (context, gameData, string) -> {
-							if (!(gameData instanceof AttackDefendData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							if (!data.removeDefender(string)) {
-								Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							Component message = UtilMCText.literal("Removed defender "+string);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, GameComArgs.suggestAgentNames()))
-						.then(setStringParamArg("add_attacker_shop", "shop", (context, gameData, string) -> {
-							if (!(gameData instanceof AttackDefendData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							if (!data.addAttackerShop(string)) {
-								Component message = UtilMCText.literal("Could not add shop.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							Component message = UtilMCText.literal("Added Attacker Shop "+string);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds())))
-						.then(setStringParamArg("add_defender_shop", "shop", (context, gameData, string) -> {
-							if (!(gameData instanceof AttackDefendData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							if (!data.addDefenderShop(string)) {
-								Component message = UtilMCText.literal("Could not add shop.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							Component message = UtilMCText.literal("Added Defender Shop "+string);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds())))
-						.then(setStringParamArg("remove_attacker_shop", "shop", (context, gameData, string) -> {
-							if (!(gameData instanceof AttackDefendData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							if (!data.removeAttackerShop(string)) {
-								Component message = UtilMCText.literal("Could not remove shop.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							Component message = UtilMCText.literal("Removed Attacker Shop "+string);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, GameComArgs.suggestEnabledShops()))
-						.then(setStringParamArg("remove_defender_shop", "shop", (context, gameData, string) -> {
-							if (!(gameData instanceof AttackDefendData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							if (!data.removeDefenderShop(string)) {
-								Component message = UtilMCText.literal("Could not remove shop.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							Component message = UtilMCText.literal("Removed Defender Shop "+string);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, GameComArgs.suggestEnabledShops()))
-						.then(setBoolParamArg("allow_respawn_during_buy", "allow", (context, gameData, value) -> {
-							if (!(gameData instanceof BuyAttackData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.setAllowRespawnInBuyPhase(value);
-							Component message;
-							if (value) message = UtilMCText.literal("Players CAN respawn during the buy phase!");
-							else message = UtilMCText.literal("Players can NOT respawn during the buy phase!");
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}))
-						.then(setIntParamArg("no_blocks_flag_radius", "blocks", (context, gameData, num) -> {
-							if (!(gameData instanceof KillFlagData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.banAllBlocksRadius = num;
-							Component message = UtilMCText.literal("Set No Blocks Flag Radius to "+num);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, 0, 10000))
-						.then(setIntParamArg("block_whitelist_flag_radius", "blocks", (context, gameData, num) -> {
-							if (!(gameData instanceof KillFlagData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.blockWhiteListRadius = num;
-							Component message = UtilMCText.literal("Set Block White List Flag Radius to "+num);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, 0, 10000))
-						.then(setIntParamArg("block_blacklist_flag_radius", "blocks", (context, gameData, num) -> {
-							if (!(gameData instanceof KillFlagData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.blockBlackListRadius = num;
-							Component message = UtilMCText.literal("Set Block Black List Flag Radius to "+num);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, 0, 10000))
-						.then(setBoolParamArg("force_non_member_spectator", "force", (context, gameData, value) -> {
-							gameData.forceNonMemberSpectator = value;
-							Component message;
-							if (value) message = UtilMCText.literal("Players will be put in spectator if they have not been added to the game!");
-							else message = UtilMCText.literal("Players will NOT be put in spectator if they have not been added to the game!");
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}))
-						.then(setBoolParamArg("always_allow_shop", "allow", (context, gameData, value) -> {
-							gameData.setAlwaysAllowOpenShop(value);
-							Component message;
-							if (value) message = UtilMCText.literal("Players will always be able to open shops!");
-							else message = UtilMCText.literal("Players will NOT always be able to open shops!");
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}))
-						.then(setFloatParamArg("water_food_exhaustion_rate", "hunger", (context, gameData, num) -> {
-							gameData.waterFoodExhaustionRate = num;
-							Component message = UtilMCText.literal("Set Water Food Exhaustion Rate to "+num);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, 0, 40))
-						.then(setIntParamArg("set_attacker_lives", "lives", (context, gameData, num) -> {
-							if (!(gameData instanceof LastStandData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.initialAttackerLives = num;
-							Component message = UtilMCText.literal("Set Initial Attacker Lives to "+num);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, 0, 10000))
-						.then(setStringParamArg("add_event", "event", (context, gameData, string) -> {
-							gameData.addEvents(string);
-							Component message = UtilMCText.literal("Added event "+string);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, CommandUtil.suggestStrings(MiniGameManager::getAllEventIds)))
-						.then(setStringParamArg("remove_event", "event", (context, gameData, string) -> {
-							gameData.removeEvents(string);
-							Component message = UtilMCText.literal("Remove event "+string);
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}, GameComArgs.suggestEnabledShops()))
-						.then(setBoolParamArg("allow_pvp_buy_phase", "allow", (context, gameData, value) -> {
-							if (!(gameData instanceof BuyAttackData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.setAllowPvpInBuyPhase(value);
-							Component message;
-							if (value) message = UtilMCText.literal("Players will take damage during the buy phase!");
-							else message = UtilMCText.literal("Players will NOT take damage during the buy phase!");
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}))
-						.then(setBoolParamArg("attackers_share_lives", "share", (context, gameData, value) -> {
-							if (!(gameData instanceof AttackDefendData data)) {
-								Component message = UtilMCText.literal("This game doesn't use this parameter.");
-								context.getSource().sendFailure(message);
-								return 0;
-							}
-							data.attackersShareLives = value;
-							Component message;
-							if (value) message = UtilMCText.literal("Players will take damage during the buy phase!");
-							else message = UtilMCText.literal("Players will NOT take damage during the buy phase!");
-							context.getSource().sendSuccess(message, true);
-							return 1;
-						}))
-			);
+		ArgumentBuilder<CommandSourceStack,?> runningGamesArg = GameComArgs.runningGameIdArgument()
+				.then(Commands.literal("start").executes(commandStartGame()))
+				.then(addTeamArg()).then(removeTeamArg())
+				.then(addPlayerArg()).then(removePlayerArg())
+				.then(setCenterArg())
+				.then(setSizeArg())
+				.then(setSpawnPlayerArg())
+				.then(setSpawnTeamArg())
+				.then(setLivesArg())
+				.then(setUseBorderArg())
+				.then(setClearOnStartArg())
+				.then(addKitArg()).then(removeKitArg())
+				.then(addShopArg()).then(removeShopArg())
+				.then(setIntParamArg("buy_time", "ticks", (context, gameData, num) -> {
+					if (!(gameData instanceof BuyAttackData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.setBuyTime(num);
+					Component message = UtilMCText.literal("Set Buy Time to "+num+" ticks!");
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, 0, 2000000))
+				.then(setIntParamArg("attack_time", "ticks", (context, gameData, num) -> {
+					if (!(gameData instanceof BuyAttackData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.setAttackTime(num);
+					Component message = UtilMCText.literal("Set Attack Time to "+num+" ticks!");
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, 0, 2000000))
+				.then(setIntParamArg("attack_end_time", "ticks", (context, gameData, num) -> {
+					if (!(gameData instanceof BuyAttackData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.setAttackEndTime(num);
+					Component message = UtilMCText.literal("Set Attack End Time to "+num+" ticks!");
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, 0, 2000000))
+				.then(setIntParamArg("rounds_to_win", "rounds", (context, gameData, num) -> {
+					if (!(gameData instanceof BuyAttackData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.setRoundsToWin(num);
+					Component message = UtilMCText.literal("Set Rounds to Win to "+num+" rounds!");
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, 1, 1000000))
+				.then(setIntParamArg("money_per_round", "money", (context, gameData, num) -> {
+					gameData.setMoneyPerRound(num);
+					Component message = UtilMCText.literal("Set money per round to "+num);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, 1, 10000))
+				.then(setIntParamArg("buy_radius", "blocks", (context, gameData, num) -> {
+					if (!(gameData instanceof BuyAttackData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.setBuyRadius(num);
+					Component message = UtilMCText.literal("Set Buy Radius to "+num);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, -1, 10000))
+				.then(setStringParamArg("add_attacker", "team", (context, gameData, string) -> {
+					if (!(gameData instanceof AttackDefendData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					if (!data.addAttacker(string)) {
+						Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					Component message = UtilMCText.literal("Added attacker "+string);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, GameComArgs.suggestAgentNames()))
+				.then(setStringParamArg("add_defender", "team", (context, gameData, string) -> {
+					if (!(gameData instanceof AttackDefendData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					if (!data.addDefender(string)) {
+						Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					Component message = UtilMCText.literal("Added defender "+string);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, GameComArgs.suggestAgentNames()))
+				.then(setStringParamArg("remove_attacker", "team", (context, gameData, string) -> {
+					if (!(gameData instanceof AttackDefendData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					if (!data.removeAttacker(string)) {
+						Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					Component message = UtilMCText.literal("Removed attacker "+string);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, GameComArgs.suggestAgentNames()))
+				.then(setStringParamArg("remove_defender", "team", (context, gameData, string) -> {
+					if (!(gameData instanceof AttackDefendData data)) {Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					if (!data.removeDefender(string)) {
+						Component message = UtilMCText.literal("This team hasn't been added to the mini-game.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					Component message = UtilMCText.literal("Removed defender "+string);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, GameComArgs.suggestAgentNames()))
+				.then(setStringParamArg("add_attacker_shop", "shop", (context, gameData, string) -> {
+					if (!(gameData instanceof AttackDefendData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					if (!data.addAttackerShop(string)) {
+						Component message = UtilMCText.literal("Could not add shop.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					Component message = UtilMCText.literal("Added Attacker Shop "+string);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds())))
+				.then(setStringParamArg("add_defender_shop", "shop", (context, gameData, string) -> {
+					if (!(gameData instanceof AttackDefendData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					if (!data.addDefenderShop(string)) {
+						Component message = UtilMCText.literal("Could not add shop.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					Component message = UtilMCText.literal("Added Defender Shop "+string);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds())))
+				.then(setStringParamArg("remove_attacker_shop", "shop", (context, gameData, string) -> {
+					if (!(gameData instanceof AttackDefendData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					if (!data.removeAttackerShop(string)) {
+						Component message = UtilMCText.literal("Could not remove shop.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					Component message = UtilMCText.literal("Removed Attacker Shop "+string);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, GameComArgs.suggestEnabledShops()))
+				.then(setStringParamArg("remove_defender_shop", "shop", (context, gameData, string) -> {
+					if (!(gameData instanceof AttackDefendData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					if (!data.removeDefenderShop(string)) {
+						Component message = UtilMCText.literal("Could not remove shop.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					Component message = UtilMCText.literal("Removed Defender Shop "+string);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, GameComArgs.suggestEnabledShops()))
+				.then(setBoolParamArg("allow_respawn_during_buy", "allow", (context, gameData, value) -> {
+					if (!(gameData instanceof BuyAttackData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.setAllowRespawnInBuyPhase(value);
+					Component message;
+					if (value) message = UtilMCText.literal("Players CAN respawn during the buy phase!");
+					else message = UtilMCText.literal("Players can NOT respawn during the buy phase!");
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}))
+				.then(setIntParamArg("no_blocks_flag_radius", "blocks", (context, gameData, num) -> {
+					if (!(gameData instanceof KillFlagData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.banAllBlocksRadius = num;
+					Component message = UtilMCText.literal("Set No Blocks Flag Radius to "+num);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, 0, 10000))
+				.then(setIntParamArg("block_whitelist_flag_radius", "blocks", (context, gameData, num) -> {
+					if (!(gameData instanceof KillFlagData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.blockWhiteListRadius = num;
+					Component message = UtilMCText.literal("Set Block White List Flag Radius to "+num);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, 0, 10000))
+				.then(setIntParamArg("block_blacklist_flag_radius", "blocks", (context, gameData, num) -> {
+					if (!(gameData instanceof KillFlagData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.blockBlackListRadius = num;
+					Component message = UtilMCText.literal("Set Block Black List Flag Radius to "+num);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, 0, 10000))
+				.then(setBoolParamArg("force_non_member_spectator", "force", (context, gameData, value) -> {
+					gameData.forceNonMemberSpectator = value;
+					Component message;
+					if (value) message = UtilMCText.literal("Players will be put in spectator if they have not been added to the game!");
+					else message = UtilMCText.literal("Players will NOT be put in spectator if they have not been added to the game!");
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}))
+				.then(setBoolParamArg("always_allow_shop", "allow", (context, gameData, value) -> {
+					gameData.setAlwaysAllowOpenShop(value);
+					Component message;
+					if (value) message = UtilMCText.literal("Players will always be able to open shops!");
+					else message = UtilMCText.literal("Players will NOT always be able to open shops!");
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}))
+				.then(setFloatParamArg("water_food_exhaustion_rate", "hunger", (context, gameData, num) -> {
+					gameData.waterFoodExhaustionRate = num;
+					Component message = UtilMCText.literal("Set Water Food Exhaustion Rate to "+num);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, 0, 40))
+				.then(setIntParamArg("set_attacker_lives", "lives", (context, gameData, num) -> {
+					if (!(gameData instanceof LastStandData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.initialAttackerLives = num;
+					Component message = UtilMCText.literal("Set Initial Attacker Lives to "+num);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, 0, 10000))
+				.then(setStringParamArg("add_event", "event", (context, gameData, string) -> {
+					gameData.addEvents(string);
+					Component message = UtilMCText.literal("Added event "+string);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, CommandUtil.suggestStrings(MiniGameManager::getAllEventIds)))
+				.then(setStringParamArg("remove_event", "event", (context, gameData, string) -> {
+					gameData.removeEvents(string);
+					Component message = UtilMCText.literal("Remove event "+string);
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}, GameComArgs.suggestEnabledShops()))
+				.then(setBoolParamArg("allow_pvp_buy_phase", "allow", (context, gameData, value) -> {
+					if (!(gameData instanceof BuyAttackData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.setAllowPvpInBuyPhase(value);
+					Component message;
+					if (value) message = UtilMCText.literal("Players will take damage during the buy phase!");
+					else message = UtilMCText.literal("Players will NOT take damage during the buy phase!");
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}))
+				.then(setBoolParamArg("attackers_share_lives", "share", (context, gameData, value) -> {
+					if (!(gameData instanceof AttackDefendData data)) {
+						Component message = UtilMCText.literal("This game doesn't use this parameter.");
+						context.getSource().sendFailure(message);
+						return 0;
+					}
+					data.attackersShareLives = value;
+					Component message;
+					if (value) message = UtilMCText.literal("Players will take damage during the buy phase!");
+					else message = UtilMCText.literal("Players will NOT take damage during the buy phase!");
+					context.getSource().sendSuccess(message, true);
+					return 1;
+				}));
+		for (MiniGameParamType<?> type : MiniGameManager.getGameParamTypes())
+			runningGamesArg.then(type.getCommandArgument());
+        return Commands.literal("setup").then(runningGamesArg);
 	}
 
 	private ArgumentBuilder<CommandSourceStack,?> setFloatParamArg(String argName, String valueName,

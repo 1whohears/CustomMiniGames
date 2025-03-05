@@ -90,5 +90,9 @@ public class GameComArgs {
 			return builder.buildFuture();
 		};
 	}
+
+	public static PlayerAgentSuggestion suggestNothing() {
+		return (context, builder, agents) -> builder.buildFuture();
+	}
 	
 }
