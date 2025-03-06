@@ -6,6 +6,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 
+import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.*;
+
 public class BuyAttackData extends MiniGameData {
 
     public static BuyAttackData createBuyAttackPhaseMatch(String instanceId, String gameTypeId) {
@@ -26,14 +28,6 @@ public class BuyAttackData extends MiniGameData {
         return game;
     }
 
-    protected int buyTime = 400;
-    protected int attackTime = 4800;
-    protected int attackEndTime = 200;
-    protected int roundsToWin = 3;
-    protected int buyRadius = 24;
-    protected boolean allowRespawnInBuyPhase = true;
-    protected boolean allowPvpInBuyPhase = false;
-
     private int currentRound = 0;
 
     public BuyAttackData(String instanceId, String gameTypeId) {
@@ -49,28 +43,14 @@ public class BuyAttackData extends MiniGameData {
     @Override
     public CompoundTag save() {
         CompoundTag nbt = super.save();
-        nbt.putInt("buyTime", buyTime);
-        nbt.putInt("attackTime", attackTime);
-        nbt.putInt("roundsToWin", roundsToWin);
         nbt.putInt("currentRound", currentRound);
-        nbt.putInt("attackEndTime", attackEndTime);
-        nbt.putInt("buyRadius", buyRadius);
-        nbt.putBoolean("allowRespawnInBuyPhase", allowRespawnInBuyPhase);
-        nbt.putBoolean("allowPvpInBuyPhase", allowPvpInBuyPhase);
         return nbt;
     }
 
     @Override
     public void load(CompoundTag nbt) {
         super.load(nbt);
-        buyTime = nbt.getInt("buyTime");
-        attackTime = nbt.getInt("attackTime");
-        roundsToWin = nbt.getInt("roundsToWin");
         currentRound = nbt.getInt("currentRound");
-        attackEndTime = nbt.getInt("attackEndTime");
-        buyRadius = nbt.getInt("buyRadius");
-        allowRespawnInBuyPhase = nbt.getBoolean("allowRespawnInBuyPhase");
-        allowPvpInBuyPhase = nbt.getBoolean("allowPvpInBuyPhase");
     }
 
     @Override
@@ -80,15 +60,15 @@ public class BuyAttackData extends MiniGameData {
     }
 
     public int getAttackTime() {
-        return attackTime;
+        return getIntParam(ATTACK_TIME);
     }
 
     public int getBuyTime() {
-        return buyTime;
+        return getIntParam(BUY_TIME);
     }
 
     public int getRoundsToWin() {
-        return roundsToWin;
+        return getIntParam(ROUNDS_TO_WIN);
     }
 
     public int getCurrentRound() {
@@ -104,31 +84,11 @@ public class BuyAttackData extends MiniGameData {
     }
 
     public int getAttackEndTime() {
-        return attackEndTime;
-    }
-
-    public void setAttackEndTime(int attackEndTime) {
-        this.attackEndTime = attackEndTime;
-    }
-
-    public void setBuyTime(int buyTime) {
-        this.buyTime = buyTime;
-    }
-
-    public void setAttackTime(int attackTime) {
-        this.attackTime = attackTime;
-    }
-
-    public void setRoundsToWin(int roundsToWin) {
-        this.roundsToWin = roundsToWin;
-    }
-
-    public void setAllowRespawnInBuyPhase(boolean allow) {
-        this.allowRespawnInBuyPhase = allow;
+        return getIntParam(ATTACK_END_TIME);
     }
 
     public boolean isAllowRespawnInBuyPhase() {
-        return allowRespawnInBuyPhase;
+        return getBooleanParam(ALLOW_BUY_PHASE_RESPAWN);
     }
 
     @Override
@@ -141,11 +101,7 @@ public class BuyAttackData extends MiniGameData {
     }
 
     public int getBuyRadius() {
-        return buyRadius;
-    }
-
-    public void setBuyRadius(int buyRadius) {
-        this.buyRadius = buyRadius;
+        return getIntParam(BUY_RADIUS);
     }
 
     public void announceWinnersByScore(MinecraftServer server) {
@@ -153,11 +109,18 @@ public class BuyAttackData extends MiniGameData {
     }
 
     public boolean allowPvpInBuyPhase() {
-        return allowPvpInBuyPhase;
+        return getBooleanParam(ALLOW_PVP_BUY_PHASE);
     }
 
-    public void setAllowPvpInBuyPhase(boolean allowPvpInBuyPhase) {
-        this.allowPvpInBuyPhase = allowPvpInBuyPhase;
+    @Override
+    protected void registerParams() {
+        super.registerParams();
+        registerParam(ALLOW_BUY_PHASE_RESPAWN);
+        registerParam(ALLOW_PVP_BUY_PHASE);
+        registerParam(BUY_TIME);
+        registerParam(ATTACK_TIME);
+        registerParam(ATTACK_END_TIME);
+        registerParam(ROUNDS_TO_WIN);
+        registerParam(BUY_RADIUS);
     }
-
 }

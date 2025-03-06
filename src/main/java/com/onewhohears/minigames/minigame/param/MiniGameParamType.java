@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.command.PlayerAgentSuggestion;
 import com.onewhohears.minigames.command.admin.GameSetupCom;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
@@ -41,14 +42,20 @@ public abstract class MiniGameParamType<E> {
     }
 
     protected abstract String getSetterArgumentName();
-    protected abstract ArgumentType<E> getSetterArgumentType();
+    protected abstract ArgumentType<?> getSetterArgumentType();
     protected abstract E getInputtedValue(CommandContext<CommandSourceStack> context, String name);
-    protected abstract PlayerAgentSuggestion getSuggestions();
-    protected abstract MutableComponent getDisplayComponentFromValue(E value);
 
-    protected TriFunction<CommandContext<CommandSourceStack>, MiniGameData, E, Integer> getSetterApplier() {
+    protected PlayerAgentSuggestion getSuggestions() {
+        return suggestNothing();
+    }
+
+    protected MutableComponent getDisplayComponentFromValue(E value) {
+        return UtilMCText.literal(""+value);
+    }
+
+    protected TriFunction<CommandContext<CommandSourceStack>, MiniGameData, E, Integer> getSetterWrapper() {
         return (context, gameData, value) -> {
-            if (gameData.setParam(this, value)) {
+            if (getSetterApplier().apply(context, gameData, value)) {
                 MutableComponent v = getDisplayComponentFromValue(value);
                 MutableComponent message = UtilMCText.literal("Set ")
                         .append(UtilMCText.translatable(getDisplayName()))
@@ -58,17 +65,21 @@ public abstract class MiniGameParamType<E> {
             } else {
                 MutableComponent message = UtilMCText.literal("The Parameter Type ")
                         .append(UtilMCText.translatable(getDisplayName()))
-                        .append("is not used by this game type!");
+                        .append(" is not used by this game type!");
                 context.getSource().sendFailure(message);
                 return 0;
             }
         };
     }
 
+    protected TriFunction<CommandContext<CommandSourceStack>, MiniGameData, E, Boolean> getSetterApplier() {
+        return (context, gameData, value) -> gameData.setParam(this, value);
+    }
+
     protected GameSetupCom getSetterExecutor() {
         return (context, gameData) -> {
             E value = getInputtedValue(context, getSetterArgumentName());
-            return getSetterApplier().apply(context, gameData, value);
+            return getSetterWrapper().apply(context, gameData, value);
         };
     }
 
@@ -96,5 +107,9 @@ public abstract class MiniGameParamType<E> {
     @NotNull
     public String getDisplayName() {
         return "param_type."+getId();
+    }
+
+    public static PlayerAgentSuggestion suggestNothing() {
+        return GameComArgs.suggestNothing();
     }
 }

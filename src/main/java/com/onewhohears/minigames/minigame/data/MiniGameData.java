@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import com.onewhohears.minigames.entity.FlagEntity;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.VanillaTeamAgent;
+import com.onewhohears.minigames.minigame.param.MiniGameParamHolder;
 import com.onewhohears.minigames.minigame.param.MiniGameParamType;
 import com.onewhohears.minigames.minigame.poi.GamePOI;
 import com.onewhohears.onewholibs.util.UtilMCText;
@@ -45,6 +46,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
 
+import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.*;
+
 public abstract class MiniGameData {
 
 	public static final Style GOLD_BOLD = Style.EMPTY.withBold(true)
@@ -59,6 +62,7 @@ public abstract class MiniGameData {
 	
 	private final String gameTypeId;
 	private final String instanceId;
+	private final Map<MiniGameParamType<?>, MiniGameParamHolder<?,?>> params = new HashMap<>();
 	private final Map<String, GameAgent> agents = new HashMap<>();
 	private final Map<String, GamePhase<?>> phases = new HashMap<>();
 	private final Map<String, GamePOI<?>> pois = new HashMap<>();
@@ -71,18 +75,6 @@ public abstract class MiniGameData {
 	private GamePhase<?> currentPhase;
 	private int age, resets;
 	private boolean isStarted, isStopped, isPaused, firstTick = true;
-
-	public boolean forceNonMemberSpectator;
-	public float waterFoodExhaustionRate;
-
-	protected boolean canAddIndividualPlayers;
-	protected boolean canAddTeams;
-
-	protected boolean clearOnStart, allowAlwaysShop;
-	protected boolean requiresSetRespawnPos, worldBorderDuringGame;
-	protected int defaultInitialLives = 3, moneyPerRound = 10;
-	protected double gameBorderSize = 1000;
-	@NotNull protected Vec3 gameCenter = Vec3.ZERO;
 	
 	protected MiniGameData(String instanceId, String gameTypeId) {
 		this.instanceId = instanceId;
@@ -98,18 +90,7 @@ public abstract class MiniGameData {
 		nbt.putBoolean("isStarted", isStarted);
 		nbt.putBoolean("isStopped", isStopped);
 		nbt.putBoolean("isPaused", isPaused);
-		nbt.putBoolean("canAddIndividualPlayers", canAddIndividualPlayers);
-		nbt.putBoolean("canAddTeams", canAddTeams);
-		nbt.putBoolean("requiresSetRespawnPos", requiresSetRespawnPos);
-		nbt.putBoolean("worldBorderDuringGame", worldBorderDuringGame);
-		nbt.putInt("initialLives", defaultInitialLives);
-		nbt.putInt("moneyPerRound", moneyPerRound);
-		nbt.putDouble("gameBorderSize", gameBorderSize);
-		nbt.putBoolean("clearOnStart", clearOnStart);
-		nbt.putBoolean("forceNonMemberSpectator", forceNonMemberSpectator);
-		nbt.putBoolean("allowAlwaysShop", allowAlwaysShop);
-		nbt.putFloat("waterFoodExhaustionRate", waterFoodExhaustionRate);
-		UtilParse.writeVec3(nbt, gameCenter, "gameCenter");
+		saveParams(nbt);
 		saveAgents(nbt);
 		savePhases(nbt);
 		savePois(nbt);
@@ -125,18 +106,7 @@ public abstract class MiniGameData {
 		isStarted = nbt.getBoolean("isStarted");
 		isStopped = nbt.getBoolean("isStopped");
 		isPaused = nbt.getBoolean("isPaused");
-		canAddIndividualPlayers = nbt.getBoolean("canAddIndividualPlayers");
-		canAddTeams = nbt.getBoolean("canAddTeams");
-		requiresSetRespawnPos = nbt.getBoolean("requiresSetRespawnPos");
-		worldBorderDuringGame = nbt.getBoolean("worldBorderDuringGame");
-		defaultInitialLives = nbt.getInt("initialLives");
-		moneyPerRound = nbt.getInt("moneyPerRound");
-		gameBorderSize = nbt.getDouble("gameBorderSize");
-		gameCenter = UtilParse.readVec3(nbt, "gameCenter");
-		clearOnStart = nbt.getBoolean("clearOnStart");
-		forceNonMemberSpectator = nbt.getBoolean("forceNonMemberSpectator");
-		allowAlwaysShop = nbt.getBoolean("allowAlwaysShop");
-		waterFoodExhaustionRate = nbt.getFloat("waterFoodExhaustionRate");
+		loadParams(nbt);
 		loadAgents(nbt);
 		loadPhases(nbt);
 		loadPois(nbt);
@@ -144,6 +114,14 @@ public abstract class MiniGameData {
 		kits.addAll(UtilParse.readStringSet(nbt, "kits"));
 		shops.addAll(UtilParse.readStringSet(nbt, "shops"));
 		events.addAll(UtilParse.readStringSet(nbt, "events"));
+	}
+
+	protected void saveParams(CompoundTag nbt) {
+		params.forEach((type, holder) -> holder.save(nbt));
+	}
+
+	protected void loadParams(CompoundTag nbt) {
+		params.forEach((type, holder) -> holder.load(nbt));
 	}
 
 	protected void savePois(CompoundTag nbt) {
@@ -378,23 +356,19 @@ public abstract class MiniGameData {
 	}
 	
 	public boolean canAddIndividualPlayers() {
-		return canAddIndividualPlayers;
+		return getBooleanParam(CAN_ADD_PLAYERS);
 	}
 	
 	public boolean canAddTeams() {
-		return canAddTeams;
+		return getBooleanParam(CAN_ADD_TEAMS);
 	}
 	
 	public int getDefaultInitialLives() {
-		return defaultInitialLives;
-	}
-	
-	public void setDefaultInitialLives(int lives) {
-		this.defaultInitialLives = lives;
+		return getIntParam(DEFAULT_LIVES);
 	}
 	
 	public void setGameCenter(@NotNull Vec3 center) {
-		gameCenter = center;
+		setParam(GAME_CENTER, center);
 	}
 	
 	public void setGameCenter(@NotNull Vec3 center, MinecraftServer server) {
@@ -404,15 +378,11 @@ public abstract class MiniGameData {
 
 	@NotNull
 	public Vec3 getGameCenter() {
-		return gameCenter;
+		return getVec3Param(GAME_CENTER);
 	}
 	
 	public double getGameBorderSize() {
-		return gameBorderSize;
-	}
-	
-	public void setGameBorderSize(double size) {
-		gameBorderSize = size;
+		return getDoubleParam(WORLD_BORDER_SIZE);
 	}
 	
 	public GamePhase<?> getCurrentPhase() {
@@ -420,15 +390,11 @@ public abstract class MiniGameData {
 	}
 	
 	public boolean requiresSetRespawnPos() {
-		return requiresSetRespawnPos;
+		return getBooleanParam(REQUIRE_SET_SPAWN);
 	}
 	
 	public boolean useWorldBorderDuringGame() {
-		return worldBorderDuringGame;
-	}
-	
-	public void setUseWorldBorderDuringGame(boolean use) {
-		worldBorderDuringGame = use;
+		return getBooleanParam(USE_WORLD_BORDER);
 	}
 	
 	public boolean areAgentRespawnPosSet() {
@@ -676,11 +642,7 @@ public abstract class MiniGameData {
 	}
 	
 	public int getMoneyPerRound() {
-		return moneyPerRound;
-	}
-
-	public void setMoneyPerRound(int money) {
-		moneyPerRound = money;
+		return getIntParam(MONEY_PER_ROUND);
 	}
 	
 	public void giveMoneyToAgents(MinecraftServer server) {
@@ -764,11 +726,7 @@ public abstract class MiniGameData {
 	}
 
 	public boolean isClearOnStart() {
-		return clearOnStart;
-	}
-
-	public void setClearOnStart(boolean clear) {
-		clearOnStart = clear;
+		return getBooleanParam(CLEAR_ON_START);
 	}
 
 	public abstract Component getStartGameMessage(MinecraftServer server);
@@ -888,7 +846,7 @@ public abstract class MiniGameData {
 	}
 
 	public boolean isForceNonMemberSpectator() {
-		return forceNonMemberSpectator;
+		return getBooleanParam(FORCE_NON_MEMBER_SPEC);
 	}
 
 	public void setAllAgentInitialLives(int lives) {
@@ -912,15 +870,11 @@ public abstract class MiniGameData {
 	}
 
 	public boolean alwaysAllowOpenShop() {
-		return allowAlwaysShop;
-	}
-
-	public void setAlwaysAllowOpenShop(boolean allow) {
-		allowAlwaysShop = allow;
+		return getBooleanParam(ALLOW_ALWAYS_SHOP);
 	}
 
 	public float getWaterFoodExhaustionRate() {
-		return waterFoodExhaustionRate;
+		return getFloatParam(WATER_FOOD_EXHAUSTION_RATE);
 	}
 
 	public void addEvents(String... ids) {
@@ -1001,13 +955,68 @@ public abstract class MiniGameData {
 		return pois.keySet().toArray(new String[0]);
 	}
 
-	public <E> boolean setParam(MiniGameParamType<E> type, E value) {
+	protected void registerParam(MiniGameParamType<?> type) {
+		params.put(type, new MiniGameParamHolder<>(type));
+	}
 
+	public boolean usesParam(MiniGameParamType<?> type) {
+		return params.containsKey(type);
+	}
+
+	public <E> boolean setParam(MiniGameParamType<E> type, E value) {
+		MiniGameParamHolder<?,E> holder = (MiniGameParamHolder<?,E>) params.get(type);
+		if (holder == null) return false;
+		holder.set(value);
 		return true;
 	}
 
+	/**
+	 * use {@link #usesParam(MiniGameParamType)} to check if the param exists.
+	 * if it doesn't exist in this game type then the default value is returned.
+	 */
+	@NotNull
 	public <E> E getParam(MiniGameParamType<E> type) {
+		MiniGameParamHolder<?,E> holder = (MiniGameParamHolder<?,E>) params.get(type);
+		if (holder == null) return type.getDefaultValue();
+		return holder.get();
+	}
 
-		return null;
+	public boolean getBooleanParam(MiniGameParamType<Boolean> type) {
+		return getParam(type);
+	}
+
+	public int getIntParam(MiniGameParamType<Integer> type) {
+		return getParam(type);
+	}
+
+	public double getDoubleParam(MiniGameParamType<Double> type) {
+		return getParam(type);
+	}
+
+	public float getFloatParam(MiniGameParamType<Float> type) {
+		return getParam(type);
+	}
+
+	public Vec3 getVec3Param(MiniGameParamType<Vec3> type) {
+		return getParam(type);
+	}
+
+	public Set<String> getStringSetParam(MiniGameParamType<Set<String>> type) {
+		return getParam(type);
+	}
+
+	protected void registerParams() {
+		registerParam(CAN_ADD_PLAYERS);
+		registerParam(CAN_ADD_TEAMS);
+		registerParam(CLEAR_ON_START);
+		registerParam(ALLOW_ALWAYS_SHOP);
+		registerParam(FORCE_NON_MEMBER_SPEC);
+		registerParam(REQUIRE_SET_SPAWN);
+		registerParam(USE_WORLD_BORDER);
+		registerParam(DEFAULT_LIVES);
+		registerParam(MONEY_PER_ROUND);
+		registerParam(WORLD_BORDER_SIZE);
+		registerParam(WATER_FOOD_EXHAUSTION_RATE);
+		registerParam(GAME_CENTER);
 	}
 }
