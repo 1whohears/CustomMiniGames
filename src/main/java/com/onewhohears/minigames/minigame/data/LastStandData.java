@@ -4,7 +4,8 @@ import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.phase.attackdefend.AttackDefendAttackPhase;
 import com.onewhohears.minigames.minigame.phase.attackdefend.AttackDefendBuyPhase;
 import com.onewhohears.minigames.minigame.phase.buyattackrounds.*;
-import net.minecraft.nbt.CompoundTag;
+
+import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.*;
 
 public class LastStandData extends AttackDefendData {
 
@@ -15,35 +16,20 @@ public class LastStandData extends AttackDefendData {
                 new AttackDefendAttackPhase<>(game),
                 new BuyAttackAttackEndPhase<>(game),
                 new BuyAttackEndPhase<>(game));
-        game.canAddIndividualPlayers = true;
-        game.canAddTeams = true;
-        game.requiresSetRespawnPos = true;
-        game.worldBorderDuringGame = true;
-        game.defaultInitialLives = 1;
-        game.roundsToWin = 3;
-        game.buyTime = 1200;
-        game.attackTime = 7200;
-        game.attackersShareLives = true;
+        game.setParam(CAN_ADD_PLAYERS, true);
+        game.setParam(CAN_ADD_TEAMS, true);
+        game.setParam(REQUIRE_SET_SPAWN, true);
+        game.setParam(USE_WORLD_BORDER, false);
+        game.setParam(DEFAULT_LIVES, 1);
+        game.setParam(ROUNDS_TO_WIN, 3);
+        game.setParam(BUY_TIME, 1200);
+        game.setParam(ATTACK_TIME, 7200);
+        game.setParam(ATTACKERS_SHARE_LIVES, true);
         return game;
     }
 
-    public int initialAttackerLives = 50;
-
     public LastStandData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);
-    }
-
-    @Override
-    public CompoundTag save() {
-        CompoundTag nbt = super.save();
-        nbt.putInt("initialAttackerLives", initialAttackerLives);
-        return nbt;
-    }
-
-    @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
-        initialAttackerLives = nbt.getInt("initialAttackerLives");
     }
 
     @Override
@@ -51,7 +37,13 @@ public class LastStandData extends AttackDefendData {
         if (!super.addAttacker(id)) return false;
         GameAgent agent = getAgentById(id);
         if (agent == null) return false;
-        agent.setInitialLives(initialAttackerLives);
+        agent.setInitialLives(getIntParam(INIT_ATTACKER_LIVES));
         return true;
+    }
+
+    @Override
+    protected void registerParams() {
+        super.registerParams();
+        registerParam(INIT_ATTACKER_LIVES);
     }
 }

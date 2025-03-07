@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.onewhohears.minigames.command.PlayerAgentSuggestion;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.onewhohears.minigames.command.admin.GameSetupCom;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 import com.onewhohears.onewholibs.util.UtilMCText;
@@ -15,27 +15,29 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class StringSetParamType extends MiniGameParamType<Set<String>> {
 
-    private final PlayerAgentSuggestion addSuggestions, removeSuggestions;
+    private final SuggestionProvider<CommandSourceStack> addSuggestions, removeSuggestions;
 
     public StringSetParamType(@NotNull String id) {
-        this(id, Set.of());
+        this(id, new HashSet<>());
     }
 
     public StringSetParamType(@NotNull String id, @NotNull Set<String> defaultValue) {
         this(id, defaultValue, suggestNothing(), suggestNothing());
     }
 
-    public StringSetParamType(@NotNull String id, PlayerAgentSuggestion addSuggestions,
-                              PlayerAgentSuggestion removeSuggestions) {
-        this(id, Set.of(), addSuggestions, removeSuggestions);
+    public StringSetParamType(@NotNull String id, SuggestionProvider<CommandSourceStack> addSuggestions,
+                              SuggestionProvider<CommandSourceStack> removeSuggestions) {
+        this(id, new HashSet<>(), addSuggestions, removeSuggestions);
     }
 
     public StringSetParamType(@NotNull String id, @NotNull Set<String> defaultValue,
-                              PlayerAgentSuggestion addSuggestions, PlayerAgentSuggestion removeSuggestions) {
+                              SuggestionProvider<CommandSourceStack> addSuggestions,
+                              SuggestionProvider<CommandSourceStack> removeSuggestions) {
         super(id, defaultValue);
         this.addSuggestions = addSuggestions;
         this.removeSuggestions = removeSuggestions;
@@ -130,11 +132,11 @@ public class StringSetParamType extends MiniGameParamType<Set<String>> {
         return Set.of();
     }
 
-    protected PlayerAgentSuggestion getAddSuggestions() {
+    protected SuggestionProvider<CommandSourceStack> getAddSuggestions() {
         return addSuggestions;
     }
 
-    protected PlayerAgentSuggestion getRemoveSuggestions() {
+    protected SuggestionProvider<CommandSourceStack> getRemoveSuggestions() {
         return removeSuggestions;
     }
 

@@ -10,11 +10,17 @@ import org.jetbrains.annotations.NotNull;
 public class IntParamType extends MiniGameParamType<Integer> {
 
     private final int min, max;
+    private final String setterArgumentName;
 
     public IntParamType(@NotNull String id, @NotNull Integer defaultValue, int min, int max) {
+        this(id, defaultValue, min, max, "integer");
+    }
+
+    public IntParamType(@NotNull String id, @NotNull Integer defaultValue, int min, int max, String setterArgumentName) {
         super(id, defaultValue);
         this.min = min;
         this.max = max;
+        this.setterArgumentName = setterArgumentName;
     }
 
     @Override
@@ -29,7 +35,7 @@ public class IntParamType extends MiniGameParamType<Integer> {
 
     @Override
     protected String getSetterArgumentName() {
-        return "integer";
+        return setterArgumentName;
     }
 
     @Override

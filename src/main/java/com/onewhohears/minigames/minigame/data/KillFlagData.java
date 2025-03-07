@@ -11,7 +11,6 @@ import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilGeometry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.Level;
@@ -22,6 +21,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.*;
+
 public class KillFlagData extends AttackDefendData {
 
     public static KillFlagData createKillFlagMatch(String instanceId, String gameTypeId) {
@@ -31,24 +32,21 @@ public class KillFlagData extends AttackDefendData {
                 new KillFlagAttackPhase<>(game),
                 new BuyAttackAttackEndPhase<>(game),
                 new BuyAttackEndPhase<>(game));
+        game.setParam(CAN_ADD_PLAYERS, false);
+        game.setParam(CAN_ADD_TEAMS, true);
+        game.setParam(REQUIRE_SET_SPAWN, true);
+        game.setParam(USE_WORLD_BORDER, false);
+        game.setParam(DEFAULT_LIVES, 1);
+        game.setParam(ROUNDS_TO_WIN, 3);
         game.addKits("standard", "builder", "archer");
-        game.addAttackerShop("survival");
-        game.addDefenderShop("survival");
+        game.addShops("survival");
+        game.getParam(ATTACKER_SHOPS).add("survival");
+        game.getParam(DEFENDER_SHOPS).add("survival");
         return game;
     }
 
-    public int banAllBlocksRadius = 2; // 0 to disable
-    public int blockBlackListRadius = 0; // 0 to disable
-    public int blockWhiteListRadius = 0; // 0 to disable
-
     public KillFlagData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);
-        this.canAddTeams = true;
-        this.canAddIndividualPlayers = false;
-        this.requiresSetRespawnPos = true;
-        this.defaultInitialLives = 1;
-        this.roundsToWin = 3;
-        this.buyTime = 600;
     }
 
     @Override
@@ -70,23 +68,6 @@ public class KillFlagData extends AttackDefendData {
     }
 
     @Override
-    public CompoundTag save() {
-        CompoundTag nbt = super.save();
-        nbt.putInt("banAllBlocksRadius", banAllBlocksRadius);
-        nbt.putInt("blockBlackListRadius", blockBlackListRadius);
-        nbt.putInt("blockWhiteListRadius", blockWhiteListRadius);
-        return nbt;
-    }
-
-    @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
-        banAllBlocksRadius = nbt.getInt("banAllBlocksRadius");
-        blockBlackListRadius = nbt.getInt("blockBlackListRadius");
-        blockWhiteListRadius = nbt.getInt("blockWhiteListRadius");
-    }
-
-    @Override
     public void reset(MinecraftServer server) {
         super.reset(server);
     }
@@ -96,9 +77,9 @@ public class KillFlagData extends AttackDefendData {
         Optional<Holder.Reference<Block>> optional = ForgeRegistries.BLOCKS.getDelegate(block);
         if (optional.isEmpty()) return true;
         Holder.Reference<Block> holder = optional.get();
-        int all = banAllBlocksRadius * banAllBlocksRadius;
-        int white = blockWhiteListRadius * blockWhiteListRadius;
-        int black = blockBlackListRadius * blockBlackListRadius;
+        int all = getIntParam(BAN_ALL_BLOCKS_RADIUS)^2;
+        int white = getIntParam(WHITE_LIST_BLOCKS_RADIUS)^2;
+        int black = getIntParam(BLACK_LIST_BLOCKS_RADIUS)^2;
         AtomicBoolean allow = new AtomicBoolean(true);
         Vec3 vpos = UtilGeometry.toVec3(pos);
         forEachFlag(flag -> {
@@ -126,4 +107,11 @@ public class KillFlagData extends AttackDefendData {
         return allow.get();
     }
 
+    @Override
+    protected void registerParams() {
+        super.registerParams();
+        registerParam(BAN_ALL_BLOCKS_RADIUS);
+        registerParam(BLACK_LIST_BLOCKS_RADIUS);
+        registerParam(WHITE_LIST_BLOCKS_RADIUS);
+    }
 }

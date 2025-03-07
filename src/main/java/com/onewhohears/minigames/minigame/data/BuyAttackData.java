@@ -17,12 +17,12 @@ public class BuyAttackData extends MiniGameData {
                 new BuyAttackAttackPhase<>(game),
                 new BuyAttackAttackEndPhase<>(game),
                 new BuyAttackEndPhase<>(game));
-        game.canAddIndividualPlayers = true;
-        game.canAddTeams = true;
-        game.requiresSetRespawnPos = true;
-        game.worldBorderDuringGame = true;
-        game.defaultInitialLives = 1;
-        game.roundsToWin = 3;
+        game.setParam(CAN_ADD_PLAYERS, true);
+        game.setParam(CAN_ADD_TEAMS, true);
+        game.setParam(REQUIRE_SET_SPAWN, true);
+        game.setParam(USE_WORLD_BORDER, true);
+        game.setParam(DEFAULT_LIVES, 1);
+        game.setParam(ROUNDS_TO_WIN, 3);
         game.addKits("standard", "builder", "archer");
         game.addShops("survival");
         return game;
@@ -32,7 +32,6 @@ public class BuyAttackData extends MiniGameData {
 
     public BuyAttackData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);
-        this.moneyPerRound = 20;
     }
 
     @Override

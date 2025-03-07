@@ -17,7 +17,8 @@ public class MiniGameParamHolder<T extends MiniGameParamType<E>, E> {
         getType().save(tag, get());
     }
     public void load(CompoundTag tag) {
-        set(getType().load(tag));
+        if (tag.contains(getType().getId())) set(getType().load(tag));
+        else set(getType().getDefaultValue());
     }
 
     public @NotNull T getType() {

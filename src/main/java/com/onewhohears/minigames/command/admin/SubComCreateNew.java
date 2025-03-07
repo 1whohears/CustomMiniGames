@@ -27,30 +27,37 @@ public class SubComCreateNew {
 	
 	private Command<CommandSourceStack> commandCreateNew() {
 		return (context) -> {
-			String gameTypeId = StringArgumentType.getString(context, "game_type");
-			if (!MiniGameManager.hasGameType(gameTypeId)) {
-				Component message = Component.literal("The Game Type "+gameTypeId+" does not exist!");
+			try {
+				String gameTypeId = StringArgumentType.getString(context, "game_type");
+				if (!MiniGameManager.hasGameType(gameTypeId)) {
+					Component message = Component.literal("The Game Type " + gameTypeId + " does not exist!");
+					context.getSource().sendFailure(message);
+					return 0;
+				}
+				String gameInstanceId = StringArgumentType.getString(context, "instance_id");
+				if (MiniGameManager.get().isGameRunning(gameInstanceId)) {
+					Component message = Component.literal(gameInstanceId + " already exists! You may want to reset or remove it.");
+					context.getSource().sendFailure(message);
+					return 0;
+				}
+				MiniGameData gameData = MiniGameManager.get().startNewGame(gameTypeId, gameInstanceId);
+				if (gameData == null) {
+					Component message = Component.literal("Unable to start new game " + gameInstanceId + " of type " + gameTypeId);
+					context.getSource().sendFailure(message);
+					return 0;
+				}
+				gameData.setGameCenter(context.getSource().getPosition());
+				MutableComponent message = Component.literal("Started new game of type " + gameTypeId + " called " + gameInstanceId + ".");
+				message.append("\nUse /game setup " + gameInstanceId + " to configure the game.");
+				message.append("\n" + gameData.getSetupInfo());
+				context.getSource().sendSuccess(message, true);
+				return 1;
+			} catch (Exception e) {
+				Component message = Component.literal("Unable to start new game due to error: "+e.getMessage());
 				context.getSource().sendFailure(message);
-				return 0;
+				e.printStackTrace();
 			}
-			String gameInstanceId = StringArgumentType.getString(context, "instance_id");
-			if (MiniGameManager.get().isGameRunning(gameInstanceId)) {
-				Component message = Component.literal(gameInstanceId+" already exists! You may want to reset or remove it.");
-				context.getSource().sendFailure(message);
-				return 0;
-			}
-			MiniGameData gameData = MiniGameManager.get().startNewGame(gameTypeId, gameInstanceId);
-			if (gameData == null) {
-				Component message = Component.literal("Unable to start new game "+gameInstanceId+" of type "+gameTypeId);
-				context.getSource().sendFailure(message);
-				return 0;
-			}
-			gameData.setGameCenter(context.getSource().getPosition());
-			MutableComponent message = Component.literal("Started new game of type "+gameTypeId+" called "+gameInstanceId+".");
-			message.append("\nUse /game setup "+gameInstanceId+" to configure the game.");
-			message.append("\n"+gameData.getSetupInfo());
-			context.getSource().sendSuccess(message, true);
-			return 1;
+			return 0;
 		};
 	}
 	

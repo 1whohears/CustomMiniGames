@@ -1,7 +1,6 @@
 package com.onewhohears.minigames.minigame.data;
 
 import com.onewhohears.minigames.minigame.agent.GameAgent;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,16 +14,6 @@ public class AttackDefendData extends BuyAttackData {
 
     public AttackDefendData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);
-    }
-
-    @Override
-    public CompoundTag save() {
-        return super.save();
-    }
-
-    @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
     }
 
     public List<GameAgent> getLivingAttackers() {

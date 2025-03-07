@@ -7,6 +7,8 @@ import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 
+import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.*;
+
 public class DeathMatchData extends MiniGameData {
 
 	public static DeathMatchData createSimpleTeamDeathMatch(String instanceId, String gameTypeId, int initialLives) {
@@ -14,11 +16,11 @@ public class DeathMatchData extends MiniGameData {
 		game.setPhases(new DeathMatchSetupPhase<>(game), 
 				new DeathMatchPlayPhase<>(game), 
 				new DeathMatchEndPhase<>(game));
-		game.canAddIndividualPlayers = false;
-		game.canAddTeams = true;
-		game.requiresSetRespawnPos = true;
-		game.worldBorderDuringGame = false;
-		game.defaultInitialLives = initialLives;
+		game.setParam(CAN_ADD_PLAYERS, false);
+		game.setParam(CAN_ADD_TEAMS, true);
+		game.setParam(REQUIRE_SET_SPAWN, true);
+		game.setParam(USE_WORLD_BORDER, false);
+		game.setParam(DEFAULT_LIVES, initialLives);
 		game.addKits("standard", "builder", "archer");
 		game.addShops("survival");
 		return game;
@@ -29,11 +31,11 @@ public class DeathMatchData extends MiniGameData {
 		game.setPhases(new DeathMatchSetupPhase<>(game), 
 				new DeathMatchPlayPhase<>(game), 
 				new DeathMatchEndPhase<>(game));
-		game.canAddIndividualPlayers = true;
-		game.canAddTeams = false;
-		game.requiresSetRespawnPos = true;
-		game.worldBorderDuringGame = false;
-		game.defaultInitialLives = initialLives;
+		game.setParam(CAN_ADD_PLAYERS, true);
+		game.setParam(CAN_ADD_TEAMS, false);
+		game.setParam(REQUIRE_SET_SPAWN, true);
+		game.setParam(USE_WORLD_BORDER, false);
+		game.setParam(DEFAULT_LIVES, initialLives);
 		game.addKits("standard", "builder", "archer");
 		game.addShops("survival");
 		return game;

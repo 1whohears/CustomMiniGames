@@ -4,8 +4,8 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.onewhohears.minigames.command.GameComArgs;
-import com.onewhohears.minigames.command.PlayerAgentSuggestion;
 import com.onewhohears.minigames.command.admin.GameSetupCom;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 import com.onewhohears.onewholibs.util.UtilMCText;
@@ -45,7 +45,7 @@ public abstract class MiniGameParamType<E> {
     protected abstract ArgumentType<?> getSetterArgumentType();
     protected abstract E getInputtedValue(CommandContext<CommandSourceStack> context, String name);
 
-    protected PlayerAgentSuggestion getSuggestions() {
+    protected SuggestionProvider<CommandSourceStack> getSuggestions() {
         return suggestNothing();
     }
 
@@ -88,7 +88,7 @@ public abstract class MiniGameParamType<E> {
             MutableComponent value = getDisplayComponentFromValue(gameData.getParam(this));
             MutableComponent message = UtilMCText.literal("The game "+gameData.getInstanceId()
                     +" has parameter ").append(UtilMCText.translatable(getDisplayName()))
-                    .append(" set to ").append(value);
+                    .append(" set to: ").append(value);
             context.getSource().sendSuccess(message, false);
             return 1;
         };
@@ -109,7 +109,7 @@ public abstract class MiniGameParamType<E> {
         return "param_type."+getId();
     }
 
-    public static PlayerAgentSuggestion suggestNothing() {
+    public static SuggestionProvider<CommandSourceStack> suggestNothing() {
         return GameComArgs.suggestNothing();
     }
 }

@@ -34,7 +34,6 @@ import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 import com.onewhohears.minigames.minigame.phase.GamePhase;
 import com.onewhohears.minigames.minigame.phase.SetupPhase;
-import com.onewhohears.onewholibs.util.UtilParse;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -67,9 +66,6 @@ public abstract class MiniGameData {
 	private final Map<String, GamePhase<?>> phases = new HashMap<>();
 	private final Map<String, GamePOI<?>> pois = new HashMap<>();
 	private final Set<FlagEntity> flags = new HashSet<>();
-	private final Set<String> kits = new HashSet<>();
-	private final Set<String> shops = new HashSet<>();
-	private final Set<String> events = new HashSet<>();
 	private SetupPhase<?> setupPhase;
 	private GamePhase<?> nextPhase;
 	private GamePhase<?> currentPhase;
@@ -79,6 +75,7 @@ public abstract class MiniGameData {
 	protected MiniGameData(String instanceId, String gameTypeId) {
 		this.instanceId = instanceId;
 		this.gameTypeId = gameTypeId;
+		registerParams();
 	}
 	
 	public CompoundTag save() {
@@ -94,9 +91,6 @@ public abstract class MiniGameData {
 		saveAgents(nbt);
 		savePhases(nbt);
 		savePois(nbt);
-		UtilParse.writeStrings(nbt, "kits", kits);
-		UtilParse.writeStrings(nbt, "shops", shops);
-		UtilParse.writeStrings(nbt, "events", events);
 		return nbt;
 	}
 	
@@ -110,10 +104,6 @@ public abstract class MiniGameData {
 		loadAgents(nbt);
 		loadPhases(nbt);
 		loadPois(nbt);
-		kits.clear(); shops.clear(); events.clear();
-		kits.addAll(UtilParse.readStringSet(nbt, "kits"));
-		shops.addAll(UtilParse.readStringSet(nbt, "shops"));
-		events.addAll(UtilParse.readStringSet(nbt, "events"));
 	}
 
 	protected void saveParams(CompoundTag nbt) {
@@ -204,8 +194,8 @@ public abstract class MiniGameData {
 		//System.out.println("GAME TICK: id="+getInstanceId()+" start="+isStarted()+" stop="+isStopped());
 		if (!isStarted() && shouldStart(server)) start(server);
 		if (isStarted() && !isStopped() && shouldStop(server)) stop(server);
- 		if (shouldTickGame(server)) tickGame(server);
- 		firstTick = false;
+		if (shouldTickGame(server)) tickGame(server);
+		firstTick = false;
 	}
 	
 	public void tickGame(MinecraftServer server) {
@@ -404,37 +394,45 @@ public abstract class MiniGameData {
 				return false;
 		return true;
 	}
-	
+
+	protected Set<String> getEnabledKits() {
+		return getStringSetParam(KITS);
+	}
+
 	public void addKits(String... ids) {
-        kits.addAll(Arrays.asList(ids));
+		getEnabledKits().addAll(Arrays.asList(ids));
 	}
 	
 	public void removeKit(String id) {
-		kits.remove(id);
+		getEnabledKits().remove(id);
 	}
 	
 	public String[] getEnabledKitIds() {
-		return kits.toArray(new String[0]);
+		return getEnabledKits().toArray(new String[0]);
 	}
 
 	public boolean hasKit(String id) {
-		return kits.contains(id);
+		return getEnabledKits().contains(id);
+	}
+
+	protected Set<String> getEnabledShops() {
+		return getStringSetParam(SHOPS);
 	}
 
 	public void addShops(String... ids) {
-        Collections.addAll(shops, ids);
+        Collections.addAll(getEnabledShops(), ids);
 	}
 	
 	public void removeShops(String... ids) {
-		for (String id : ids) shops.remove(id);
+		for (String id : ids) getEnabledShops().remove(id);
 	}
 	
 	public String[] getEnabledShopIds() {
-		return shops.toArray(new String[0]);
+		return getEnabledShops().toArray(new String[0]);
 	}
 
 	public boolean hasShop(String id) {
-		return shops.contains(id);
+		return getEnabledShops().contains(id);
 	}
 	
 	public boolean isFirstTick() {
@@ -877,20 +875,24 @@ public abstract class MiniGameData {
 		return getFloatParam(WATER_FOOD_EXHAUSTION_RATE);
 	}
 
+	protected Set<String> getEnabledEvents() {
+		return getStringSetParam(EVENTS);
+	}
+
 	public void addEvents(String... ids) {
-		Collections.addAll(events, ids);
+		Collections.addAll(getEnabledEvents(), ids);
 	}
 
 	public void removeEvents(String... ids) {
-		for (String id : ids) events.remove(id);
+		for (String id : ids) getEnabledEvents().remove(id);
 	}
 
 	public String[] getHandleableEvents() {
-		return events.toArray(new String[0]);
+		return getEnabledEvents().toArray(new String[0]);
 	}
 
     public boolean canHandleEvent(String event) {
-		return events.contains(event);
+		return getEnabledEvents().contains(event);
     }
 
 	/**
@@ -1018,5 +1020,8 @@ public abstract class MiniGameData {
 		registerParam(WORLD_BORDER_SIZE);
 		registerParam(WATER_FOOD_EXHAUSTION_RATE);
 		registerParam(GAME_CENTER);
+		registerParam(KITS);
+		registerParam(SHOPS);
+		registerParam(EVENTS);
 	}
 }

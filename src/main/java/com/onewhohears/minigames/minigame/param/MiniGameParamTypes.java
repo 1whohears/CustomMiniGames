@@ -1,9 +1,13 @@
 package com.onewhohears.minigames.minigame.param;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.onewhohears.minigames.command.GameComArgs;
+import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
+import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.data.AttackDefendData;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
+import com.onewhohears.minigames.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.function.TriFunction;
@@ -28,21 +32,39 @@ public final class MiniGameParamTypes {
             };
         }
     };
-    public static final IntParamType MONEY_PER_ROUND = new IntParamType("moneyPerRound", 10, 0, 640);
+    public static final IntParamType MONEY_PER_ROUND = new IntParamType("moneyPerRound", 20, 0, 640);
     public static final DoubleParamType WORLD_BORDER_SIZE = new DoubleParamType("gameBorderSize", 1000d, 1, 9999999);
     public static final FloatParamType WATER_FOOD_EXHAUSTION_RATE = new FloatParamType("waterFoodExhaustionRate", 0f, 0, 40f);
-    public static final Vec3ParamType GAME_CENTER = new Vec3ParamType("gameCenter", Vec3.ZERO);
+    public static final Vec3ParamType GAME_CENTER = new Vec3ParamType("gameCenter", Vec3.ZERO) {
+        @Override
+        protected TriFunction<CommandContext<CommandSourceStack>, MiniGameData, Vec3, Boolean> getSetterApplier() {
+            return (context, gameData, value) -> {
+                if (!gameData.setParam(this, value)) return false;
+                gameData.setGameCenter(value, context.getSource().getServer());
+                return true;
+            };
+        }
+    };
+    public static final StringSetParamType KITS = new StringSetParamType("kits",
+            CommandUtil.suggestStrings(() -> MiniGameKitsManager.get().getAllIds()),
+            GameComArgs.suggestEnabledKits());
+    public static final StringSetParamType SHOPS = new StringSetParamType("shops",
+            CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds()),
+            GameComArgs.suggestEnabledShops());
+    public static final StringSetParamType EVENTS = new StringSetParamType("events",
+            CommandUtil.suggestStrings(MiniGameManager::getAllEventIds),
+            GameComArgs.suggestHandleableEvents());
     // Buy Attack Phase Games
     public static final BoolParamType ALLOW_BUY_PHASE_RESPAWN = new BoolParamType("allowRespawnInBuyPhase", true);
     public static final BoolParamType ALLOW_PVP_BUY_PHASE = new BoolParamType("allowPvpInBuyPhase", false);
-    public static final IntParamType BUY_TIME = new IntParamType("buyTime", 900, 0, 1000000);
-    public static final IntParamType ATTACK_TIME = new IntParamType("attackTime", 6000, 0, 1000000);
-    public static final IntParamType ATTACK_END_TIME = new IntParamType("attackEndTime", 200, 0, 1000000);
+    public static final IntParamType BUY_TIME = new IntParamType("buyTime", 900, 0, 2000000, "ticks");
+    public static final IntParamType ATTACK_TIME = new IntParamType("attackTime", 6000, 0, 2000000, "ticks");
+    public static final IntParamType ATTACK_END_TIME = new IntParamType("attackEndTime", 200, 0, 2000000, "ticks");
     public static final IntParamType ROUNDS_TO_WIN = new IntParamType("roundsToWin", 3, 1, 1000000);
-    public static final IntParamType BUY_RADIUS = new IntParamType("buyRadius", 24, 1, 1000000);
+    public static final IntParamType BUY_RADIUS = new IntParamType("buyRadius", 24, -1, 1000000, "blocks");
     // Attack Defend Data
     public static final BoolParamType ATTACKERS_SHARE_LIVES = new BoolParamType("attackersShareLives", false);
-    public static final StringSetParamType DEFENDERS = new StringSetParamType("defenders") {
+    public static final StringSetParamType DEFENDERS = new StringSetParamType("defenders", GameComArgs.suggestAgentNames(), GameComArgs.suggestAgentNames()) {
         @Override
         protected ListParamModifier getAdderApplier() {
             return (context, gameData, list, value) -> {
@@ -51,7 +73,7 @@ public final class MiniGameParamTypes {
             };
         }
     };
-    public static final StringSetParamType ATTACKERS = new StringSetParamType("attackers") {
+    public static final StringSetParamType ATTACKERS = new StringSetParamType("attackers", GameComArgs.suggestAgentNames(), GameComArgs.suggestAgentNames()) {
         @Override
         protected ListParamModifier getAdderApplier() {
             return (context, gameData, list, value) -> {
@@ -60,7 +82,9 @@ public final class MiniGameParamTypes {
             };
         }
     };
-    public static final StringSetParamType DEFENDER_SHOPS = new StringSetParamType("defenderShops") {
+    public static final StringSetParamType DEFENDER_SHOPS = new StringSetParamType("defenderShops",
+            CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds()),
+            GameComArgs.suggestEnabledShops()) {
         @Override
         protected ListParamModifier getAdderApplier() {
             return (context, gameData, list, value) -> {
@@ -70,7 +94,9 @@ public final class MiniGameParamTypes {
             };
         }
     };
-    public static final StringSetParamType ATTACKER_SHOPS = new StringSetParamType("attackerShops") {
+    public static final StringSetParamType ATTACKER_SHOPS = new StringSetParamType("attackerShops",
+            CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds()),
+            GameComArgs.suggestEnabledShops()) {
         @Override
         protected ListParamModifier getAdderApplier() {
             return (context, gameData, list, value) -> {
@@ -80,12 +106,20 @@ public final class MiniGameParamTypes {
             };
         }
     };
-
+    // Kill the flag data
+    public static final IntParamType BAN_ALL_BLOCKS_RADIUS = new IntParamType("banAllBlocksRadius", 2, 0, 1000000, "blocks");
+    public static final IntParamType BLACK_LIST_BLOCKS_RADIUS = new IntParamType("blockBlackListRadius", 0, 0, 1000000, "blocks");
+    public static final IntParamType WHITE_LIST_BLOCKS_RADIUS = new IntParamType("blockWhiteListRadius", 0, 0, 1000000, "blocks");
+    // Last Stand Data
+    public static final IntParamType INIT_ATTACKER_LIVES = new IntParamType("initialAttackerLives", 50, 1, 1000000, "lives");
     /**
      * called in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
      * register all built in games param types here
      */
     public static void registerGameParamTypes() {
+        MiniGameManager.registerGameParamType(KITS);
+        MiniGameManager.registerGameParamType(SHOPS);
+        MiniGameManager.registerGameParamType(EVENTS);
         MiniGameManager.registerGameParamType(CAN_ADD_PLAYERS);
         MiniGameManager.registerGameParamType(CAN_ADD_TEAMS);
         MiniGameManager.registerGameParamType(CLEAR_ON_START);
@@ -110,5 +144,9 @@ public final class MiniGameParamTypes {
         MiniGameManager.registerGameParamType(ATTACKERS);
         MiniGameManager.registerGameParamType(DEFENDER_SHOPS);
         MiniGameManager.registerGameParamType(ATTACKER_SHOPS);
+        MiniGameManager.registerGameParamType(BAN_ALL_BLOCKS_RADIUS);
+        MiniGameManager.registerGameParamType(BLACK_LIST_BLOCKS_RADIUS);
+        MiniGameManager.registerGameParamType(WHITE_LIST_BLOCKS_RADIUS);
+        MiniGameManager.registerGameParamType(INIT_ATTACKER_LIVES);
     }
 }
