@@ -1,9 +1,13 @@
 package com.onewhohears.minigames.command.all;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.command.admin.SubComShop;
+import com.onewhohears.minigames.common.network.PacketHandler;
+import com.onewhohears.minigames.common.network.toclient.ToClientOpenKitGUI;
+import com.onewhohears.minigames.common.network.toclient.ToClientOpenShopGUI;
 import com.onewhohears.minigames.data.shops.GameShop;
 import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
@@ -11,18 +15,42 @@ import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.network.PacketDistributor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MiniGameAllCommands {
 	
 	public MiniGameAllCommands(CommandDispatcher<CommandSourceStack> d) {
 		d.register(Commands.literal("shop").requires((stack) -> stack.hasPermission(0))
-			.then(GameComArgs.enabledShopNameArgument()
-			.executes(openShopCommand()))
+				.executes(openShopGUICommand())
+				.then(GameComArgs.enabledShopNameArgument()
+				.executes(openShopCommand()))
 		);
 		d.register(Commands.literal("kit").requires((stack) -> stack.hasPermission(0))
-			.then(GameComArgs.enabledKitNameArgument()
-			.executes(selectKitCommand()))
+				.executes(openKitGUICommand())
+				.then(GameComArgs.enabledKitNameArgument()
+				.executes(selectKitCommand()))
 		);
+	}
+
+	private PlayerAgentsCommand openShopGUICommand() {
+		return (context, agents) -> {
+			List<String> shops = new ArrayList<>();
+			for (PlayerAgent agent : agents) {
+				String[] a = agent.getAvailableShops();
+				for (String s : a) if (agent.canOpenShop(s)) shops.add(s);
+			}
+			if (shops.isEmpty()) {
+				Component message = Component.literal("You are currently not allowed to open shops!");
+				context.getSource().sendFailure(message);
+				return 0;
+			}
+			PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> context.getSource().getPlayer()),
+					new ToClientOpenShopGUI(shops.toArray(new String[0])));
+			return 1;
+		};
 	}
 	
 	private PlayerAgentsCommand openShopCommand() {
@@ -60,6 +88,26 @@ public class MiniGameAllCommands {
 			Component message = Component.literal("You can't currently change your kit to "+kit_name);
 			context.getSource().sendFailure(message);
 			return 0;
+		};
+	}
+
+	private PlayerAgentsCommand openKitGUICommand() {
+		return (context, agents) -> {
+			String selected = "";
+			List<String> kits = new ArrayList<>();
+			for (PlayerAgent agent : agents) {
+				selected = agent.getSelectedKit();
+				String[] a = agent.getAvailableKits();
+				for (String s : a) if (agent.canUseKit(s)) kits.add(s);
+			}
+			if (kits.isEmpty()) {
+				Component message = Component.literal("You aren't in an active game");
+				context.getSource().sendFailure(message);
+				return 0;
+			}
+			PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> context.getSource().getPlayer()),
+					new ToClientOpenKitGUI(selected, kits.toArray(new String[0])));
+			return 1;
 		};
 	}
 	

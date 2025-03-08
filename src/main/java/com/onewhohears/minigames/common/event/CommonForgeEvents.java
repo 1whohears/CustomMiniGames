@@ -49,7 +49,7 @@ public class CommonForgeEvents {
 		} else if (event.getEntity() instanceof FlagEntity flag) {
 			MiniGameData data = flag.getGameData();
 			if (data == null) return;
-			if (data.getCurrentPhase().allowPVP()) {
+			if (!data.getCurrentPhase().allowPVP()) {
 				event.setCanceled(true);
 			}
 		}

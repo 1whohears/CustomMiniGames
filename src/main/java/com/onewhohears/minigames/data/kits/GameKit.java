@@ -35,6 +35,7 @@ public class GameKit extends JsonPresetStats {
 	public static final MiniGamePresetType GAMEKIT = new MiniGamePresetType("gamekit", GameKit::new);
 
 	private final List<KitItem> items = new ArrayList<>();
+	private List<ItemStack> displayStacks;
 	public GameKit(ResourceLocation key, JsonObject json) {
 		super(key, json);
 		JsonArray list = json.get("kitItems").getAsJsonArray();
@@ -103,6 +104,14 @@ public class GameKit extends JsonPresetStats {
 		if (stack.isEmpty()) return null;
 		for (KitItem item : items) if (item.isSameItem(stack)) return item;
 		return null;
+	}
+	public List<ItemStack> getItemsForDisplay() {
+		if (displayStacks == null) {
+			displayStacks = new ArrayList<>();
+			for (KitItem item : items)
+				displayStacks.add(item.getItem());
+		}
+		return displayStacks;
 	}
 	
 	public static class KitItem {
