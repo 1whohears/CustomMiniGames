@@ -15,6 +15,9 @@ import org.apache.commons.lang3.function.TriFunction;
 public final class MiniGameParamTypes {
 
     // All Mini Games
+    public static final BoolParamType JOIN_SETUP_ONLY = new BoolParamType("onlyJoinDuringSetup", false);
+    public static final BoolParamType OPEN_JOINING = new BoolParamType("allPlayersCanJoin", true);
+    public static final BoolParamType OPEN_TEAMS = new BoolParamType("allowTeamSelection", true);
     public static final BoolParamType CAN_ADD_PLAYERS = new BoolParamType("canAddIndividualPlayers", false);
     public static final BoolParamType CAN_ADD_TEAMS = new BoolParamType("canAddTeams", false);
     public static final BoolParamType CLEAR_ON_START = new BoolParamType("clearOnStart", false);
@@ -117,6 +120,9 @@ public final class MiniGameParamTypes {
      * register all built in games param types here
      */
     public static void registerGameParamTypes() {
+        MiniGameManager.registerGameParamType(JOIN_SETUP_ONLY);
+        MiniGameManager.registerGameParamType(OPEN_JOINING);
+        MiniGameManager.registerGameParamType(OPEN_TEAMS);
         MiniGameManager.registerGameParamType(KITS);
         MiniGameManager.registerGameParamType(SHOPS);
         MiniGameManager.registerGameParamType(EVENTS);

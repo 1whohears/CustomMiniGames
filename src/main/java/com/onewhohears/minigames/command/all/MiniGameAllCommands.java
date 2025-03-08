@@ -8,17 +8,23 @@ import com.onewhohears.minigames.command.admin.SubComShop;
 import com.onewhohears.minigames.common.network.PacketHandler;
 import com.onewhohears.minigames.common.network.toclient.ToClientOpenKitGUI;
 import com.onewhohears.minigames.common.network.toclient.ToClientOpenShopGUI;
+import com.onewhohears.minigames.common.network.toclient.ToClientGameJoinGUI;
 import com.onewhohears.minigames.data.shops.GameShop;
 import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
+import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 
+import com.onewhohears.minigames.minigame.data.MiniGameData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MiniGameAllCommands {
 	
@@ -26,13 +32,40 @@ public class MiniGameAllCommands {
 		d.register(Commands.literal("shop").requires((stack) -> stack.hasPermission(0))
 				.executes(openShopGUICommand())
 				.then(GameComArgs.enabledShopNameArgument()
-				.executes(openShopCommand()))
+						.executes(openShopCommand()))
 		);
 		d.register(Commands.literal("kit").requires((stack) -> stack.hasPermission(0))
 				.executes(openKitGUICommand())
 				.then(GameComArgs.enabledKitNameArgument()
-				.executes(selectKitCommand()))
+						.executes(selectKitCommand()))
 		);
+		d.register(Commands.literal("joingame").requires((stack) -> stack.hasPermission(0))
+				.executes(openJoinGameGUICommand())
+		);
+	}
+
+	private Command<CommandSourceStack> openJoinGameGUICommand() {
+		return context -> {
+			ServerPlayer player = context.getSource().getPlayer();
+			if (player == null) {
+				Component message = Component.literal("This command must be used by a player!");
+				context.getSource().sendFailure(message);
+				return 0;
+			}
+			List<String> joinAbleGames = new ArrayList<>();
+			Map<String, String[]> teamMap = new HashMap<>();
+			String[] ids = MiniGameManager.get().getRunningGameIds();
+            for (String id : ids) {
+                MiniGameData data = MiniGameManager.get().getRunningGame(id);
+                if (data == null) continue;
+                if (data.canPlayerJoinViaGUI()) joinAbleGames.add(id);
+				else continue;
+				if (data.canPlayersPickTeams()) teamMap.put(id, data.getTeamIds());
+            }
+			PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> context.getSource().getPlayer()),
+					new ToClientGameJoinGUI(joinAbleGames.toArray(new String[0]), teamMap));
+			return 1;
+		};
 	}
 
 	private PlayerAgentsCommand openShopGUICommand() {

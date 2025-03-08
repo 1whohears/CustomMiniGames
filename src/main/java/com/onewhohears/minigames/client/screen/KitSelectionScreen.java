@@ -61,7 +61,7 @@ public class KitSelectionScreen extends BackgroundScreen {
                     k += cycle;
                     if (k >= num) k -= num;
                 }
-                minecraft.getItemRenderer().renderGuiItem(stacks.get(k), x + 90 + j * 20, button.y);
+                getMinecraft().getItemRenderer().renderGuiItem(stacks.get(k), x + 90 + j * 20, button.y);
             }
         }
     }

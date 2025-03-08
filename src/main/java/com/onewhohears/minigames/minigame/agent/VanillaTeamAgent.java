@@ -77,4 +77,12 @@ public class VanillaTeamAgent extends TeamAgent {
 		if (pt == null) return UtilMCText.literal(getId());
 		return pt.getDisplayName();
 	}
+
+	@Override
+	public boolean addPlayer(MinecraftServer server, ServerPlayer player) {
+		PlayerTeam pt = getTeam(server);
+		if (pt == null) return false;
+		server.getScoreboard().addPlayerToTeam(player.getScoreboardName(), pt);
+		return true;
+	}
 }

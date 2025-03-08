@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 
 public class ToServerShopSelect {
     private final String shop;
-    public ToServerShopSelect(String kit) {
-        this.shop = kit;
+    public ToServerShopSelect(String shop) {
+        this.shop = shop;
     }
     public ToServerShopSelect(FriendlyByteBuf buffer){
         shop = buffer.readUtf();

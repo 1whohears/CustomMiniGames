@@ -14,9 +14,9 @@ public class ShopSelectionScreen extends BackgroundScreen {
 
     private final String[] shops;
 
-    public ShopSelectionScreen(String... kits) {
+    public ShopSelectionScreen(String... shops) {
         super("Shop Selection", BG, 256, 180, 256, 256);
-        this.shops = kits;
+        this.shops = shops;
     }
 
     @Override
@@ -34,8 +34,6 @@ public class ShopSelectionScreen extends BackgroundScreen {
     }
 
     private Button.OnPress getSelectOnPress(String shop) {
-        return button -> {
-            PacketHandler.INSTANCE.sendToServer(new ToServerShopSelect(shop));
-        };
+        return button -> PacketHandler.INSTANCE.sendToServer(new ToServerShopSelect(shop));
     }
 }

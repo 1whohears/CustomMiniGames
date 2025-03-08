@@ -1007,7 +1007,27 @@ public abstract class MiniGameData {
 		return getParam(type);
 	}
 
+	public boolean canAnyPlayerJoin() {
+		return getBooleanParam(OPEN_JOINING);
+	}
+
+	public boolean canPlayersPickTeams() {
+		return getBooleanParam(OPEN_TEAMS) && canAddTeams();
+	}
+
+	public boolean canJoinSetupOnly() {
+		return getBooleanParam(JOIN_SETUP_ONLY);
+	}
+
+	public boolean canPlayerJoinViaGUI() {
+		if (!canAnyPlayerJoin()) return false;
+		return canJoinSetupOnly() && isSetupPhase();
+	}
+
 	protected void registerParams() {
+		registerParam(JOIN_SETUP_ONLY);
+		registerParam(OPEN_JOINING);
+		registerParam(OPEN_TEAMS);
 		registerParam(CAN_ADD_PLAYERS);
 		registerParam(CAN_ADD_TEAMS);
 		registerParam(CLEAR_ON_START);
@@ -1023,5 +1043,13 @@ public abstract class MiniGameData {
 		registerParam(KITS);
 		registerParam(SHOPS);
 		registerParam(EVENTS);
+	}
+
+	public String[] getTeamIds() {
+		List<TeamAgent> agents = getTeamAgents();
+		String[] ids = new String[agents.size()];
+		for (int i = 0; i < ids.length; ++i)
+			ids[i] = agents.get(i).getId();
+		return ids;
 	}
 }

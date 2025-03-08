@@ -7,16 +7,11 @@ import javax.annotation.Nullable;
 
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
-import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.scores.PlayerTeam;
 
 public abstract class TeamAgent extends GameAgent {
 	
@@ -201,4 +196,6 @@ public abstract class TeamAgent extends GameAgent {
 	public void teamSyncLives() {
 		getPlayerAgents().forEach(agent -> agent.setLives(getLives()));
 	}
+
+	public abstract boolean addPlayer(MinecraftServer server, ServerPlayer player);
 }
