@@ -1,6 +1,8 @@
 package com.onewhohears.minigames.command.admin;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -44,7 +46,13 @@ public class SubComSetup {
 				.then(addPlayerArg()).then(removePlayerArg())
 				.then(setSpawnPlayerArg())
 				.then(setSpawnTeamArg())
-				.then(setLivesArg());
+				.then(setLivesArg())
+				.then(randomizeTeamsArg());
+	}
+
+	private ArgumentBuilder<CommandSourceStack,?> randomizeTeamsArg() {
+		return Commands.literal("randomize_teams")
+				.executes(commandRandomizeTeam());
 	}
 
 	private ArgumentBuilder<CommandSourceStack,?> addTeamArg() {
@@ -103,7 +111,25 @@ public class SubComSetup {
 						)
 				);
 	}
-	
+
+	private GameSetupCom commandRandomizeTeam() {
+		return (context, gameData) -> {
+			List<TeamAgent> teams = gameData.getTeamAgents();
+			List<PlayerAgent> randomPlayers = gameData.getAllPlayerAgents();
+			Collections.shuffle(randomPlayers);
+			int k = 0;
+			for (PlayerAgent agent : randomPlayers) {
+				ServerPlayer player = agent.getPlayer(context.getSource().getServer());
+				if (player == null) continue;
+				TeamAgent team = teams.get(k);
+				team.addPlayer(context.getSource().getServer(), player);
+				++k;
+				if (k >= teams.size()) k = 0;
+			}
+			return 1;
+		};
+	}
+
 	private GameSetupCom commandSetLives() {
 		return (context, gameData) -> {
 			int lives = IntegerArgumentType.getInteger(context, "lives");
