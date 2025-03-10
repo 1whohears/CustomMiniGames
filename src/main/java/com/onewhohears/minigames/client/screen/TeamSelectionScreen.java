@@ -36,6 +36,8 @@ public class TeamSelectionScreen extends BackgroundScreen {
     @Override
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         super.render(poseStack, mouseX, mouseY, partialTick);
+        font.draw(poseStack, UtilMCText.literal("Team Selection"),
+                guiX + left_padding, guiY + top_padding,0x0000AA);
         ClientPacketListener clientPacketListener = getMinecraft().getConnection();
         if (clientPacketListener == null) return;
         if (!teamMap.containsKey(selectedGame)) return;
@@ -49,8 +51,10 @@ public class TeamSelectionScreen extends BackgroundScreen {
                 if (info.getTeam() == null) continue;
                 if (!info.getTeam().getName().equals(teams[i])) continue;
                 Component name = info.getTabListDisplayName();
+                Integer color = info.getTeam().getColor().getColor();
+                if (color == null) color = 0xFFFFFF;
                 font.draw(poseStack, name != null ? name : UtilMCText.literal(info.getProfile().getName()),
-                        x+2, y+22+k*10, 0xFFFFFF);
+                        x+2, y+22+k*10, color);
                 ++k;
             }
         }
@@ -58,9 +62,9 @@ public class TeamSelectionScreen extends BackgroundScreen {
 
     @Override
     protected void init() {
-        this.vertical_widget_shift = 10;
         super.init();
-        positionWidgetGrid(createBackButton(), 9, 2, 2);
+        this.vertical_widget_shift = 10;
+        positionWidgetGrid(createBackButton(), 9, 2, 0);
         this.vertical_widget_shift = 32;
         if (teamMap.containsKey(selectedGame)) {
             String[] teams = teamMap.get(selectedGame);
@@ -72,12 +76,15 @@ public class TeamSelectionScreen extends BackgroundScreen {
                 if (i % 2 == 1) verticalSpace += 4;
             }
         } else {
-            positionWidgetGrid(createSelectButton(""), 0, 1, 9, 2);
+            positionWidgetGrid(createSelectButton(""), 9, 2, 1, 2);
         }
     }
 
     private Button createSelectButton(String id) {
-        return new Button(0, 0, 20, 20, UtilMCText.literal(id), getSelectTeamOnPress(id));
+        String name;
+        if (id.isEmpty()) name = "Solo";
+        else name = id;
+        return new Button(0, 0, 20, 20, UtilMCText.literal(name), getSelectTeamOnPress(id));
     }
 
     private Button.OnPress getSelectTeamOnPress(String team) {

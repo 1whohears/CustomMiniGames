@@ -1021,7 +1021,8 @@ public abstract class MiniGameData {
 
 	public boolean canPlayerJoinViaGUI() {
 		if (!canAnyPlayerJoin()) return false;
-		return canJoinSetupOnly() && isSetupPhase();
+		if (canJoinSetupOnly()) return isSetupPhase();
+		return true;
 	}
 
 	protected void registerParams() {

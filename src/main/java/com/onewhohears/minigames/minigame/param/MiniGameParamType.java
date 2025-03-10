@@ -36,9 +36,10 @@ public abstract class MiniGameParamType<E> {
     }
 
     protected RequiredArgumentBuilder<CommandSourceStack, ?> getSetterArgument() {
-        return Commands.argument(getSetterArgumentName(), getSetterArgumentType())
-                .executes(getSetterExecutor())
-                .suggests(getSuggestions());
+        RequiredArgumentBuilder<CommandSourceStack, ?> arg = Commands.argument(getSetterArgumentName(), getSetterArgumentType())
+                .executes(getSetterExecutor());
+        if (overrideSetterSuggestions()) arg.suggests(getSuggestions());
+        return arg;
     }
 
     protected abstract String getSetterArgumentName();
@@ -47,6 +48,10 @@ public abstract class MiniGameParamType<E> {
 
     protected SuggestionProvider<CommandSourceStack> getSuggestions() {
         return suggestNothing();
+    }
+
+    protected boolean overrideSetterSuggestions() {
+        return false;
     }
 
     protected MutableComponent getDisplayComponentFromValue(E value) {

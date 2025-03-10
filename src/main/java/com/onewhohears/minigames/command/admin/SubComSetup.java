@@ -115,6 +115,7 @@ public class SubComSetup {
 	private GameSetupCom commandRandomizeTeam() {
 		return (context, gameData) -> {
 			List<TeamAgent> teams = gameData.getTeamAgents();
+			Collections.shuffle(teams);
 			List<PlayerAgent> randomPlayers = gameData.getAllPlayerAgents();
 			Collections.shuffle(randomPlayers);
 			int k = 0;

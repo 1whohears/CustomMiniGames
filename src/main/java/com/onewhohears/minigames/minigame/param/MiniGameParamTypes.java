@@ -15,7 +15,7 @@ import org.apache.commons.lang3.function.TriFunction;
 public final class MiniGameParamTypes {
 
     // All Mini Games
-    public static final BoolParamType JOIN_SETUP_ONLY = new BoolParamType("onlyJoinDuringSetup", false);
+    public static final BoolParamType JOIN_SETUP_ONLY = new BoolParamType("onlyJoinDuringSetup", true);
     public static final BoolParamType OPEN_JOINING = new BoolParamType("allPlayersCanJoin", true);
     public static final BoolParamType OPEN_TEAMS = new BoolParamType("allowTeamSelection", true);
     public static final BoolParamType CAN_ADD_PLAYERS = new BoolParamType("canAddIndividualPlayers", false);
