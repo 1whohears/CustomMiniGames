@@ -19,11 +19,13 @@ import com.onewhohears.onewholibs.util.math.UtilAngles;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -585,12 +587,26 @@ public abstract class MiniGameData {
 			if (!agent.isDead()) living.add(agent);
 		return living;
 	}
+
+	public List<GameAgent> getAgentsWithLives() {
+		List<GameAgent> living = new ArrayList<>();
+		for (GameAgent agent : agents.values())
+			if (!agent.isOutOfLives()) living.add(agent);
+		return living;
+	}
 	
 	public List<GameAgent> getDeadAgents() {
 		List<GameAgent> dead = new ArrayList<>();
 		for (GameAgent agent : agents.values())
 			if (agent.isDead()) dead.add(agent);
 		return dead;
+	}
+
+	public List<GameAgent> getAgentsWithoutLives() {
+		List<GameAgent> living = new ArrayList<>();
+		for (GameAgent agent : agents.values())
+			if (agent.isOutOfLives()) living.add(agent);
+		return living;
 	}
 	
 	public List<PlayerAgent> getAllPlayerAgents() {
@@ -655,7 +671,7 @@ public abstract class MiniGameData {
 	}
 	
 	public void announceWinners(MinecraftServer server) {
-		List<GameAgent> winners = getLivingAgents();
+		List<GameAgent> winners = getAgentsWithLives();
 		if (winners.size() != 1) return;
 		GameAgent winner = winners.get(0);
 		winner.onWin(server);
@@ -744,8 +760,8 @@ public abstract class MiniGameData {
 		return getCurrentPhase().canAgentUseKit(agent, kit);
 	}
 
-	public boolean canOpenShop(GameAgent agent, String shop) {
-		return getCurrentPhase().canAgentOpenShop(agent, shop);
+	public boolean canOpenShop(MinecraftServer server, GameAgent agent, String shop) {
+		return getCurrentPhase().canAgentOpenShop(server, agent, shop);
 	}
 
 	public void resetAllPlayerHealth(MinecraftServer server) {
@@ -799,13 +815,13 @@ public abstract class MiniGameData {
 	}
 
 	public void awardLivingTeamsTie() {
-		double numLiving = currentPhase.getGameData().getLivingAgents().size();
-		for (GameAgent agent : currentPhase.getGameData().getLivingAgents())
+		double numLiving = currentPhase.getGameData().getAgentsWithLives().size();
+		for (GameAgent agent : currentPhase.getGameData().getAgentsWithLives())
 			agent.addScore(1d/numLiving);
 	}
 
 	public void awardLivingTeams() {
-		for (GameAgent agent : currentPhase.getGameData().getLivingAgents())
+		for (GameAgent agent : currentPhase.getGameData().getAgentsWithLives())
 			agent.addScore(1);
 	}
 
@@ -910,12 +926,22 @@ public abstract class MiniGameData {
 		return getCurrentPhase().isAttackPhase();
 	}
 
-	public void putPOI(GamePOI<?> poi) {
+	protected void putPOI(GamePOI<?> poi) {
 		pois.put(poi.getInstanceId(), poi);
 	}
 
-	public void removePOI(String instanceId) {
-		pois.remove(instanceId);
+	public boolean addPOI(String typeId, String instanceId, Vec3 pos, ResourceKey<Level> dimension) {
+		if (!getAllowedPoiTypes().contains(typeId)) return false;
+		GamePOI<?> poi = MiniGameManager.createGamePOI(typeId, instanceId, this);
+		if (poi == null) return false;
+		poi.setPos(pos);
+		poi.setDimension(dimension);
+		putPOI(poi);
+		return true;
+	}
+
+	public boolean removePOI(String instanceId) {
+		return pois.remove(instanceId) != null;
 	}
 
 	public boolean hasPOI(String instanceId) {
@@ -1037,6 +1063,7 @@ public abstract class MiniGameData {
 		registerParam(REQUIRE_SET_SPAWN);
 		registerParam(USE_WORLD_BORDER);
 		registerParam(DEFAULT_LIVES);
+		registerParam(RESPAWN_TICKS);
 		registerParam(MONEY_PER_ROUND);
 		registerParam(WORLD_BORDER_SIZE);
 		registerParam(WATER_FOOD_EXHAUSTION_RATE);
@@ -1044,6 +1071,7 @@ public abstract class MiniGameData {
 		registerParam(KITS);
 		registerParam(SHOPS);
 		registerParam(EVENTS);
+		registerParam(POI_TYPES);
 	}
 
 	public String[] getTeamIds() {
@@ -1052,5 +1080,13 @@ public abstract class MiniGameData {
 		for (int i = 0; i < ids.length; ++i)
 			ids[i] = agents.get(i).getId();
 		return ids;
+	}
+
+	public int getRespawnTicks() {
+		return getIntParam(RESPAWN_TICKS);
+	}
+
+	public Set<String> getAllowedPoiTypes() {
+		return getParam(POI_TYPES);
 	}
 }

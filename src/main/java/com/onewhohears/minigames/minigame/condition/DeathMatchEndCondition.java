@@ -13,7 +13,7 @@ public class DeathMatchEndCondition<D extends DeathMatchData> extends PhaseExitC
 
 	@Override
 	public boolean shouldExit(MinecraftServer server, GamePhase<D> currentPhase) {
-		return currentPhase.getGameData().getLivingAgents().size() == 1;
+		return currentPhase.getGameData().getAgentsWithLives().size() <= 1;
 	}
 
 }

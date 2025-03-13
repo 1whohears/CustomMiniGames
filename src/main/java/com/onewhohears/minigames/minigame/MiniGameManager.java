@@ -9,6 +9,7 @@ import com.onewhohears.minigames.minigame.agent.VanillaTeamAgent;
 import com.onewhohears.minigames.minigame.data.*;
 import com.onewhohears.minigames.minigame.event.SummonEvent;
 import com.onewhohears.minigames.minigame.param.MiniGameParamType;
+import com.onewhohears.minigames.minigame.poi.AreaControlPOI;
 import com.onewhohears.minigames.minigame.poi.GamePOI;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import org.apache.commons.lang3.function.TriFunction;
@@ -30,7 +31,7 @@ public class MiniGameManager extends SavedData {
 	private static MiniGameManager instance;
 	private static final Map<String, GameGenerator> gameGenerators = new HashMap<>();
 	private static final Map<String, TriFunction<ServerPlayer, PlayerAgent, CompoundTag, Boolean>> itemEvents = new HashMap<>();
-	private static final Map<String, GamePOIGenerator> gamePoiGenerators = new HashMap<>();
+	private static final Map<String, GamePOIGenerator<?>> gamePoiGenerators = new HashMap<>();
 	private static final Map<String, GameAgentGenerator> gameAgentGenerators = new HashMap<>();
 	private static final Map<String, MiniGameParamType<?>> gameParamTypes = new HashMap<>();
 
@@ -54,10 +55,9 @@ public class MiniGameManager extends SavedData {
 		registerGame("simple_buy_attack_phases", BuyAttackData::createBuyAttackPhaseMatch);
 		registerGame("simple_kill_flag", KillFlagData::createKillFlagMatch);
 		registerGame("last_stand", LastStandData::createLastStandMatch);
+		registerGame("area_control", AreaControlData::createAreaControlMatch);
 		/*
 		 * TODO 3.1 create and register the following minigame modes
-		 * team capture the flag
-		 * team/ffa territory control
 		 * one volunteer runs away from everyone else
 		 * zombie apocalypse
 		 * bomb defuse
@@ -245,8 +245,12 @@ public class MiniGameManager extends SavedData {
 		return consume;
 	}
 
-	public interface GamePOIGenerator {
-		@NotNull <G extends MiniGameData> GamePOI<G> create(String typeId, String instanceId, G gameData);
+	public interface GamePOIGenerator<G extends MiniGameData> {
+		@NotNull GamePOI<G> create(String typeId, String instanceId, G gameData);
+	}
+
+	public static String[] getAllPoiTypeIds() {
+		return gamePoiGenerators.keySet().toArray(new String[0]);
 	}
 
 	public static boolean hasPOIType(String typeId) {
@@ -254,14 +258,14 @@ public class MiniGameManager extends SavedData {
 	}
 
 	public static void registerPOIGens() {
-
+		registerPOIGen("area_control", (GamePOIGenerator<AreaControlData>) AreaControlPOI::new);
 	}
 
 	/**
 	 * call this in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
 	 * @return false if a poi with that typeId was already registered
 	 */
-	public static boolean registerPOIGen(String typeId, GamePOIGenerator gen) {
+	public static boolean registerPOIGen(String typeId, GamePOIGenerator<?> gen) {
 		if (hasPOIType(typeId)) return false;
 		gamePoiGenerators.put(typeId, gen);
 		LOGGER.debug("Registered game POI Type {}", typeId);
@@ -269,13 +273,13 @@ public class MiniGameManager extends SavedData {
 	}
 
 	@Nullable
-	public static GamePOIGenerator getPOIGen(String typeId) {
-		return gamePoiGenerators.get(typeId);
+	public static <G extends MiniGameData> GamePOIGenerator<G> getPOIGen(String typeId) {
+		return (GamePOIGenerator<G>) gamePoiGenerators.get(typeId);
 	}
 
 	@Nullable
 	public static <G extends MiniGameData> GamePOI<G> createGamePOI(String typeId, String instanceId, G gameData) {
-		GamePOIGenerator gen = getPOIGen(typeId);
+		GamePOIGenerator<G> gen = getPOIGen(typeId);
 		if (gen == null) return null;
 		return gen.create(typeId, instanceId, gameData);
 	}

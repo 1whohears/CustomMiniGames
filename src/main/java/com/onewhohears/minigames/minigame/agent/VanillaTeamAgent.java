@@ -79,10 +79,23 @@ public class VanillaTeamAgent extends TeamAgent {
 	}
 
 	@Override
+	public int getColor(MinecraftServer server) {
+		PlayerTeam pt = getTeam(server);
+		if (pt == null) return 0xffffff;
+		if (pt.getColor().getColor() == null) return 0xffffff;
+		return pt.getColor().getColor();
+	}
+
+	@Override
 	public boolean addPlayer(MinecraftServer server, ServerPlayer player) {
 		PlayerTeam pt = getTeam(server);
 		if (pt == null) return false;
 		server.getScoreboard().addPlayerToTeam(player.getScoreboardName(), pt);
 		return true;
+	}
+
+	@Override @Nullable
+	public PlayerTeam getPlayerTeamForDisplay(MinecraftServer server) {
+		return getTeam(server);
 	}
 }

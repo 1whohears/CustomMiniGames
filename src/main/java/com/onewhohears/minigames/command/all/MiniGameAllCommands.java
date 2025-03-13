@@ -73,7 +73,9 @@ public class MiniGameAllCommands {
 			List<String> shops = new ArrayList<>();
 			for (PlayerAgent agent : agents) {
 				String[] a = agent.getAvailableShops();
-				for (String s : a) if (agent.canOpenShop(s)) shops.add(s);
+				for (String s : a)
+					if (agent.canOpenShop(context.getSource().getServer(), s))
+						shops.add(s);
 			}
 			if (shops.isEmpty()) {
 				Component message = Component.literal("You are currently not allowed to open shops!");
@@ -96,7 +98,7 @@ public class MiniGameAllCommands {
 				return 0;
 			}
 			for (PlayerAgent agent : agents) {
-				if (!agent.canOpenShop(shop_name)) continue;
+				if (!agent.canOpenShop(context.getSource().getServer(), shop_name)) continue;
 				SubComShop.openPlayerShop(agent.getPlayer(context.getSource().getServer()), shop);
 				Component message = Component.literal("Opened shop "+shop_name);
 				context.getSource().sendSuccess(message, false);

@@ -12,6 +12,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.function.TriFunction;
 
+import java.util.Set;
+
 public final class MiniGameParamTypes {
 
     // All Mini Games
@@ -35,6 +37,7 @@ public final class MiniGameParamTypes {
             };
         }
     };
+    public static final IntParamType RESPAWN_TICKS = new IntParamType("respawnTicks", 0, 0, 1000000, "ticks");
     public static final IntParamType MONEY_PER_ROUND = new IntParamType("moneyPerRound", 20, 0, 640);
     public static final DoubleParamType WORLD_BORDER_SIZE = new DoubleParamType("gameBorderSize", 1000d, 1, 9999999);
     public static final FloatParamType WATER_FOOD_EXHAUSTION_RATE = new FloatParamType("waterFoodExhaustionRate", 0f, 0, 40f);
@@ -57,6 +60,9 @@ public final class MiniGameParamTypes {
     public static final StringSetParamType EVENTS = new StringSetParamType("events",
             CommandUtil.suggestStrings(MiniGameManager::getAllEventIds),
             GameComArgs.suggestHandleableEvents());
+    public static final StringSetParamType POI_TYPES = new StringSetParamType("poiTypes",
+            CommandUtil.suggestStrings(MiniGameManager::getAllPoiTypeIds),
+            GameComArgs.suggestHandleablePoiTypes());
     // Buy Attack Phase Games
     public static final BoolParamType ALLOW_BUY_PHASE_RESPAWN = new BoolParamType("allowRespawnInBuyPhase", true);
     public static final BoolParamType ALLOW_PVP_BUY_PHASE = new BoolParamType("allowPvpInBuyPhase", false);
@@ -65,11 +71,12 @@ public final class MiniGameParamTypes {
     public static final IntParamType ATTACK_END_TIME = new IntParamType("attackEndTime", 200, 0, 2000000, "ticks");
     public static final IntParamType ROUNDS_TO_WIN = new IntParamType("roundsToWin", 3, 1, 1000000);
     public static final IntParamType BUY_RADIUS = new IntParamType("buyRadius", 24, -1, 1000000, "blocks");
+    public static final BoolParamType SHOP_OUTSIDE_BUY_RADIUS = new BoolParamType("allowShopOutsideBuyRadius", false);
     // Attack Defend Data
     public static final BoolParamType ATTACKERS_SHARE_LIVES = new BoolParamType("attackersShareLives", false);
     public static final StringSetParamType DEFENDERS = new StringSetParamType("defenders", GameComArgs.suggestAgentNames(), GameComArgs.suggestAgentNames()) {
         @Override
-        protected ListParamModifier getAdderApplier() {
+        protected ListParamModifier<Set<String>, String> getAdderApplier() {
             return (context, gameData, list, value) -> {
                 if (!(gameData instanceof AttackDefendData data)) return false;
                 return data.addDefender(value);
@@ -78,7 +85,7 @@ public final class MiniGameParamTypes {
     };
     public static final StringSetParamType ATTACKERS = new StringSetParamType("attackers", GameComArgs.suggestAgentNames(), GameComArgs.suggestAgentNames()) {
         @Override
-        protected ListParamModifier getAdderApplier() {
+        protected ListParamModifier<Set<String>, String> getAdderApplier() {
             return (context, gameData, list, value) -> {
                 if (!(gameData instanceof AttackDefendData data)) return false;
                 return data.addAttacker(value);
@@ -89,7 +96,7 @@ public final class MiniGameParamTypes {
             CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds()),
             GameComArgs.suggestEnabledShops()) {
         @Override
-        protected ListParamModifier getAdderApplier() {
+        protected ListParamModifier<Set<String>, String> getAdderApplier() {
             return (context, gameData, list, value) -> {
                 gameData.addShops(value);
                 list.add(value);
@@ -101,7 +108,7 @@ public final class MiniGameParamTypes {
             CommandUtil.suggestStrings(() -> MiniGameShopsManager.get().getAllIds()),
             GameComArgs.suggestEnabledShops()) {
         @Override
-        protected ListParamModifier getAdderApplier() {
+        protected ListParamModifier<Set<String>, String> getAdderApplier() {
             return (context, gameData, list, value) -> {
                 gameData.addShops(value);
                 list.add(value);
@@ -115,6 +122,10 @@ public final class MiniGameParamTypes {
     public static final IntParamType WHITE_LIST_BLOCKS_RADIUS = new IntParamType("blockWhiteListRadius", 0, 0, 1000000, "blocks");
     // Last Stand Data
     public static final IntParamType INIT_ATTACKER_LIVES = new IntParamType("initialAttackerLives", 50, 1, 1000000, "lives");
+    // Area Control Data
+    public static final FloatParamType AREA_CONTROL_POINTS_MAX = new FloatParamType("areaControlPointsMax", 100f, 1, 1000000);
+    public static final IntParamType AREA_RADIUS = new IntParamType("areaRadius", 10, 1, 1000000, "blocks");
+    public static final FloatParamType POINTS_PER_PLAYER_PER_SECOND = new FloatParamType("areaControlPointsPerPlayerPerSecond", 4f, 0, 1000000);
     /**
      * called in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
      * register all built in games param types here
@@ -145,6 +156,7 @@ public final class MiniGameParamTypes {
         MiniGameManager.registerGameParamType(ATTACK_END_TIME);
         MiniGameManager.registerGameParamType(ROUNDS_TO_WIN);
         MiniGameManager.registerGameParamType(BUY_RADIUS);
+        MiniGameManager.registerGameParamType(SHOP_OUTSIDE_BUY_RADIUS);
         MiniGameManager.registerGameParamType(ATTACKERS_SHARE_LIVES);
         MiniGameManager.registerGameParamType(DEFENDERS);
         MiniGameManager.registerGameParamType(ATTACKERS);
@@ -154,5 +166,10 @@ public final class MiniGameParamTypes {
         MiniGameManager.registerGameParamType(BLACK_LIST_BLOCKS_RADIUS);
         MiniGameManager.registerGameParamType(WHITE_LIST_BLOCKS_RADIUS);
         MiniGameManager.registerGameParamType(INIT_ATTACKER_LIVES);
+        MiniGameManager.registerGameParamType(AREA_CONTROL_POINTS_MAX);
+        MiniGameManager.registerGameParamType(RESPAWN_TICKS);
+        MiniGameManager.registerGameParamType(AREA_RADIUS);
+        MiniGameManager.registerGameParamType(POI_TYPES);
+        MiniGameManager.registerGameParamType(POINTS_PER_PLAYER_PER_SECOND);
     }
 }

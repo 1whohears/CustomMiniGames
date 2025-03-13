@@ -94,5 +94,20 @@ public class GameComArgs {
 	public static PlayerAgentSuggestion suggestNothing() {
 		return (context, builder, agents) -> builder.buildFuture();
 	}
-	
+
+	public static PlayerAgentSuggestion suggestHandleablePoiTypes() {
+		return (context, builder, agents) -> {
+			for (PlayerAgent agent : agents)
+				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getAllowedPoiTypes());
+			return builder.buildFuture();
+		};
+	}
+
+	public static PlayerAgentSuggestion suggestAddedPois() {
+		return (context, builder, agents) -> {
+			for (PlayerAgent agent : agents)
+				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getPOIInstanceIds());
+			return builder.buildFuture();
+		};
+	}
 }

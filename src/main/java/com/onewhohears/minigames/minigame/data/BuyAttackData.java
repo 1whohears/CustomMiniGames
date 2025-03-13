@@ -1,10 +1,12 @@
 package com.onewhohears.minigames.minigame.data;
 
+import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.phase.buyattackrounds.*;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.phys.Vec3;
 
 import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.*;
 
@@ -32,11 +34,6 @@ public class BuyAttackData extends MiniGameData {
 
     public BuyAttackData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);
-    }
-
-    @Override
-    public void onGameStart(MinecraftServer server) {
-        super.onGameStart(server);
     }
 
     @Override
@@ -103,12 +100,27 @@ public class BuyAttackData extends MiniGameData {
         return getIntParam(BUY_RADIUS);
     }
 
+    public boolean allowShopOutsideBuyRadius() {
+        return getBooleanParam(SHOP_OUTSIDE_BUY_RADIUS);
+    }
+
     public void announceWinnersByScore(MinecraftServer server) {
         getAgentsWithScore(getRoundsToWin()).forEach(agent -> agent.onWin(server));
     }
 
     public boolean allowPvpInBuyPhase() {
         return getBooleanParam(ALLOW_PVP_BUY_PHASE);
+    }
+
+    public boolean canOpenBuyAttackPhaseShop(MinecraftServer server, GameAgent agent, String shop) {
+        if (!hasShop(shop)) return false;
+        if (getCurrentPhase().isBuyPhase()) return true;
+        if (!alwaysAllowOpenShop()) return false;
+        if (allowShopOutsideBuyRadius()) return true;
+        Vec3 pos = agent.getCurrentPos(server);
+        int buyRad = getBuyRadius();
+        return buyRad > -1 && agent.getRespawnPoint() != null
+                && agent.getRespawnPoint().distanceToSqr(pos) <= buyRad * buyRad;
     }
 
     @Override
@@ -121,5 +133,6 @@ public class BuyAttackData extends MiniGameData {
         registerParam(ATTACK_END_TIME);
         registerParam(ROUNDS_TO_WIN);
         registerParam(BUY_RADIUS);
+        registerParam(SHOP_OUTSIDE_BUY_RADIUS);
     }
 }

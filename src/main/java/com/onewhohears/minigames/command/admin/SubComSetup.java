@@ -13,17 +13,26 @@ import com.onewhohears.minigames.minigame.agent.TeamAgent;
 
 import com.onewhohears.minigames.minigame.param.MiniGameParamType;
 import com.onewhohears.onewholibs.util.UtilMCText;
+import com.onewhohears.onewholibs.util.UtilParse;
 import com.onewhohears.onewholibs.util.math.UtilGeometry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.TeamArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
+
+import javax.annotation.Nullable;
 
 import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.DEFAULT_LIVES;
 
@@ -47,7 +56,31 @@ public class SubComSetup {
 				.then(setSpawnPlayerArg())
 				.then(setSpawnTeamArg())
 				.then(setLivesArg())
-				.then(randomizeTeamsArg());
+				.then(randomizeTeamsArg())
+				.then(addPoiArg()).then(removePoiArg());
+	}
+
+	private ArgumentBuilder<CommandSourceStack,?> addPoiArg() {
+		return Commands.literal("add_poi").then(Commands.argument("type", StringArgumentType.string())
+				.suggests(GameComArgs.suggestHandleablePoiTypes())
+				.then(Commands.argument("instance", StringArgumentType.string())
+						.executes(commandAddPoi(false, false))
+						.then(Commands.argument("pos", Vec3Argument.vec3())
+								.executes(commandAddPoi(true, false))
+								.then(Commands.argument("dim", DimensionArgument.dimension())
+										.executes(commandAddPoi(true, true))
+								)
+						)
+				)
+		);
+	}
+
+	private ArgumentBuilder<CommandSourceStack,?> removePoiArg() {
+		return Commands.literal("remove_poi")
+				.then(Commands.argument("instance", StringArgumentType.string())
+						.suggests(GameComArgs.suggestAddedPois())
+						.executes(commandRemovePoi())
+		);
 	}
 
 	private ArgumentBuilder<CommandSourceStack,?> randomizeTeamsArg() {
@@ -110,6 +143,47 @@ public class SubComSetup {
 								)
 						)
 				);
+	}
+
+	private GameSetupCom commandAddPoi(boolean inputPos, boolean inputDim) {
+		return (context, gameData) -> {
+			String typeId = StringArgumentType.getString(context, "type");
+			String instanceId = StringArgumentType.getString(context, "instance");
+			Vec3 pos;
+			if (inputPos) pos = Vec3Argument.getVec3(context, "pos");
+			else pos = context.getSource().getPosition();
+			ServerLevel level;
+			if (inputDim) level = DimensionArgument.getDimension(context, "dim");
+			else level = context.getSource().getLevel();
+			if (!gameData.addPOI(typeId, instanceId, pos, level.dimension())) {
+				Component message = UtilMCText.literal("Could not add POI of type "+typeId+" and name "
+						+instanceId+" to game "+gameData.getInstanceId()+"! POI type may not be compatible " +
+						"with this game or it hasn't been registered.");
+				context.getSource().sendFailure(message);
+				return 0;
+			}
+			Component message = UtilMCText.literal("Add POI of type "+typeId+" and name "
+					+instanceId+" to game "+gameData.getInstanceId()+" at pos "
+					+UtilParse.prettyVec3(pos, 1)+"!");
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
+	}
+
+	private GameSetupCom commandRemovePoi() {
+		return (context, gameData) -> {
+			String instanceId = StringArgumentType.getString(context, "instance");
+			if (!gameData.removePOI(instanceId)) {
+				Component message = UtilMCText.literal("Could not remove POI "
+						+instanceId+" from game "+gameData.getInstanceId()+"! It may have already been removed?");
+				context.getSource().sendFailure(message);
+				return 0;
+			}
+			Component message = UtilMCText.literal("Removed POI "
+					+instanceId+" from game "+gameData.getInstanceId()+"!");
+			context.getSource().sendSuccess(message, true);
+			return 1;
+		};
 	}
 
 	private GameSetupCom commandRandomizeTeam() {

@@ -27,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.PlayerTeam;
 
 public class PlayerAgent extends GameAgent {
 	
@@ -161,7 +162,13 @@ public class PlayerAgent extends GameAgent {
 	public boolean isTeam() {
 		return false;
 	}
-	
+
+	@Override
+	public String getAgentOrTeamId() {
+		if (teamAgent != null) return teamAgent.getId();
+		return getId();
+	}
+
 	@Override
 	public boolean isPlayerOnTeam() {
 		return teamAgent != null;
@@ -183,9 +190,9 @@ public class PlayerAgent extends GameAgent {
 	}
 	
 	@Override
-	public boolean canOpenShop(String shop) {
-		if (isPlayerOnTeam()) return getTeamAgent().canOpenShop(shop);
-		return super.canOpenShop(shop);
+	public boolean canOpenShop(MinecraftServer server, String shop) {
+		if (teamAgent != null) return teamAgent.canOpenShop(server, shop);
+		return super.canOpenShop(server, shop);
 	}
 
 	@Override
@@ -284,5 +291,24 @@ public class PlayerAgent extends GameAgent {
 	@Override
 	public boolean isShareLives() {
 		return teamAgent != null && teamAgent.isShareLives();
+	}
+
+	@Override
+	public int getColor(MinecraftServer server) {
+		if (teamAgent != null) return teamAgent.getColor(server);
+		return 0xffffff;
+	}
+
+	@Override @Nullable
+	public PlayerTeam getPlayerTeamForDisplay(MinecraftServer server) {
+		if (teamAgent != null) return teamAgent.getPlayerTeamForDisplay(server);
+		return super.getPlayerTeamForDisplay(server);
+	}
+
+	@Override
+	public Vec3 getCurrentPos(MinecraftServer server) {
+		ServerPlayer player = getPlayer(server);
+		if (player == null) return Vec3.ZERO;
+		return player.position();
 	}
 }

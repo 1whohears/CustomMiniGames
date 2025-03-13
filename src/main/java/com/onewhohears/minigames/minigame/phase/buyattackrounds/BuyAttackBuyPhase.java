@@ -51,6 +51,11 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
     }
 
     @Override
+    public boolean canAgentOpenShop(MinecraftServer server, GameAgent agent, String shop) {
+        return getGameData().canOpenBuyAttackPhaseShop(server, agent, shop);
+    }
+
+    @Override
     public void onReset(MinecraftServer server) {
         super.onReset(server);
     }

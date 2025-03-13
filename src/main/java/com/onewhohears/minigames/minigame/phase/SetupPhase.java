@@ -76,7 +76,7 @@ public abstract class SetupPhase<T extends MiniGameData> extends GamePhase<T> {
 		return 32;
 	}
 
-	public boolean canAgentOpenShop(GameAgent agent, String shop) {
+	public boolean canAgentOpenShop(MinecraftServer server, GameAgent agent, String shop) {
 		return false;
 	}
 

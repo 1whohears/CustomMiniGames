@@ -25,6 +25,15 @@ public class AttackDefendData extends BuyAttackData {
         return list;
     }
 
+    public List<GameAgent> getAttackersWithLives() {
+        List<GameAgent> list = new ArrayList<>();
+        Set<String> attackers = getStringSetParam(ATTACKERS);
+        for (GameAgent agent : getAgentsWithLives())
+            if (attackers.contains(agent.getId()))
+                list.add(agent);
+        return list;
+    }
+
     public void awardAllAttackers() {
         getStringSetParam(ATTACKERS).forEach(id -> {
             GameAgent agent = getAgentById(id);
@@ -103,10 +112,10 @@ public class AttackDefendData extends BuyAttackData {
         return list;
     }
 
-    public boolean canOpenAttackDefendShop(GameAgent agent, String shop) {
-        if (isAttacker(agent.getId())) return isAttackerShop(shop);
-        else if (isDefender(agent.getId())) return isDefenderShop(shop);
-        return hasShop(shop);
+    public boolean canOpenAttackDefendShop(MinecraftServer server, GameAgent agent, String shop) {
+        if (isAttacker(agent.getId())) return isAttackerShop(shop) && canOpenBuyAttackPhaseShop(server, agent, shop);
+        else if (isDefender(agent.getId())) return isDefenderShop(shop) && canOpenBuyAttackPhaseShop(server, agent, shop);
+        return canOpenBuyAttackPhaseShop(server, agent, shop);
     }
 
     @Override

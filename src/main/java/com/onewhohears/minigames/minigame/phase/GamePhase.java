@@ -220,7 +220,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 		return getGameData().hasKit(kit);
 	}
 
-	public boolean canAgentOpenShop(GameAgent agent, String shop) {
+	public boolean canAgentOpenShop(MinecraftServer server, GameAgent agent, String shop) {
 		return getGameData().hasShop(shop);
 	}
 

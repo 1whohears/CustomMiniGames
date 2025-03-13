@@ -49,11 +49,6 @@ public class KillFlagData extends AttackDefendData {
         super(instanceId, gameTypeId);
     }
 
-    @Override
-    public void onGameStart(MinecraftServer server) {
-        super.onGameStart(server);
-    }
-
     public void resetFlags(MinecraftServer server) {
         discardAllFlags();
         for (GameAgent agent : getDefenders()) {
@@ -85,19 +80,19 @@ public class KillFlagData extends AttackDefendData {
         forEachFlag(flag -> {
             if (!allow.get()) return;
             double distSqr = flag.distanceToSqr(vpos);
-            if (distSqr < all) {
+            if (distSqr <= all) {
                 allow.set(false);
                 agent.consumeForPlayer(server, player -> player.sendSystemMessage(UtilMCText.literal(
                         "Cannot place blocks in the NO BLOCKS range of the flag!").setStyle(RED)));
                 return;
             }
-            if (distSqr < white && !holder.is(CMGTags.Blocks.FLAG_PLACE_WHITE_LIST)) {
+            if (distSqr <= white && !holder.is(CMGTags.Blocks.FLAG_PLACE_WHITE_LIST)) {
                 allow.set(false);
                 agent.consumeForPlayer(server, player -> player.sendSystemMessage(UtilMCText.literal(
                         "Cannot place this block in the WHITE LIST range of the flag!").setStyle(RED)));
                 return;
             }
-            if (distSqr < black && holder.is(CMGTags.Blocks.FLAG_PLACE_BLACK_LIST)) {
+            if (distSqr <= black && holder.is(CMGTags.Blocks.FLAG_PLACE_BLACK_LIST)) {
                 allow.set(false);
                 agent.consumeForPlayer(server, player -> player.sendSystemMessage(UtilMCText.literal(
                         "Cannot place this block in the BLACK LIST range of the flag!").setStyle(RED)));

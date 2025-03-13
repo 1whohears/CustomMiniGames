@@ -12,7 +12,7 @@ public class BuyAttackRoundWinCondition<D extends BuyAttackData> extends PhaseEx
 
     @Override
     public boolean shouldExit(MinecraftServer server, GamePhase<D> currentPhase) {
-        return currentPhase.getGameData().getLivingAgents().size() <= 1;
+        return currentPhase.getGameData().getAgentsWithLives().size() <= 1;
     }
 
     @Override

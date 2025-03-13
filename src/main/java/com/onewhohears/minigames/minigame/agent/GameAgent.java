@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -31,7 +32,7 @@ public abstract class GameAgent {
 
 	private final String id, type;
 	private final MiniGameData gameData;
-	private int age;
+	private int age, deadTicks;
 	private double score;
 	private int lives, initialLives;
 	private int money;
@@ -51,6 +52,7 @@ public abstract class GameAgent {
 		nbt.putString("type", type);
 		nbt.putString("id", id);
 		nbt.putInt("age", age);
+		nbt.putInt("deadTicks", deadTicks);
 		nbt.putDouble("score", score);
 		nbt.putInt("lives", lives);
 		nbt.putInt("money", money);
@@ -64,6 +66,7 @@ public abstract class GameAgent {
 	
 	public void load(CompoundTag tag) {
 		age = tag.getInt("age");
+		deadTicks = tag.getInt("deadTicks");
 		score = tag.getDouble("score");
 		lives = tag.getInt("lives");
 		money = tag.getInt("money");
@@ -85,11 +88,14 @@ public abstract class GameAgent {
 	}
 	
 	protected void tickDead(MinecraftServer server) {
+		deadTicks++;
+		if (isPlayer() && !isDead()) tpToSpawnPoint(server);
 	}
 	
 	public void onDeath(MinecraftServer server, @Nullable DamageSource source) {
 		if (looseLiveOnDeath(server)) {
 			lives = Math.max(lives-1, 0);
+			tickDead(server);
 			if (isShareLives()) teamSyncLives();
 		}
         LOGGER.debug("ON DEATH: {} {}", id, lives);
@@ -102,6 +108,7 @@ public abstract class GameAgent {
 	}
 
 	public void onRespawn(MinecraftServer server) {
+		deadTicks = 0;
 	}
 	
 	public boolean shouldRunOnDeath() {
@@ -113,11 +120,17 @@ public abstract class GameAgent {
 	}
 	
 	public boolean isDead() {
+		if (getDeadTicks() <= getGameData().getRespawnTicks()) return true;
+		return isOutOfLives();
+	}
+
+	public boolean isOutOfLives() {
 		return getLives() <= 0;
 	}
 	
 	public void resetAgent() {
 		age = 0;
+		deadTicks = 0;
 		score = 0;
 		money = 0;
         LOGGER.debug("RESET AGENT: {} {}", id, lives);
@@ -152,7 +165,11 @@ public abstract class GameAgent {
 	public int getAge() {
 		return age;
 	}
-	
+
+	public int getDeadTicks() {
+		return deadTicks;
+	}
+
 	public double getScore() {
 		return score;
 	}
@@ -221,13 +238,14 @@ public abstract class GameAgent {
 		return getGameData().canUseKit(this, kit);
 	}
 	
-	public boolean canOpenShop(String shop) {
-		return getGameData().canOpenShop(this, shop);
+	public boolean canOpenShop(MinecraftServer server, String shop) {
+		return getGameData().canOpenShop(server, this, shop);
 	}
 	
 	public abstract boolean isPlayer();
 	public abstract boolean isPlayerOnTeam();
 	public abstract boolean isTeam();
+	public abstract String getAgentOrTeamId();
 	
 	public abstract void applySpawnPoint(MinecraftServer server);
 	public abstract void tpToSpawnPoint(MinecraftServer server);
@@ -272,4 +290,13 @@ public abstract class GameAgent {
 	public boolean isShareLives() {
 		return shareLives;
 	}
+
+	public abstract int getColor(MinecraftServer server);
+
+	@Nullable
+	public PlayerTeam getPlayerTeamForDisplay(MinecraftServer server) {
+		return null;
+	}
+
+	public abstract Vec3 getCurrentPos(MinecraftServer server);
 }

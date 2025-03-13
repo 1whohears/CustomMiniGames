@@ -6,6 +6,7 @@ import com.onewhohears.minigames.minigame.condition.PhaseExitCondition;
 import com.onewhohears.minigames.minigame.condition.TimeoutPhaseExitCondition;
 import com.onewhohears.minigames.minigame.data.AttackDefendData;
 import com.onewhohears.minigames.minigame.phase.buyattackrounds.BuyAttackBuyPhase;
+import net.minecraft.server.MinecraftServer;
 
 public class AttackDefendBuyPhase<T extends AttackDefendData> extends BuyAttackBuyPhase<T> {
 
@@ -21,7 +22,7 @@ public class AttackDefendBuyPhase<T extends AttackDefendData> extends BuyAttackB
     }
 
     @Override
-    public boolean canAgentOpenShop(GameAgent agent, String shop) {
-        return getGameData().canOpenAttackDefendShop(agent, shop);
+    public boolean canAgentOpenShop(MinecraftServer server, GameAgent agent, String shop) {
+        return getGameData().canOpenAttackDefendShop(server, agent, shop);
     }
 }

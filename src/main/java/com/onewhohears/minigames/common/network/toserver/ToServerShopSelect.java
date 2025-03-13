@@ -33,7 +33,7 @@ public class ToServerShopSelect {
             if (player == null) return;
             List<PlayerAgent> agents = MiniGameManager.get().getActiveGamePlayerAgents(player);
             for (PlayerAgent agent : agents) {
-                if (!agent.canOpenShop(shop)) {
+                if (!agent.canOpenShop(player.getServer(), shop)) {
                     Component message = Component.literal("You cannot open this shop!");
                     player.displayClientMessage(message, true);
                     return;

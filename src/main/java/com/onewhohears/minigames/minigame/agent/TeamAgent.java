@@ -12,6 +12,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class TeamAgent extends GameAgent {
 	
@@ -101,6 +102,13 @@ public abstract class TeamAgent extends GameAgent {
 			if (!agent.isDead()) living.add(agent);
 		return living;
 	}
+
+	public List<PlayerAgent> getPlayerAgentsWithLives() {
+		List<PlayerAgent> living = new ArrayList<>();
+		for (PlayerAgent agent : getPlayerAgents())
+			if (!agent.isOutOfLives()) living.add(agent);
+		return living;
+	}
 	
 	@Override
 	public void resetAgent() {
@@ -117,6 +125,11 @@ public abstract class TeamAgent extends GameAgent {
 	@Override
 	public boolean isDead() {
 		return getLivingPlayerAgents().isEmpty();
+	}
+
+	@Override
+	public boolean isOutOfLives() {
+		return getPlayerAgentsWithLives().isEmpty();
 	}
 
 	@Override
@@ -198,4 +211,14 @@ public abstract class TeamAgent extends GameAgent {
 	}
 
 	public abstract boolean addPlayer(MinecraftServer server, ServerPlayer player);
+
+	@Override
+	public String getAgentOrTeamId() {
+		return getId();
+	}
+
+	@Override
+	public Vec3 getCurrentPos(MinecraftServer server) {
+		return getRespawnPoint() != null ? getRespawnPoint() : Vec3.ZERO;
+	}
 }
