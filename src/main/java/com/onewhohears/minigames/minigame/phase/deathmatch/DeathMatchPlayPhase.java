@@ -32,6 +32,7 @@ public class DeathMatchPlayPhase<T extends DeathMatchData> extends GamePhase<T> 
 	public void onStart(MinecraftServer server) {
 		super.onStart(server);
 		getGameData().onGameStart(server);
+		getGameData().onRoundStart(server);
 	}
 	
 	@Override

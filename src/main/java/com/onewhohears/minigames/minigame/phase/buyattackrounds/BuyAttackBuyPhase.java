@@ -14,6 +14,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 
+import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.FUNCTION_ON_ROUND_START;
+
 public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
 
     public BuyAttackBuyPhase(T gameData) {
@@ -63,16 +65,8 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
     @Override
     public void onStart(MinecraftServer server) {
         super.onStart(server);
-        getGameData().setupAllAgents();
         if (getGameData().isFirstRound()) getGameData().onGameStart(server);
-        else {
-            getGameData().applyAllAgentRespawnPoints(server);
-            getGameData().tpPlayersToSpawnPosition(server);
-            getGameData().refillAllAgentKits(server);
-            getGameData().resetAllPlayerHealth(server);
-        }
-        getGameData().forAllPOIs(server, (serv, poi) -> poi.onRoundStart(serv));
-        getGameData().giveMoneyToAgents(server);
+        getGameData().onRoundStart(server);
         Component message = UtilMCText.literal("Buy Phase Start!").setStyle(MiniGameData.GOLD_BOLD);
         getGameData().chatToAllPlayers(server, message, SoundEvents.EXPERIENCE_ORB_PICKUP);
     }

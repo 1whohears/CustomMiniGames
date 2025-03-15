@@ -3,6 +3,7 @@ package com.onewhohears.minigames.minigame.param;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.onewhohears.minigames.command.admin.GameSetupCom;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
@@ -12,6 +13,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,13 +46,13 @@ public abstract class SetParamType<C extends Set<E>, E> extends MiniGameParamTyp
     public ArgumentBuilder<CommandSourceStack,?> getCommandArgument() {
         return Commands.literal(getId()).executes(getGetterExecutor())
                 .then(Commands.literal("add")
-                        .then(Commands.argument(getSetterArgumentName(), StringArgumentType.string())
+                        .then(Commands.argument(getSetterArgumentName(), getSetterArgumentType())
                                 .executes(getModifyExecutor(true))
                                 .suggests(getAddSuggestions())
                         )
                 )
                 .then(Commands.literal("remove")
-                        .then(Commands.argument(getSetterArgumentName(), StringArgumentType.string())
+                        .then(Commands.argument(getSetterArgumentName(), getSetterArgumentType())
                                 .executes(getModifyExecutor(false))
                                 .suggests(getRemoveSuggestions())
                         )
@@ -100,6 +102,8 @@ public abstract class SetParamType<C extends Set<E>, E> extends MiniGameParamTyp
         };
     }
 
+    public abstract Collection<String> toStringList(C param);
+
     public interface ListParamModifier<C extends Set<E>, E> {
         boolean apply(CommandContext<CommandSourceStack> context, MiniGameData gameData, C list, E value);
     }
@@ -122,6 +126,6 @@ public abstract class SetParamType<C extends Set<E>, E> extends MiniGameParamTyp
         return (C) Set.of();
     }
 
-    protected abstract E getInputtedListMember(CommandContext<CommandSourceStack> context, String name);
+    protected abstract E getInputtedListMember(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException;
 
 }

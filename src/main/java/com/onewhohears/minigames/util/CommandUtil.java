@@ -1,5 +1,6 @@
 package com.onewhohears.minigames.util;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -24,6 +25,10 @@ public class CommandUtil {
 	}
 
 	public static void suggestStringToBuilder(SuggestionsBuilder builder, Set<String> strings) {
+		for (String s : strings) builder.suggest(s);
+	}
+
+	public static void suggestStringToBuilder(SuggestionsBuilder builder, Collection<String> strings) {
 		for (String s : strings) builder.suggest(s);
 	}
 	

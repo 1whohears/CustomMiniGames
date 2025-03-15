@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.minigame.param;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
@@ -13,6 +14,8 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.function.TriFunction;
 
 import java.util.Set;
+
+import static net.minecraft.server.commands.FunctionCommand.SUGGEST_FUNCTION;
 
 public final class MiniGameParamTypes {
 
@@ -63,6 +66,20 @@ public final class MiniGameParamTypes {
     public static final StringSetParamType POI_TYPES = new StringSetParamType("poiTypes",
             CommandUtil.suggestStrings(MiniGameManager::getAllPoiTypeIds),
             GameComArgs.suggestHandleablePoiTypes());
+    public static final FunctionSetParamType FUNCTION_ON_GAME_START = new FunctionSetParamType("functionsOnGameStart",
+            SUGGEST_FUNCTION, GameComArgs.suggestNothing()) {
+        @Override
+        protected SuggestionProvider<CommandSourceStack> getRemoveSuggestions() {
+            return GameComArgs.suggestFromSet(this);
+        }
+    };
+    public static final FunctionSetParamType FUNCTION_ON_ROUND_START = new FunctionSetParamType("functionsOnRoundStart",
+            SUGGEST_FUNCTION, GameComArgs.suggestNothing()) {
+        @Override
+        protected SuggestionProvider<CommandSourceStack> getRemoveSuggestions() {
+            return GameComArgs.suggestFromSet(this);
+        }
+    };
     // Buy Attack Phase Games
     public static final BoolParamType ALLOW_BUY_PHASE_RESPAWN = new BoolParamType("allowRespawnInBuyPhase", true);
     public static final BoolParamType ALLOW_PVP_BUY_PHASE = new BoolParamType("allowPvpInBuyPhase", false);
@@ -131,6 +148,8 @@ public final class MiniGameParamTypes {
      * register all built in games param types here
      */
     public static void registerGameParamTypes() {
+        MiniGameManager.registerGameParamType(FUNCTION_ON_GAME_START);
+        MiniGameManager.registerGameParamType(FUNCTION_ON_ROUND_START);
         MiniGameManager.registerGameParamType(JOIN_SETUP_ONLY);
         MiniGameManager.registerGameParamType(OPEN_JOINING);
         MiniGameManager.registerGameParamType(OPEN_TEAMS);

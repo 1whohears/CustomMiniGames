@@ -9,8 +9,7 @@ public class AreaControlAttackPhase<T extends AreaControlData> extends BuyAttack
     public AreaControlAttackPhase(T gameData) {
         this("buy_attack_attack", gameData,
                 new AreaControlTimeoutCondition<>(phase -> phase.getGameData().getAttackTime()),
-                new BuyAttackGameWinCondition<>(), new AreaControlRoundWinCondition<>(),
-                new BuyAttackRoundWinCondition<>());
+                new BuyAttackGameWinCondition<>(), new AreaControlRoundWinCondition<>());
     }
 
     @SafeVarargs

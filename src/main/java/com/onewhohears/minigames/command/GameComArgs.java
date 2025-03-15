@@ -6,10 +6,14 @@ import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
+import com.onewhohears.minigames.minigame.param.MiniGameParamTypes;
+import com.onewhohears.minigames.minigame.param.SetParamType;
 import com.onewhohears.minigames.util.CommandUtil;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+
+import java.util.Set;
 
 public class GameComArgs {
 	
@@ -84,11 +88,7 @@ public class GameComArgs {
 	}
 
 	public static PlayerAgentSuggestion suggestHandleableEvents() {
-		return (context, builder, agents) -> {
-			for (PlayerAgent agent : agents)
-				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getHandleableEvents());
-			return builder.buildFuture();
-		};
+		return suggestFromSet(MiniGameParamTypes.EVENTS);
 	}
 
 	public static PlayerAgentSuggestion suggestNothing() {
@@ -96,17 +96,21 @@ public class GameComArgs {
 	}
 
 	public static PlayerAgentSuggestion suggestHandleablePoiTypes() {
-		return (context, builder, agents) -> {
-			for (PlayerAgent agent : agents)
-				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getAllowedPoiTypes());
-			return builder.buildFuture();
-		};
+		return suggestFromSet(MiniGameParamTypes.POI_TYPES);
 	}
 
 	public static PlayerAgentSuggestion suggestAddedPois() {
 		return (context, builder, agents) -> {
 			for (PlayerAgent agent : agents)
 				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getPOIInstanceIds());
+			return builder.buildFuture();
+		};
+	}
+
+	public static <C extends Set<E>, E> PlayerAgentSuggestion suggestFromSet(SetParamType<C,E> type) {
+		return (context, builder, agents) -> {
+			for (PlayerAgent agent : agents)
+				CommandUtil.suggestStringToBuilder(builder, agent.getGameData().getStringsFromType(type));
 			return builder.buildFuture();
 		};
 	}

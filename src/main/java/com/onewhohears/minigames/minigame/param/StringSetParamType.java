@@ -3,6 +3,7 @@ package com.onewhohears.minigames.minigame.param;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.UtilParse;
@@ -11,7 +12,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class StringSetParamType extends SetParamType<Set<String>, String> {
@@ -36,7 +39,12 @@ public class StringSetParamType extends SetParamType<Set<String>, String> {
     }
 
     @Override
-    protected String getInputtedListMember(CommandContext<CommandSourceStack> context, String name) {
+    public Collection<String> toStringList(Set<String> param) {
+        return param;
+    }
+
+    @Override
+    protected String getInputtedListMember(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
         return StringArgumentType.getString(context, name);
     }
 

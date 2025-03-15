@@ -11,15 +11,19 @@ import javax.annotation.Nullable;
 import com.onewhohears.minigames.entity.FlagEntity;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.VanillaTeamAgent;
+import com.onewhohears.minigames.minigame.param.FunctionSetParamType;
 import com.onewhohears.minigames.minigame.param.MiniGameParamHolder;
 import com.onewhohears.minigames.minigame.param.MiniGameParamType;
+import com.onewhohears.minigames.minigame.param.SetParamType;
 import com.onewhohears.minigames.minigame.poi.GamePOI;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilAngles;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -747,13 +751,22 @@ public abstract class MiniGameData {
 
 	public void onGameStart(MinecraftServer server) {
 		removeOfflineTeamPlayers(server);
-		tpPlayersToSpawnPosition(server);
 		if (isClearOnStart()) clearAllPlayerInventories(server);
-		refillAllAgentKits(server);
-		resetAllPlayerHealth(server);
 		chatToAllPlayers(server, getStartGameMessage(server));
 		if (requiresSetRespawnPos()) chatTeamSpawns(server);
 		forAllPOIs(server, (serv, poi) -> poi.onGameStart(serv));
+		runFunctions(server, FUNCTION_ON_GAME_START);
+	}
+
+	public void onRoundStart(MinecraftServer server) {
+		setupAllAgents();
+		applyAllAgentRespawnPoints(server);
+		tpPlayersToSpawnPosition(server);
+		refillAllAgentKits(server);
+		resetAllPlayerHealth(server);
+		runFunctions(server, FUNCTION_ON_ROUND_START);
+		forAllPOIs(server, (serv, poi) -> poi.onRoundStart(serv));
+		giveMoneyToAgents(server);
 	}
 
 	public boolean canUseKit(GameAgent agent, String kit) {
@@ -1072,6 +1085,8 @@ public abstract class MiniGameData {
 		registerParam(SHOPS);
 		registerParam(EVENTS);
 		registerParam(POI_TYPES);
+		registerParam(FUNCTION_ON_GAME_START);
+		registerParam(FUNCTION_ON_ROUND_START);
 	}
 
 	public String[] getTeamIds() {
@@ -1088,5 +1103,22 @@ public abstract class MiniGameData {
 
 	public Set<String> getAllowedPoiTypes() {
 		return getParam(POI_TYPES);
+	}
+
+	public <C extends Set<E>, E> Collection<String> getStringsFromType(SetParamType<C,E> type) {
+		return type.toStringList(getParam(type));
+	}
+
+	public void runFunctions(MinecraftServer server, FunctionSetParamType type) {
+		Set<String> functionIds = getParam(type);
+		for (String id : functionIds) {
+			if (id.startsWith("#")) {
+				Collection<CommandFunction> list = server.getFunctions().getTag(new ResourceLocation(id));
+				for (CommandFunction f : list) server.getFunctions().execute(f, server.getFunctions().getGameLoopSender());
+			} else {
+				Optional<CommandFunction> function = server.getFunctions().get(new ResourceLocation(id));
+                function.ifPresent(func -> server.getFunctions().execute(func, server.getFunctions().getGameLoopSender()));
+			}
+		}
 	}
 }
