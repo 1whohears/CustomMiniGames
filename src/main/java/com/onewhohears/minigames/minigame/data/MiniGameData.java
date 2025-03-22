@@ -16,6 +16,7 @@ import com.onewhohears.minigames.minigame.param.MiniGameParamHolder;
 import com.onewhohears.minigames.minigame.param.MiniGameParamType;
 import com.onewhohears.minigames.minigame.param.SetParamType;
 import com.onewhohears.minigames.minigame.poi.GamePOI;
+import com.onewhohears.minigames.util.CommandUtil;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilAngles;
 import net.minecraft.ChatFormatting;
@@ -769,6 +770,10 @@ public abstract class MiniGameData {
 		giveMoneyToAgents(server);
 	}
 
+	public void onRoundEnd(MinecraftServer server) {
+		runFunctions(server, FUNCTION_ON_ROUND_END);
+	}
+
 	public boolean canUseKit(GameAgent agent, String kit) {
 		return getCurrentPhase().canAgentUseKit(agent, kit);
 	}
@@ -1087,6 +1092,7 @@ public abstract class MiniGameData {
 		registerParam(POI_TYPES);
 		registerParam(FUNCTION_ON_GAME_START);
 		registerParam(FUNCTION_ON_ROUND_START);
+		registerParam(FUNCTION_ON_ROUND_END);
 	}
 
 	public String[] getTeamIds() {
@@ -1111,14 +1117,6 @@ public abstract class MiniGameData {
 
 	public void runFunctions(MinecraftServer server, FunctionSetParamType type) {
 		Set<String> functionIds = getParam(type);
-		for (String id : functionIds) {
-			if (id.startsWith("#")) {
-				Collection<CommandFunction> list = server.getFunctions().getTag(new ResourceLocation(id));
-				for (CommandFunction f : list) server.getFunctions().execute(f, server.getFunctions().getGameLoopSender());
-			} else {
-				Optional<CommandFunction> function = server.getFunctions().get(new ResourceLocation(id));
-                function.ifPresent(func -> server.getFunctions().execute(func, server.getFunctions().getGameLoopSender()));
-			}
-		}
+		for (String id : functionIds) CommandUtil.runFunction(server, id);
 	}
 }

@@ -80,6 +80,13 @@ public final class MiniGameParamTypes {
             return GameComArgs.suggestFromSet(this);
         }
     };
+    public static final FunctionSetParamType FUNCTION_ON_ROUND_END = new FunctionSetParamType("functionsOnRoundEnd",
+            SUGGEST_FUNCTION, GameComArgs.suggestNothing()) {
+        @Override
+        protected SuggestionProvider<CommandSourceStack> getRemoveSuggestions() {
+            return GameComArgs.suggestFromSet(this);
+        }
+    };
     // Buy Attack Phase Games
     public static final BoolParamType ALLOW_BUY_PHASE_RESPAWN = new BoolParamType("allowRespawnInBuyPhase", true);
     public static final BoolParamType ALLOW_PVP_BUY_PHASE = new BoolParamType("allowPvpInBuyPhase", false);
@@ -150,6 +157,7 @@ public final class MiniGameParamTypes {
     public static void registerGameParamTypes() {
         MiniGameManager.registerGameParamType(FUNCTION_ON_GAME_START);
         MiniGameManager.registerGameParamType(FUNCTION_ON_ROUND_START);
+        MiniGameManager.registerGameParamType(FUNCTION_ON_ROUND_END);
         MiniGameManager.registerGameParamType(JOIN_SETUP_ONLY);
         MiniGameManager.registerGameParamType(OPEN_JOINING);
         MiniGameManager.registerGameParamType(OPEN_TEAMS);

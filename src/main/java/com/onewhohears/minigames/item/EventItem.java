@@ -37,8 +37,7 @@ public class EventItem extends Item {
         if (event.isEmpty())
             return sendError(player, stack, "This event item has no event id!");
         CompoundTag params = stack.getTag().getCompound("params");
-        if (MiniGameManager.get().onEventItemUse((ServerPlayer) player, event, params) &&
-                MiniGameManager.get().onEventItemUse((ServerPlayer) player, event, params)) {
+        if (MiniGameManager.get().onEventItemUse((ServerPlayer) player, event, params)) {
             stack.shrink(1);
         }
         return InteractionResultHolder.success(stack);

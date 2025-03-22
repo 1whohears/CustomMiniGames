@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.agent.VanillaTeamAgent;
 import com.onewhohears.minigames.minigame.data.*;
+import com.onewhohears.minigames.minigame.event.FunctionEvent;
 import com.onewhohears.minigames.minigame.event.SummonEvent;
 import com.onewhohears.minigames.minigame.param.MiniGameParamType;
 import com.onewhohears.minigames.minigame.poi.AreaControlPOI;
@@ -87,6 +88,7 @@ public class MiniGameManager extends SavedData {
 	 */
 	public static void registerItemEvents() {
 		registerItemEvent("summon", (SummonEvent)((player, agent, params, entity) -> true));
+		registerItemEvent("function", (FunctionEvent)((player, agent, params) -> true));
 	}
 
 	/**
