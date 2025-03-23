@@ -2,13 +2,9 @@ package com.onewhohears.minigames.minigame.event;
 
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.util.CommandUtil;
-import com.onewhohears.onewholibs.util.UtilEntity;
 import com.onewhohears.onewholibs.util.UtilMCText;
-import com.onewhohears.onewholibs.util.UtilParse;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.function.TriFunction;
 
@@ -19,7 +15,7 @@ public interface FunctionEvent extends TriFunction<ServerPlayer, PlayerAgent, Co
     @Override
     default Boolean apply(ServerPlayer player, PlayerAgent agent, CompoundTag params) {
         String functionId = params.getString("function");
-        CommandUtil.runFunction(player.getServer(), functionId);
+        CommandUtil.runFunctionAs(player.getServer(), functionId, player);
         return postFunction(player, agent, params);
     }
 
