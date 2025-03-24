@@ -1072,6 +1072,14 @@ public abstract class MiniGameData {
 		return true;
 	}
 
+	public boolean forceAdventureDuringSetup() {
+		return getBooleanParam(ADVENTURE_DURING_SETUP);
+	}
+
+	public boolean forceAdventureDuringGame() {
+		return getBooleanParam(ADVENTURE_DURING_SETUP);
+	}
+
 	protected void registerParams() {
 		registerParam(JOIN_SETUP_ONLY);
 		registerParam(OPEN_JOINING);
@@ -1084,6 +1092,8 @@ public abstract class MiniGameData {
 		registerParam(FORCE_NON_MEMBER_SPEC);
 		registerParam(REQUIRE_SET_SPAWN);
 		registerParam(USE_WORLD_BORDER);
+		registerParam(ADVENTURE_DURING_SETUP);
+		registerParam(ADVENTURE_DURING_GAME);
 		registerParam(DEFAULT_LIVES);
 		registerParam(RESPAWN_TICKS);
 		registerParam(MONEY_PER_ROUND);

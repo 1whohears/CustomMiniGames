@@ -11,7 +11,6 @@ import net.minecraft.server.MinecraftServer;
 public abstract class SetupPhase<T extends MiniGameData> extends GamePhase<T> {
 	
 	protected boolean smallWorldBorderStartArea;
-	protected boolean forceAdventureMode;
 	
 	protected SetupPhase(String id, T gameData) {
 		super(id, gameData, new NeverExitCondition<>());
@@ -21,7 +20,6 @@ public abstract class SetupPhase<T extends MiniGameData> extends GamePhase<T> {
 	public CompoundTag save() {
 		CompoundTag nbt = super.save();
 		nbt.putBoolean("smallWorldBorderStartArea", smallWorldBorderStartArea);
-		nbt.putBoolean("forceAdventureMode", forceAdventureMode);
 		return nbt;
 	}
 	
@@ -29,7 +27,6 @@ public abstract class SetupPhase<T extends MiniGameData> extends GamePhase<T> {
 	public void load(CompoundTag tag) {
 		super.load(tag);
 		smallWorldBorderStartArea = tag.getBoolean("smallWorldBorderStartArea");
-		forceAdventureMode = tag.getBoolean("forceAdventureMode");
 	}
 	
 	@Override
@@ -58,7 +55,7 @@ public abstract class SetupPhase<T extends MiniGameData> extends GamePhase<T> {
 	
 	@Override
 	public boolean isForceAdventureMode() {
-		return forceAdventureMode;
+		return getGameData().forceAdventureDuringSetup();
 	}
 	
 	@Override

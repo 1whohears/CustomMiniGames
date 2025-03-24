@@ -65,7 +65,11 @@ public abstract class GamePhase<T extends MiniGameData> {
 		if (ticksRemaining % 20 != 0) return;
 		int secondsRemaining = ticksRemaining / 20;
 		int minutes = -1, seconds = -1;
-		if (secondsRemaining == 600) minutes = 10;
+		if (secondsRemaining == 1800) minutes = 30;
+		else if (secondsRemaining == 1500) minutes = 25;
+		else if (secondsRemaining == 1200) minutes = 20;
+		else if (secondsRemaining == 900) minutes = 15;
+		else if (secondsRemaining == 600) minutes = 10;
 		else if (secondsRemaining == 300) minutes = 5;
 		else if (secondsRemaining == 240) minutes = 4;
 		else if (secondsRemaining == 180) minutes = 3;
@@ -89,13 +93,9 @@ public abstract class GamePhase<T extends MiniGameData> {
 		ServerPlayer player = agent.getPlayer(server);
 		if (player == null) return;
 		if (player.gameMode.isCreative()) return;
-		if (isForceSurvivalMode()) {
-			if (!isSetupPhase() && agent.isDead()) player.setGameMode(GameType.SPECTATOR);
-			else player.setGameMode(GameType.SURVIVAL);
-		} else if (isForceAdventureMode()) {
-			if (!isSetupPhase() && agent.isDead()) player.setGameMode(GameType.SPECTATOR);
-			else player.setGameMode(GameType.ADVENTURE);
-		}
+		if (!isSetupPhase() && agent.isDead()) player.setGameMode(GameType.SPECTATOR);
+		else if (isForceAdventureMode()) player.setGameMode(GameType.ADVENTURE);
+		else if (isForceSurvivalMode()) player.setGameMode(GameType.SURVIVAL);
 		if (getGameData().getWaterFoodExhaustionRate() > 0 && player.isInWater() && hungerPlayersInWater()) {
 			player.causeFoodExhaustion(getGameData().getWaterFoodExhaustionRate());
 		}
@@ -170,7 +170,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 	}
 
 	public boolean isForceAdventureMode() {
-		return false;
+		return getGameData().forceAdventureDuringGame();
 	}
 	
 	public boolean isForceSurvivalMode() {

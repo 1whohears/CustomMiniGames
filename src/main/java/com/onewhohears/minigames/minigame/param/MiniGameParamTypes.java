@@ -31,6 +31,8 @@ public final class MiniGameParamTypes {
     public static final BoolParamType FORCE_NON_MEMBER_SPEC = new BoolParamType("forceNonMemberSpectator", false);
     public static final BoolParamType REQUIRE_SET_SPAWN = new BoolParamType("requiresSetRespawnPos", false);
     public static final BoolParamType USE_WORLD_BORDER = new BoolParamType("worldBorderDuringGame", false);
+    public static final BoolParamType ADVENTURE_DURING_SETUP = new BoolParamType("adventureDuringSetup", true);
+    public static final BoolParamType ADVENTURE_DURING_GAME = new BoolParamType("adventureDuringGame", false);
     public static final IntParamType DEFAULT_LIVES = new IntParamType("defaultInitialLives", 3, 1, 1000000) {
         @Override
         protected TriFunction<CommandContext<CommandSourceStack>, MiniGameData, Integer, Boolean> getSetterApplier() {
@@ -159,6 +161,8 @@ public final class MiniGameParamTypes {
         MiniGameManager.registerGameParamType(FUNCTION_ON_GAME_START);
         MiniGameManager.registerGameParamType(FUNCTION_ON_ROUND_START);
         MiniGameManager.registerGameParamType(FUNCTION_ON_ROUND_END);
+        MiniGameManager.registerGameParamType(ADVENTURE_DURING_SETUP);
+        MiniGameManager.registerGameParamType(ADVENTURE_DURING_GAME);
         MiniGameManager.registerGameParamType(JOIN_SETUP_ONLY);
         MiniGameManager.registerGameParamType(OPEN_JOINING);
         MiniGameManager.registerGameParamType(OPEN_TEAMS);
