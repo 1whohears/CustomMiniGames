@@ -26,6 +26,7 @@ public final class MiniGameParamTypes {
     public static final BoolParamType CAN_ADD_PLAYERS = new BoolParamType("canAddIndividualPlayers", false);
     public static final BoolParamType CAN_ADD_TEAMS = new BoolParamType("canAddTeams", false);
     public static final BoolParamType CLEAR_ON_START = new BoolParamType("clearOnStart", false);
+    public static final BoolParamType CLEAR_ON_ROUND_CHANGE = new BoolParamType("clearOnRoundChange", false);
     public static final BoolParamType ALLOW_ALWAYS_SHOP = new BoolParamType("allowAlwaysShop", false);
     public static final BoolParamType FORCE_NON_MEMBER_SPEC = new BoolParamType("forceNonMemberSpectator", false);
     public static final BoolParamType REQUIRE_SET_SPAWN = new BoolParamType("requiresSetRespawnPos", false);
@@ -167,6 +168,7 @@ public final class MiniGameParamTypes {
         MiniGameManager.registerGameParamType(CAN_ADD_PLAYERS);
         MiniGameManager.registerGameParamType(CAN_ADD_TEAMS);
         MiniGameManager.registerGameParamType(CLEAR_ON_START);
+        MiniGameManager.registerGameParamType(CLEAR_ON_ROUND_CHANGE);
         MiniGameManager.registerGameParamType(ALLOW_ALWAYS_SHOP);
         MiniGameManager.registerGameParamType(FORCE_NON_MEMBER_SPEC);
         MiniGameManager.registerGameParamType(REQUIRE_SET_SPAWN);

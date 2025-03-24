@@ -20,11 +20,9 @@ import com.onewhohears.minigames.util.CommandUtil;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilAngles;
 import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -748,6 +746,10 @@ public abstract class MiniGameData {
 		return getBooleanParam(CLEAR_ON_START);
 	}
 
+	public boolean isClearOnRoundChange() {
+		return getBooleanParam(CLEAR_ON_ROUND_CHANGE);
+	}
+
 	public abstract Component getStartGameMessage(MinecraftServer server);
 
 	public void onGameStart(MinecraftServer server) {
@@ -760,6 +762,7 @@ public abstract class MiniGameData {
 	}
 
 	public void onRoundStart(MinecraftServer server) {
+		if (isClearOnRoundChange()) clearAllPlayerInventories(server);
 		setupAllAgents();
 		applyAllAgentRespawnPoints(server);
 		tpPlayersToSpawnPosition(server);
@@ -1076,6 +1079,7 @@ public abstract class MiniGameData {
 		registerParam(CAN_ADD_PLAYERS);
 		registerParam(CAN_ADD_TEAMS);
 		registerParam(CLEAR_ON_START);
+		registerParam(CLEAR_ON_ROUND_CHANGE);
 		registerParam(ALLOW_ALWAYS_SHOP);
 		registerParam(FORCE_NON_MEMBER_SPEC);
 		registerParam(REQUIRE_SET_SPAWN);
