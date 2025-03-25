@@ -33,6 +33,6 @@ showAsResourcePack=false
 [[dependencies.minigames]]
     modId = "onewholibs"
     mandatory = true
-    versionRange = "[1.6.3,)"
+    versionRange = "[1.6.5,)"
     ordering = "NONE"
     side = "BOTH"
