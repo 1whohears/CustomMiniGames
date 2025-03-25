@@ -14,7 +14,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 
-import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.FUNCTION_ON_ROUND_START;
+import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.*;
 
 public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
 
@@ -74,7 +74,7 @@ public class BuyAttackBuyPhase<T extends BuyAttackData> extends GamePhase<T> {
     @Override
     public void onStop(MinecraftServer server) {
         super.onStop(server);
-        getGameData().onRoundEnd(server);
+        getGameData().runFunctions(server, FUNCTION_ON_BUY_END);
     }
 
     @Override

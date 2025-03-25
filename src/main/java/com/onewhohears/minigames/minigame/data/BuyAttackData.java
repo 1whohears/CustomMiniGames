@@ -134,5 +134,6 @@ public class BuyAttackData extends MiniGameData {
         registerParam(ROUNDS_TO_WIN);
         registerParam(BUY_RADIUS);
         registerParam(SHOP_OUTSIDE_BUY_RADIUS);
+        registerParam(FUNCTION_ON_BUY_END);
     }
 }

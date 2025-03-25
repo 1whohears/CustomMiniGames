@@ -48,6 +48,7 @@ public class BuyAttackAttackPhase<T extends BuyAttackData> extends GamePhase<T> 
     @Override
     public void onStop(MinecraftServer server) {
         super.onStop(server);
+        getGameData().onRoundEnd(server);
     }
 
     @Override
