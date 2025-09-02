@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "minigames",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_authors}"
+  ],
+  "contact": {
+    "homepage": "${homepage}",
+    "sources": "${issue_tracker}"
+  },
+  "license": "MIT",
+  "icon": "assets/minigames/minigames.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.onewhohears.minigames.fabric.MiniGamesModFabric"
+    ],
+    "client": [
+      "com.onewhohears.minigames.fabric.client.MiniGamesModFabricClient"
+    ],
+    "fabric-datagen": [
+      "com.onewhohears.minigames.fabric.MiniGamesDataGenEntrypoint"
+    ]
+  },
+  "mixins": [
+  ],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": ">=${fabric_api_version}",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=17",
+    "architectury": ">=${architectury_version}",
+    "onewholibs": ">=${onewholibs_version}"
+  },
+  "suggests": {
+
+  }
+}

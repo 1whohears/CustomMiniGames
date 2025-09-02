@@ -1,159 +1,75 @@
-buildscript {
-    repositories {
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
-}
-
 plugins {
-    id 'eclipse'
-    id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '5.1.+'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'dev.architectury.loom' version '1.10-SNAPSHOT' apply false
+    id 'architectury-plugin' version '3.4-SNAPSHOT'
+    id 'com.gradleup.shadow' version '8.3.6' apply false
 }
 
-apply plugin: 'org.spongepowered.mixin'
-
-version = mod_version
-group = "com.1whohears.${mod_id}"
-archivesBaseName = "${mod_id}-${minecraft_version}"
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-minecraft {
-    mappings channel: 'parchment', version: '2022.11.27-1.19.2'
-    
-    runs {
-        client {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', 'minigames'
-            mods {
-                minigames {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        client2 {
-            parent runs.client
-            taskName 'runClient2'
-            arg '--username=StupidIdiot'
-        }
-
-        client3 {
-            parent runs.client
-            taskName 'runClient3'
-            arg '--username=LunaticDonkey'
-        }
-
-        client4 {
-            parent runs.client
-            taskName 'runClient4'
-            arg '--username=ShitAss'
-        }
-
-        server {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', 'minigames'
-            mods {
-                minigames {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        gameTestServer {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', 'minigames'
-            mods {
-                minigames {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-            args '--mod', 'minigames', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-            mods {
-                minigames {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
+architectury {
+    minecraft = project.minecraft_version
 }
 
-/*mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-    config "${mod_id}.mixins.json"
-}*/
+allprojects {
+    group = rootProject.maven_group
+    version = rootProject.mod_version
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-repositories {
-    maven { url "https://repo.repsy.io/mvn/1whohears/1wholibs" }
-    maven { url "https://cursemaven.com" }
-}
-
-dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    // https://github.com/1whohears/1wholibs
-    implementation fg.deobf("com.onewhohears.onewholibs:onewholibs-${minecraft_version}:${onewholibs_version}")
-    implementation fg.deobf("curse.maven:xaeros-minimap-fair-play-edition-${xaeros_minimap_fair_play_version}")
-    implementation fg.deobf("curse.maven:timeless-and-classics-zero-${tacz_version}")
-}
-
-jar {
-    manifest {
-        attributes([
-                "Specification-Title"     : "Custom Mini Games",
-                "Specification-Vendor"    : "1whohears",
-                "Specification-Version"   : version, 
-                "Implementation-Title"    : "Custom Mini Games",
-                "Implementation-Version"  : version,
-                "Implementation-Vendor"   : "1whohears",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
-}
-
-jar.finalizedBy('reobfJar')
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-        	groupId = group
-            artifactId = archivesBaseName
-            version = version
-            artifact jar
-        }
-    }
-    Properties props = new Properties() 
-	props.load(new FileInputStream("$projectDir/local.properties")) 
     repositories {
-        maven {
-            credentials {
-    			username props.repsyMavenUsername
-    			password props.repsyMavenPassword
-  			}
-  			url "https://repo.repsy.io/mvn/1whohears/minigames"
-        }
+        maven { url "https://cursemaven.com" }
+        maven { url "https://repo.repsy.io/mvn/1whohears/1wholibs" }
     }
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' 
+ext.localProps = new Properties()
+def localFile = rootProject.file("local.properties")
+if (localFile.exists()) {
+    localFile.withInputStream { ext.localProps.load(it) }
+}
+
+subprojects {
+    apply plugin: 'dev.architectury.loom'
+    apply plugin: 'architectury-plugin'
+    apply plugin: 'maven-publish'
+
+    base {
+        archivesName = "$rootProject.archives_name-$project.name-$rootProject.minecraft_version"
+    }
+
+    loom {
+        silentMojangMappingsLicense()
+    }
+
+    dependencies {
+        minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
+        mappings loom.officialMojangMappings()
+    }
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
+
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.release = 17
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId = base.archivesName.get()
+                from components.java
+            }
+        }
+
+        repositories {
+            maven {
+                credentials {
+                    username = rootProject.ext.localProps.repsyMavenUsername
+                    password = rootProject.ext.localProps.repsyMavenPassword
+                }
+                url "https://repo.repsy.io/mvn/1whohears/minigames"
+            }
+        }
+    }
 }
