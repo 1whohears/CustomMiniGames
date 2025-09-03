@@ -4,7 +4,7 @@ import com.onewhohears.minigames.MiniGamesMod;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.UtilParse;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -46,7 +46,7 @@ public abstract class GamePOI<G extends MiniGameData> {
         pos = UtilParse.readVec3(nbt, "pos");
         if (nbt.contains("dimension")) {
             ResourceLocation dimLoc = new ResourceLocation(nbt.getString("dimension"));
-            dimension = ResourceKey.create(Registry.DIMENSION_REGISTRY, dimLoc);
+            dimension = ResourceKey.create(Registries.DIMENSION, dimLoc);
         } else dimension = Level.OVERWORLD;
     }
 

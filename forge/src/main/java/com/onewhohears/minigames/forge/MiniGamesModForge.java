@@ -3,12 +3,16 @@ package com.onewhohears.minigames.forge;
 import com.onewhohears.minigames.MiniGamesMod;
 import com.onewhohears.minigames.data.kits.MiniGameKitsGenerator;
 import com.onewhohears.minigames.data.shops.MiniGameShopsGenerator;
+import com.onewhohears.minigames.init.MiniGameItems;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.forge.EventBuses;
 import dev.architectury.utils.Env;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.data.loading.DatagenModLoader;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -24,6 +28,7 @@ public class MiniGamesModForge {
         EventBuses.registerModEventBus(MiniGamesMod.MOD_ID, modEventBus);
 
         modEventBus.addListener(this::onGatherData);
+        modEventBus.addListener(this::buildCreativeModeTabs);
 
         MiniGamesMod.init();
         if (Platform.getEnvironment() == Env.CLIENT && !DatagenModLoader.isRunningDataGen()) {
@@ -37,6 +42,7 @@ public class MiniGamesModForge {
         EventBuses.registerModEventBus(MiniGamesMod.MOD_ID, modEventBus);
 
         modEventBus.addListener(this::onGatherData);
+        modEventBus.addListener(this::buildCreativeModeTabs);
 
         MiniGamesMod.init();
         if (Platform.getEnvironment() == Env.CLIENT && !DatagenModLoader.isRunningDataGen()) {
@@ -48,6 +54,17 @@ public class MiniGamesModForge {
         if (event.includeServer()) {
             event.getGenerator().addProvider(true, new MiniGameKitsGenerator(event.getGenerator().getPackOutput()));
             event.getGenerator().addProvider(true, new MiniGameShopsGenerator(event.getGenerator().getPackOutput()));
+        }
+    }
+
+    private void buildCreativeModeTabs(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(MiniGameItems.MONEY);
+            event.accept(MiniGameItems.EVIL_MONEY);
+            event.accept(MiniGameItems.MONEY_MONEY);
+            event.accept(MiniGameItems.WACKY_MONEY);
+            event.accept(MiniGameItems.YAKUZA_MONEY);
+            event.accept(MiniGameItems.ZELDA_MONEY);
         }
     }
 
