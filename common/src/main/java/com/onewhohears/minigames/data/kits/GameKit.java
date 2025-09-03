@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import net.minecraft.core.Registry;
 import net.minecraft.world.item.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -119,7 +118,6 @@ public class GameKit extends JsonPresetStats {
 		public static boolean verifySafe(JsonObject json) {
 			String itemKey = UtilParse.getStringSafe(json, "item", "");
 			if (itemKey.isEmpty()) return false;
-			ResourceLocation rl = new ResourceLocation(itemKey);
             return UtilItem.getItem(itemKey, null) != null;
         }
 		private final Item item;
@@ -140,8 +138,7 @@ public class GameKit extends JsonPresetStats {
         }
 		protected KitItem(JsonObject json) {
 			String itemKey = UtilParse.getStringSafe(json, "item", "");
-			ResourceLocation rl = new ResourceLocation(itemKey);
-			item = UtilItem.getItem(rl.toString(), Items.DIRT);
+			item = UtilItem.getItem(itemKey, Items.DIRT);
 			num = UtilParse.getIntSafe(json, "num", 1);
 			if (json.has("nbt")) {
 				JsonObject nbtJson = json.get("nbt").getAsJsonObject();

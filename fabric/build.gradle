@@ -32,6 +32,14 @@ loom {
     }
 }
 
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/generated/resources'
+        }
+    }
+}
+
 configurations {
     common {
         canBeResolved = true

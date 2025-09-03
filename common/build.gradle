@@ -35,3 +35,11 @@ configurations {
 artifacts {
     shadowedElements tasks.named("commonShadowJar")
 }
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/generated/resources'
+        }
+    }
+}
