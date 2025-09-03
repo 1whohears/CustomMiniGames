@@ -14,6 +14,7 @@ import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 
 import com.onewhohears.minigames.minigame.data.MiniGameData;
+import com.onewhohears.minigames.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -99,7 +100,7 @@ public class MiniGameAllCommands {
 				if (!agent.canOpenShop(context.getSource().getServer(), shop_name)) continue;
 				SubComShop.openPlayerShop(agent.getPlayer(context.getSource().getServer()), shop);
 				Component message = Component.literal("Opened shop "+shop_name);
-				context.getSource().sendSuccess(message, false);
+                CommandUtil.sendSuccess(context, message, false);
 				return 1;
 			}
 			Component message = Component.literal("You can't currently open the shop "+shop_name);
@@ -115,7 +116,7 @@ public class MiniGameAllCommands {
 				if (!agent.canUseKit(kit_name)) continue;
 				agent.setSelectedKit(kit_name);
 				Component message = Component.literal("Changed kit to "+kit_name);
-				context.getSource().sendSuccess(message, false);
+                CommandUtil.sendSuccess(context, message, false);
 				return 1;
 			}
 			Component message = Component.literal("You can't currently change your kit to "+kit_name);

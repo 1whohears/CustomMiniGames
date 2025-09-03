@@ -10,6 +10,7 @@ import com.onewhohears.minigames.common.container.ShopMenu;
 import com.onewhohears.minigames.data.shops.GameShop;
 import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
 
+import com.onewhohears.minigames.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -61,7 +62,7 @@ public class SubComShop {
 				message = Component.literal("Opened ").append(players.iterator().next().getDisplayName()).append(" shop "+shop_name);
 			else 
 				message = Component.literal("No matching players found to open shop "+shop_name);
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}

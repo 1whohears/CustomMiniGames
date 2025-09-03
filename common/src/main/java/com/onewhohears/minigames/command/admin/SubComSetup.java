@@ -10,6 +10,7 @@ import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
+import com.onewhohears.minigames.util.CommandUtil;
 
 import com.onewhohears.minigames.minigame.param.MiniGameParamType;
 import com.onewhohears.onewholibs.util.UtilMCText;
@@ -161,7 +162,7 @@ public class SubComSetup {
 			Component message = UtilMCText.literal("Add POI of type "+typeId+" and name "
 					+instanceId+" to game "+gameData.getInstanceId()+" at pos "
 					+UtilParse.prettyVec3(pos, 1)+"!");
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}
@@ -177,7 +178,7 @@ public class SubComSetup {
 			}
 			Component message = UtilMCText.literal("Removed POI "
 					+instanceId+" from game "+gameData.getInstanceId()+"!");
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}
@@ -207,7 +208,7 @@ public class SubComSetup {
 			gameData.setParam(DEFAULT_LIVES, lives);
 			gameData.setAllAgentInitialLives(lives);
 			Component message = UtilMCText.literal("Set "+gameData.getInstanceId()+" default initial lives to "+lives);
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}
@@ -226,7 +227,7 @@ public class SubComSetup {
 				agent.setInitialLives(lives);
 			}
 			Component message = UtilMCText.literal("Set initial lives to "+lives);
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}
@@ -243,7 +244,7 @@ public class SubComSetup {
 			}
 			agent.setInitialLives(lives);
 			Component message = UtilMCText.literal("Set initial lives to "+lives);
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}
@@ -253,7 +254,7 @@ public class SubComSetup {
 			Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "player");
 			if (players.isEmpty()) {
 				Component message = Component.literal("No player spawnpoints were changed");
-				context.getSource().sendSuccess(message, true);
+				CommandUtil.sendSuccess(context, message, true);
 				return 1;
 			}
 			BlockPos pos = BlockPosArgument.getSpawnablePos(context, "spawn_pos");
@@ -268,7 +269,7 @@ public class SubComSetup {
 				agent.setRespawnPoint(UtilGeometry.toVec3(pos));
 				Component message = Component.literal("Set ").append(player.getDisplayName())
 						.append(" spawn point to "+pos.toShortString());
-				context.getSource().sendSuccess(message, true);
+				CommandUtil.sendSuccess(context, message, true);
 			}
 			return 1;
 		};
@@ -288,7 +289,7 @@ public class SubComSetup {
 			agent.setRespawnPoint(UtilGeometry.toVec3(pos));
 			Component message = Component.literal("Set ").append(team.getDisplayName())
 					.append(" spawn point to "+pos.toShortString());
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}
@@ -304,7 +305,7 @@ public class SubComSetup {
 				return 0;
 			}
 			Component message = Component.literal("Starting "+gameData.getInstanceId()+"!");
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}
@@ -313,7 +314,7 @@ public class SubComSetup {
 		return (context, gameData) -> {
 			Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "player");
 			if (players.isEmpty()) {
-				context.getSource().sendSuccess(Component.literal("No players could be removed."), true);
+                CommandUtil.sendSuccess(context, Component.literal("No players could be removed."), true);
 				return 1;
 			}
 			for (ServerPlayer player : players) {
@@ -324,7 +325,7 @@ public class SubComSetup {
 				} else {
 					Component message = Component.literal("Removed player ").append(player.getDisplayName())
 							.append(" from "+gameData.getInstanceId()+"!");
-					context.getSource().sendSuccess(message, true);
+					CommandUtil.sendSuccess(context, message, true);
 				}
 			}
 			return 1;
@@ -340,7 +341,7 @@ public class SubComSetup {
 			}
 			Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "player");
 			if (players.isEmpty()) {
-				context.getSource().sendSuccess(Component.literal("No players could be added."), true);
+                CommandUtil.sendSuccess(context, Component.literal("No players could be added."), true);
 				return 1;
 			}
 			for (ServerPlayer player : players) {
@@ -351,7 +352,7 @@ public class SubComSetup {
 				} else {
 					Component message = Component.literal("Added player ").append(player.getDisplayName())
 							.append(" to "+gameData.getInstanceId()+"!");
-					context.getSource().sendSuccess(message, true);
+					CommandUtil.sendSuccess(context, message, true);
 				}
 			}
 			return 1;
@@ -363,11 +364,11 @@ public class SubComSetup {
 			PlayerTeam team = TeamArgument.getTeam(context, "team");
 			if (!gameData.removeAgentById(team.getName())) {
 				Component message = Component.literal("Already removed "+team.getName()+" from "+gameData.getInstanceId()+"!");
-				context.getSource().sendSuccess(message, true);
+				CommandUtil.sendSuccess(context, message, true);
 				return 1;
 			}
 			MutableComponent message = Component.literal("Removed "+team.getName()+" from "+gameData.getInstanceId()+"!");
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}
@@ -386,7 +387,7 @@ public class SubComSetup {
 				return 0;
 			}
 			MutableComponent message = Component.literal("Added team "+team.getName()+" to "+gameData.getInstanceId()+"!");
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}

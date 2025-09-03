@@ -9,6 +9,7 @@ import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.data.kits.GameKit;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 
+import com.onewhohears.minigames.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -68,7 +69,7 @@ public class SubComKit {
 				message = Component.literal("Gave ").append(players.iterator().next().getDisplayName()).append(" the kit "+kit_name);
 			else 
 				message = Component.literal("No matching players found to give kit "+kit_name);
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}

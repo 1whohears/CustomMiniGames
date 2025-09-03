@@ -8,6 +8,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.command.admin.GameSetupCom;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
+import com.onewhohears.minigames.util.CommandUtil;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -65,7 +66,7 @@ public abstract class MiniGameParamType<E> {
                 MutableComponent message = UtilMCText.literal("Set ")
                         .append(UtilMCText.translatable(getDisplayName()))
                         .append(" to ").append(v);
-                context.getSource().sendSuccess(message, true);
+                CommandUtil.sendSuccess(context, message, true);
                 return 1;
             } else {
                 MutableComponent message = UtilMCText.literal("The Parameter Type ")
@@ -94,7 +95,7 @@ public abstract class MiniGameParamType<E> {
             MutableComponent message = UtilMCText.literal("The game "+gameData.getInstanceId()
                     +" has parameter ").append(UtilMCText.translatable(getDisplayName()))
                     .append(" set to: ").append(value);
-            context.getSource().sendSuccess(message, false);
+            CommandUtil.sendSuccess(context, message, false);
             return 1;
         };
     }
