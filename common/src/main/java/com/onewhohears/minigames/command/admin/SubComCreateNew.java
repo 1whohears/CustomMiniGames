@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
+import com.onewhohears.minigames.util.CommandUtil;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -50,7 +51,7 @@ public class SubComCreateNew {
 				MutableComponent message = Component.literal("Started new game of type " + gameTypeId + " called " + gameInstanceId + ".");
 				message.append("\nUse /game setup " + gameInstanceId + " to configure the game.");
 				message.append("\n" + gameData.getSetupInfo());
-				context.getSource().sendSuccess(message, true);
+				CommandUtil.sendSuccess(context, message, true);
 				return 1;
 			} catch (Exception e) {
 				Component message = Component.literal("Unable to start new game due to error: "+e.getMessage());

@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.onewhohears.minigames.command.admin.GameSetupCom;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
+import com.onewhohears.minigames.util.CommandUtil;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -72,11 +73,11 @@ public abstract class SetParamType<C extends Set<E>, E> extends MiniGameParamTyp
             if (add && getAdderApplier().apply(context, gameData, list, value)) {
                 MutableComponent message = UtilMCText.literal(value+" has been added to ")
                         .append(UtilMCText.translatable(getDisplayName()));
-                context.getSource().sendSuccess(message, true);
+                CommandUtil.sendSuccess(context, message, true);
             } else if (!add && getRemoveApplier().apply(context, gameData, list, value)) {
                 MutableComponent message = UtilMCText.literal(value+" has been removed from ")
                         .append(UtilMCText.translatable(getDisplayName()));
-                context.getSource().sendSuccess(message, true);
+                CommandUtil.sendSuccess(context, message, true);
             } else {
                 MutableComponent message = UtilMCText.literal("Could not add/remove ")
                         .append(value+"").append("!");

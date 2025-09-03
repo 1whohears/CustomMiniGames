@@ -5,12 +5,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -54,5 +56,9 @@ public class CommandUtil {
 	public static void runFunctionAs(MinecraftServer server, String id, ServerPlayer player) {
 		runFunction(server, id, player.createCommandSourceStack());
 	}
+
+    public static void sendSuccess(CommandContext<CommandSourceStack> context, Component message, boolean chat) {
+        context.getSource().sendSuccess(() -> message, chat);
+    }
 	
 }

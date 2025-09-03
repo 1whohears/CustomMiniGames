@@ -8,6 +8,7 @@ import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
+import com.onewhohears.minigames.util.CommandUtil;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -28,7 +29,7 @@ public class SubComInfo {
 	private GameDataCom commandgameInfo() {
 		return (context, gameData) -> {
 			CommandSourceStack source = context.getSource();
-			source.sendSuccess(gameData.getDebugInfo(source.getServer()), true);
+            CommandUtil.sendSuccess(context, gameData.getDebugInfo(source.getServer()), true);
 			return 1;
 		};
 	}
@@ -38,7 +39,7 @@ public class SubComInfo {
 			List<PlayerAgent> players = gameData.getAllPlayerAgents();
 			if (players.isEmpty()) {
 				Component message = Component.literal("There are zero players in the game "+gameData.getInstanceId());
-				context.getSource().sendSuccess(message, true);
+				CommandUtil.sendSuccess(context, message, true);
 				return 1;
 			}
 			MutableComponent message = Component.empty();
@@ -47,7 +48,7 @@ public class SubComInfo {
 				if (i != 0) message.append(", ");
 				message.append(agent.getDebugInfo(context.getSource().getServer()));
 			}
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}
@@ -57,7 +58,7 @@ public class SubComInfo {
 			List<TeamAgent> teams = gameData.getTeamAgents();
 			if (teams.isEmpty()) {
 				Component message = Component.literal("There are zero teams in the game "+gameData.getInstanceId());
-				context.getSource().sendSuccess(message, true);
+				CommandUtil.sendSuccess(context, message, true);
 				return 1;
 			}
 			MutableComponent message = Component.empty();
@@ -66,7 +67,7 @@ public class SubComInfo {
 				if (i != 0) message.append(", ");
 				message.append(agent.getDebugInfo(context.getSource().getServer()));
 			}
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}
@@ -77,7 +78,7 @@ public class SubComInfo {
 			Component message;
 			if (ids.length == 0) message = Component.literal("There are currently no games running.");
 			else message = Component.literal(Arrays.deepToString(ids));
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		});
 	}

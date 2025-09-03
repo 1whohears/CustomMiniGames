@@ -3,6 +3,7 @@ package com.onewhohears.minigames.command.admin;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.minigame.MiniGameManager;
+import com.onewhohears.minigames.util.CommandUtil;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -26,7 +27,7 @@ public class SubComRemove {
 			gameData.reset(context.getSource().getServer());
 			MiniGameManager.get().removeGame(gameData.getInstanceId());
 			Component message = Component.literal(gameData.getInstanceId()+" was removed!");
-			context.getSource().sendSuccess(message, true);
+			CommandUtil.sendSuccess(context, message, true);
 			return 1;
 		};
 	}

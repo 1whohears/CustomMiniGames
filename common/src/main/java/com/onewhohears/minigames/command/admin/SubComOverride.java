@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
+import com.onewhohears.minigames.util.CommandUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -41,7 +42,7 @@ public class SubComOverride {
 				for (PlayerAgent agent : agents) {
 					agent.setLives(lives);
 					Component message = Component.literal("Set "+player.getScoreboardName()+"'s lives to "+lives+"!");
-					context.getSource().sendSuccess(message, true);
+					CommandUtil.sendSuccess(context, message, true);
 				}
 			}
 			return 1;
