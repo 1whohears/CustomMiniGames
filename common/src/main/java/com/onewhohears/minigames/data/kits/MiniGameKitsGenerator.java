@@ -4,15 +4,11 @@ import com.google.gson.JsonObject;
 import com.onewhohears.minigames.MiniGamesMod;
 
 import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetGenerator;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 
 public class MiniGameKitsGenerator extends JsonPresetGenerator<GameKit> {
 
-	public static void register(DataGenerator generator) {
-		generator.addProvider(true, new MiniGameKitsGenerator(generator));
-	}
-
-	public MiniGameKitsGenerator(DataGenerator output) {
+	public MiniGameKitsGenerator(PackOutput output) {
 		super(output, MiniGameKitsManager.KIND);
 	}
 

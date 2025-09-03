@@ -3,8 +3,6 @@ package com.onewhohears.minigames;
 import com.onewhohears.minigames.client.event.MGClientEventHandlers;
 import com.onewhohears.minigames.common.event.MGCommonEventHandlers;
 import com.onewhohears.minigames.common.network.CMGPacketHandler;
-import com.onewhohears.minigames.data.kits.MiniGameKitsGenerator;
-import com.onewhohears.minigames.data.shops.MiniGameShopsGenerator;
 import com.onewhohears.minigames.init.CMGTags;
 import com.onewhohears.minigames.init.MiniGameContainers;
 import com.onewhohears.minigames.init.MiniGameEntities;
@@ -13,8 +11,6 @@ import com.onewhohears.minigames.minigame.MiniGameManager;
 
 import com.onewhohears.minigames.minigame.param.MiniGameParamTypes;
 import dev.architectury.platform.Platform;
-import dev.architectury.utils.Env;
-import net.minecraft.data.DataGenerator;
 
 public class MiniGamesMod {
 	
@@ -45,11 +41,6 @@ public class MiniGamesMod {
 
     public static void clientInit() {
         MGClientEventHandlers.init();
-    }
-
-    public static void registerServerDataGens(DataGenerator generator) {
-        MiniGameKitsGenerator.register(generator);
-        MiniGameShopsGenerator.register(generator);
     }
 	
 }

@@ -4,15 +4,11 @@ import com.google.gson.JsonObject;
 import com.onewhohears.minigames.MiniGamesMod;
 
 import com.onewhohears.onewholibs.data.jsonpreset.JsonPresetGenerator;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 
 public class MiniGameShopsGenerator extends JsonPresetGenerator<GameShop> {
 
-	public static void register(DataGenerator generator) {
-		generator.addProvider(true, new MiniGameShopsGenerator(generator));
-	}
-
-	public MiniGameShopsGenerator(DataGenerator output) {
+	public MiniGameShopsGenerator(PackOutput output) {
 		super(output, MiniGameShopsManager.KIND);
 	}
 

@@ -1,6 +1,8 @@
 package com.onewhohears.minigames.forge;
 
 import com.onewhohears.minigames.MiniGamesMod;
+import com.onewhohears.minigames.data.kits.MiniGameKitsGenerator;
+import com.onewhohears.minigames.data.shops.MiniGameShopsGenerator;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.forge.EventBuses;
 import dev.architectury.utils.Env;
@@ -44,7 +46,8 @@ public class MiniGamesModForge {
 
     private void onGatherData(GatherDataEvent event) {
         if (event.includeServer()) {
-            MiniGamesMod.registerServerDataGens(event.getGenerator());
+            event.getGenerator().addProvider(true, new MiniGameKitsGenerator(event.getGenerator().getPackOutput()));
+            event.getGenerator().addProvider(true, new MiniGameShopsGenerator(event.getGenerator().getPackOutput()));
         }
     }
 
