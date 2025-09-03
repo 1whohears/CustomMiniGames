@@ -1,6 +1,6 @@
 {
   "values": [
     "#minecraft:planks",
-    "#forge:cobblestone"
+    "minecraft:cobblestone"
   ]
 }
