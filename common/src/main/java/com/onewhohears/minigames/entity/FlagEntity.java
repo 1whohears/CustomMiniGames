@@ -8,6 +8,7 @@ import com.onewhohears.minigames.init.MiniGameEntities;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
+import com.onewhohears.onewholibs.util.UtilEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -82,7 +83,7 @@ public class FlagEntity extends Mob {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!getLevel().isClientSide() && tickCount == 1) verifySelf();
+		if (!UtilEntity.getLevel(this).isClientSide() && tickCount == 1) verifySelf();
 	}
 
 	protected void verifySelf() {
@@ -96,7 +97,7 @@ public class FlagEntity extends Mob {
 	}
 
 	public void onDeath(@Nullable DamageSource source) {
-		if (getLevel().isClientSide()) return;
+		if (UtilEntity.getLevel(this).isClientSide()) return;
 		MiniGameData data = getGameData();
 		if (data == null) {
 			discard();
@@ -113,7 +114,7 @@ public class FlagEntity extends Mob {
 
 	@Nullable
 	public MiniGameData getGameData() {
-		if (getLevel().isClientSide()) return null;
+		if (UtilEntity.getLevel(this).isClientSide()) return null;
 		if (MiniGameManager.get() == null) {
             LOGGER.warn("MiniGameManager is somehow null {}", this);
 			return null;

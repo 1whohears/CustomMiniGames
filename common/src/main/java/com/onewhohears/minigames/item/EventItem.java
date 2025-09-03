@@ -1,6 +1,7 @@
 package com.onewhohears.minigames.item;
 
 import com.onewhohears.minigames.minigame.MiniGameManager;
+import com.onewhohears.onewholibs.util.UtilEntity;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -29,7 +30,7 @@ public class EventItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player,
                                                            @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (player.getLevel().isClientSide())
+        if (UtilEntity.getLevel(player).isClientSide())
             return InteractionResultHolder.pass(stack);
         if (stack.getTag() == null)
             return sendError(player, stack, "This event item has no data!");

@@ -23,7 +23,7 @@ public interface SummonEvent extends TriFunction<ServerPlayer, PlayerAgent, Comp
             sendError(player, "Entity Type "+entityTypeKey+" does not exist.");
             return false;
         }
-        Entity entity = type.create(player.getLevel());
+        Entity entity = type.create(UtilEntity.getLevel(player));
         if (entity == null) {
             sendError(player, "Entity couldn't be created.");
             return false;
@@ -32,7 +32,7 @@ public interface SummonEvent extends TriFunction<ServerPlayer, PlayerAgent, Comp
         if (params.contains("pos")) entity.setPos(UtilParse.readVec3(params, "pos"));
         else entity.setPos(player.position());
         if (params.contains("yaw")) entity.setYRot(params.getFloat("yaw"));
-        if (!player.getLevel().addFreshEntity(entity)) {
+        if (!UtilEntity.getLevel(player).addFreshEntity(entity)) {
             sendError(player, "Entity couldn't be added to the world.");
             return false;
         }
