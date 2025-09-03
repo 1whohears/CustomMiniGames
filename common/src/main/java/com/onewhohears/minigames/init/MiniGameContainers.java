@@ -2,34 +2,23 @@ package com.onewhohears.minigames.init;
 
 import com.onewhohears.minigames.MiniGamesMod;
 import com.onewhohears.minigames.common.container.ShopMenu;
-import com.onewhohears.minigames.data.shops.GameShop;
-import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
 
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import dev.architectury.registry.menu.MenuRegistry;
+import dev.architectury.registry.registries.DeferredRegister;
+import dev.architectury.registry.registries.RegistrySupplier;
+import net.minecraft.core.Registry;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.network.IContainerFactory;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 public class MiniGameContainers {
-	
-	public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MiniGamesMod.MOD_ID);
-	
-	public static void register(IEventBus eventBus) {
-		CONTAINERS.register(eventBus);
-    }
-	
-	public static final RegistryObject<MenuType<ShopMenu>> SHOP_MENU = 
-			register("shop_menu", (windowId, playerInv, data) -> {
-				String shop_name = data.readUtf();
-				GameShop shop = MiniGameShopsManager.get().get(shop_name);
-				return new ShopMenu(windowId, playerInv, shop);
-			});
-	
-	private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> register(String id, IContainerFactory<T> factory){
-        return CONTAINERS.register(id, () -> new MenuType<>(factory));
+
+	public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(
+            MiniGamesMod.MOD_ID, Registry.MENU_REGISTRY);
+
+    public static final RegistrySupplier<MenuType<ShopMenu>> SHOP_MENU =
+            CONTAINERS.register("shop_menu", () -> MenuRegistry.ofExtended(ShopMenu::new));
+
+    public static void register() {
+        CONTAINERS.register();
     }
 	
 }

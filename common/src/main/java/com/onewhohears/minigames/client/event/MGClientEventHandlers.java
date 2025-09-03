@@ -22,7 +22,7 @@ public class MGClientEventHandlers {
     }
 
     public static void registerEntityRenderers() {
-        EntityRendererRegistry.register(MiniGameEntities.FLAG.get(), context -> new RendererObjEntity<>(
+        EntityRendererRegistry.register(MiniGameEntities.FLAG, context -> new RendererObjEntity<>(
                 context, new ObjEntityModel<>("computa_flag")
         ));
     }
