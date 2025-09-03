@@ -7,6 +7,7 @@ import com.onewhohears.minigames.minigame.phase.areacontrol.AreaControlAttackPha
 import com.onewhohears.minigames.minigame.phase.buyattackrounds.*;
 import com.onewhohears.minigames.minigame.poi.AreaControlPOI;
 import com.onewhohears.minigames.minigame.poi.GamePOI;
+import com.onewhohears.minigames.util.CMGUtil;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilGeometry;
 import net.minecraft.core.BlockPos;
@@ -16,10 +17,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -107,9 +106,7 @@ public class AreaControlData extends BuyAttackData {
 
     @Override
     public boolean allowBlockPlace(PlayerAgent agent, MinecraftServer server, BlockPos pos, Block block) {
-        Optional<Holder.Reference<Block>> optional = ForgeRegistries.BLOCKS.getDelegate(block);
-        if (optional.isEmpty()) return true;
-        Holder.Reference<Block> holder = optional.get();
+        Holder.Reference<Block> holder = CMGUtil.getHolder(block);
         int all = getIntParam(BAN_ALL_BLOCKS_RADIUS)^2;
         int white = getIntParam(WHITE_LIST_BLOCKS_RADIUS)^2;
         int black = getIntParam(BLACK_LIST_BLOCKS_RADIUS)^2;

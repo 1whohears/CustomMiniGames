@@ -1,8 +1,10 @@
 package com.onewhohears.minigames.util;
 
+import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.Block;
 
 public class CMGUtil {
 
@@ -17,6 +19,10 @@ public class CMGUtil {
                 sp.connection.send(new ClientboundSetEquipmentPacket(sp.getId(), slots));
             }*/
         }
+    }
+
+    public static Holder.Reference<Block> getHolder(Block block) {
+        return block.builtInRegistryHolder();
     }
 
 }

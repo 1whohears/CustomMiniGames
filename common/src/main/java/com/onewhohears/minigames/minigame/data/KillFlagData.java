@@ -7,6 +7,7 @@ import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.phase.buyattackrounds.*;
 import com.onewhohears.minigames.minigame.phase.flag.KillFlagAttackPhase;
 import com.onewhohears.minigames.minigame.phase.flag.KillFlagBuyPhase;
+import com.onewhohears.minigames.util.CMGUtil;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilGeometry;
 import net.minecraft.core.BlockPos;
@@ -16,9 +17,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.*;
@@ -69,9 +67,7 @@ public class KillFlagData extends AttackDefendData {
 
     @Override
     public boolean allowBlockPlace(PlayerAgent agent, MinecraftServer server, BlockPos pos, Block block) {
-        Optional<Holder.Reference<Block>> optional = ForgeRegistries.BLOCKS.getDelegate(block);
-        if (optional.isEmpty()) return true;
-        Holder.Reference<Block> holder = optional.get();
+        Holder.Reference<Block> holder = CMGUtil.getHolder(block);
         int all = getIntParam(BAN_ALL_BLOCKS_RADIUS)^2;
         int white = getIntParam(WHITE_LIST_BLOCKS_RADIUS)^2;
         int black = getIntParam(BLACK_LIST_BLOCKS_RADIUS)^2;
