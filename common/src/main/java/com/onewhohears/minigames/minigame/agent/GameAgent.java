@@ -1,8 +1,5 @@
 package com.onewhohears.minigames.minigame.agent;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.mojang.logging.LogUtils;
 import com.onewhohears.minigames.MiniGamesMod;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
@@ -20,6 +17,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.function.Consumer;
@@ -221,7 +219,7 @@ public abstract class GameAgent {
 		return selectedKit;
 	}
 	
-	public void setSelectedKit(@Nonnull String kit) {
+	public void setSelectedKit(@NotNull String kit) {
 		if (!canUseKit(kit)) return;
 		selectedKit = kit;
 	}

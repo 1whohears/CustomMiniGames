@@ -3,8 +3,6 @@ package com.onewhohears.minigames.minigame.agent;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import javax.annotation.Nullable;
-
 import com.onewhohears.minigames.data.kits.GameKit;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.minigames.init.MiniGameItems;
@@ -28,6 +26,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
+import org.jetbrains.annotations.Nullable;
 
 public class PlayerAgent extends GameAgent {
 	

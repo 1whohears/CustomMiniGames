@@ -21,7 +21,7 @@ import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 
 public abstract class GamePhase<T extends MiniGameData> {

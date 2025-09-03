@@ -3,7 +3,7 @@ package com.onewhohears.minigames.minigame.agent;
 import java.util.*;
 import java.util.function.Consumer;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
