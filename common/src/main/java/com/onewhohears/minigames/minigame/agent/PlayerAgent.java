@@ -26,6 +26,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PlayerAgent extends GameAgent {
@@ -133,18 +134,22 @@ public class PlayerAgent extends GameAgent {
 
 	@Override
 	public boolean canTickAgent(MinecraftServer server) {
-		return getPlayer(server) != null && player.isAddedToWorld();
+		return getPlayer(server) != null && isAddedToWorld(server, player);
 	}
 	
 	@Nullable
 	public ServerPlayer getPlayer(MinecraftServer server) {
-		if (player != null && player.isAddedToWorld()) return player;
+		if (player != null && isAddedToWorld(server, player)) return player;
 		UUID uuid = getPlayerId();
 		if (uuid == null) return null;
 		player = server.getPlayerList().getPlayer(uuid);
 		if (player != null) scoreboardName = player.getScoreboardName();
 		return player;
 	}
+
+    private static boolean isAddedToWorld(MinecraftServer server, @NotNull ServerPlayer player) {
+        return server.getPlayerList().getPlayer(player.getUUID()) != null;
+    }
 	
 	@Nullable
 	public UUID getPlayerId() {
