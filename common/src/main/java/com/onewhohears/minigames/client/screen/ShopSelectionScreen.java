@@ -29,7 +29,8 @@ public class ShopSelectionScreen extends BackgroundScreen {
     }
 
     private Button createSelectButton(GameShop shop) {
-        return new Button(0, 0, 20, 20, shop.getDisplayNameComponent(), getSelectOnPress(shop.getId()));
+        return Button.builder(shop.getDisplayNameComponent(), getSelectOnPress(shop.getId()))
+                .pos(0, 0).size(20, 20).build();
     }
 
     private Button.OnPress getSelectOnPress(String shop) {

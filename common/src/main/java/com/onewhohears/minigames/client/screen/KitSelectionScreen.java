@@ -1,11 +1,11 @@
 package com.onewhohears.minigames.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.onewhohears.minigames.common.network.toserver.ToServerKitSelect;
 import com.onewhohears.minigames.data.kits.GameKit;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.onewholibs.client.screen.BackgroundScreen;
 import com.onewhohears.onewholibs.util.UtilMCText;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -39,18 +39,18 @@ public class KitSelectionScreen extends BackgroundScreen {
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        super.render(poseStack, mouseX, mouseY, partialTick);
-        font.draw(poseStack, UtilMCText.literal("Kits are applied in the next round!"),
-                guiX + left_padding, guiY + top_padding,0x0000AA);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.drawString(font, UtilMCText.literal("Kits are applied in the next round!"),
+                guiX + left_padding, guiY + top_padding, 0x0000AA);
         for (int i = 0; i < kits.length; ++i) {
             Button button = selectButtons[i];
             GameKit kit = MiniGameKitsManager.get().get(kits[i]);
             if (kit == null) continue;
-            int x = button.x + 40, y = button.y + 6;
+            int x = button.getX() + 40, y = button.getY() + 6;
             int color = 0x444444;
             if (kit.getId().equals(selected)) color = 0x0000AA;
-            font.draw(poseStack, kit.getDisplayNameComponent(), x, y, color);
+            guiGraphics.drawString(font, kit.getDisplayNameComponent(), x, y, color);
             List<ItemStack> stacks = kit.getItemsForDisplay();
             int num = stacks.size();
             int cycle = (int) ((System.currentTimeMillis() / 750) % num);
@@ -60,13 +60,14 @@ public class KitSelectionScreen extends BackgroundScreen {
                     k += cycle;
                     if (k >= num) k -= num;
                 }
-                minecraft.getItemRenderer().renderGuiItem(stacks.get(k), x + 90 + j * 20, button.y);
+                guiGraphics.renderItem(stacks.get(k), x + 90 + j * 20, button.getY());
             }
         }
     }
 
     private Button createSelectButton(String kit) {
-        return new Button(0, 0, 20, 20, UtilMCText.literal("Select"), getSelectOnPress(kit));
+        return Button.builder(UtilMCText.literal("Select"), getSelectOnPress(kit))
+                .pos(0, 0).size(20, 20).build();
     }
 
     private Button.OnPress getSelectOnPress(String kit) {

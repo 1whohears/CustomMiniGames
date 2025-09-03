@@ -29,7 +29,7 @@ public class GameSelectionScreen extends BackgroundScreen {
     }
 
     private Button createSelectButton(String id) {
-        return new Button(0, 0, 20, 20, UtilMCText.literal(id), getSelectOnPress(id));
+        return Button.builder(UtilMCText.literal(id), getSelectOnPress(id)).pos(0, 0).size(20, 20).build();
     }
 
     private Button.OnPress getSelectOnPress(String id) {

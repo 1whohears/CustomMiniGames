@@ -1,9 +1,9 @@
 package com.onewhohears.minigames.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.onewhohears.minigames.common.network.toserver.ToServerGameSelect;
 import com.onewhohears.onewholibs.client.screen.BackgroundScreen;
 import com.onewhohears.onewholibs.util.UtilMCText;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -33,10 +33,10 @@ public class TeamSelectionScreen extends BackgroundScreen {
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        super.render(poseStack, mouseX, mouseY, partialTick);
-        font.draw(poseStack, UtilMCText.literal("Team Selection"),
-                guiX + left_padding, guiY + top_padding,0x0000AA);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.drawString(font, UtilMCText.literal("Team Selection"),
+                guiX + left_padding, guiY + top_padding, 0x0000AA);
         ClientPacketListener clientPacketListener = minecraft.getConnection();
         if (clientPacketListener == null) return;
         if (!teamMap.containsKey(selectedGame)) return;
@@ -45,14 +45,14 @@ public class TeamSelectionScreen extends BackgroundScreen {
         if (infoCollection.isEmpty()) return;
         PlayerInfo[] players = infoCollection.toArray(new PlayerInfo[0]);
         for (int i = 0; i < teams.length; ++i) {
-            int k = 0, x = teamButtons.get(i).x, y = teamButtons.get(i).y;
+            int k = 0, x = teamButtons.get(i).getX(), y = teamButtons.get(i).getY();
             for (PlayerInfo info : players) {
                 if (info.getTeam() == null) continue;
                 if (!info.getTeam().getName().equals(teams[i])) continue;
                 Component name = info.getTabListDisplayName();
                 Integer color = info.getTeam().getColor().getColor();
                 if (color == null) color = 0xFFFFFF;
-                font.draw(poseStack, name != null ? name : UtilMCText.literal(info.getProfile().getName()),
+                guiGraphics.drawString(font, name != null ? name : UtilMCText.literal(info.getProfile().getName()),
                         x+2, y+22+k*10, color);
                 ++k;
             }
@@ -83,7 +83,8 @@ public class TeamSelectionScreen extends BackgroundScreen {
         String name;
         if (id.isEmpty()) name = "Solo";
         else name = id;
-        return new Button(0, 0, 20, 20, UtilMCText.literal(name), getSelectTeamOnPress(id));
+        return Button.builder(UtilMCText.literal(name), getSelectTeamOnPress(id))
+                .pos(0, 0).size(20, 20).build();
     }
 
     private Button.OnPress getSelectTeamOnPress(String team) {
@@ -93,7 +94,8 @@ public class TeamSelectionScreen extends BackgroundScreen {
     }
 
     private Button createBackButton() {
-        return new Button(0, 0, 20, 20, UtilMCText.literal("Back"), getBackOnPress());
+        return Button.builder(UtilMCText.literal("Back"), getBackOnPress())
+                .pos(0, 0).size(20, 20).build();
     }
 
     private Button.OnPress getBackOnPress() {
