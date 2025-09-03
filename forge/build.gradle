@@ -39,6 +39,9 @@ dependencies {
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
     modApi "com.onewhohears.onewholibs:onewholibs-forge-$rootProject.minecraft_version:$rootProject.onewholibs_version"
+
+    modCompileOnly "curse.maven:xaeros-minimap-fair-play-edition-263466:$rootProject.xaeros_minimap_fair_play_id_forge"
+    modCompileOnly "curse.maven:timeless-and-classics-zero-1028108:$rootProject.tacz_id_forge"
 }
 
 processResources {
@@ -57,7 +60,9 @@ processResources {
                 forge_version: project.findProperty("forge_version"),
                 forge_version_range: project.findProperty("forge_version_range"),
                 forge_loader_version_range: project.findProperty("forge_loader_version_range"),
-                onewholibs_version: project.findProperty("onewholibs_version")
+                onewholibs_version: project.findProperty("onewholibs_version"),
+                xaeros_minimap_fair_play_version: project.findProperty("xaeros_minimap_fair_play_version"),
+                tacz_version: project.findProperty("tacz_version")
     }
 }
 

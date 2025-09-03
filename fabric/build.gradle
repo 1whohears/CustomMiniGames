@@ -63,6 +63,8 @@ dependencies {
     modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
 
     modApi "com.onewhohears.onewholibs:onewholibs-fabric-$rootProject.minecraft_version:$rootProject.onewholibs_version"
+
+    modCompileOnly "curse.maven:xaeros-minimap-fair-play-edition-263466:$rootProject.xaeros_minimap_fair_play_id_fabric"
 }
 
 processResources {
@@ -81,7 +83,9 @@ processResources {
                 architectury_version: project.findProperty("architectury_version"),
                 fabric_loader_version: project.findProperty("fabric_loader_version"),
                 fabric_api_version: project.findProperty("fabric_api_version"),
-                onewholibs_version: project.findProperty("onewholibs_version")
+                onewholibs_version: project.findProperty("onewholibs_version"),
+                xaeros_minimap_fair_play_version: project.findProperty("xaeros_minimap_fair_play_version"),
+                tacz_version: project.findProperty("tacz_version")
     }
 }
 

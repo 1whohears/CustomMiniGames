@@ -43,3 +43,17 @@ showAsResourcePack=false
     versionRange = "[${architectury_version},)"
     ordering = "NONE"
     side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+    modId = "xaerominimapfair"
+    mandatory = false
+    versionRange = "[${xaeros_minimap_fair_play_version},)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+    modId = "tacz"
+    mandatory = false
+    versionRange = "[${tacz_version},)"
+    ordering = "NONE"
+    side = "BOTH"

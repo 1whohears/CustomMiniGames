@@ -36,6 +36,6 @@
     "onewholibs": ">=${onewholibs_version}"
   },
   "suggests": {
-
+    "xaerominimapfair": ">=${xaeros_minimap_fair_play_version}"
   }
 }
