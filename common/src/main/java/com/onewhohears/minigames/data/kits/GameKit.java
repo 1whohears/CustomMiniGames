@@ -170,7 +170,7 @@ public class GameKit extends JsonPresetStats {
 				if (stack.getTag() == null || nbt == null) return false;
 				return stack.getTag().getString(distinguishByNBT).equals(nbt.getString(distinguishByNBT));
  			}
-			if (sameCheckIgnoreNbt()) return ItemStack.isSameIgnoreDurability(getItem(), stack);
+			if (sameCheckIgnoreNbt()) return ItemStack.isSameItem(getItem(), stack);
 			return ItemStack.isSameItemSameTags(getItem(), stack);
 		}
 		public Predicate<ItemStack> sameChecker() {
@@ -212,8 +212,8 @@ public class GameKit extends JsonPresetStats {
 			ItemStack stack = getItem();
 			if (num > 0) setCount(stack, num);
 			Item i = stack.getItem();
-			if (i instanceof ArmorItem armorItem && !player.hasItemInSlot(armorItem.getSlot())) {
-				player.setItemSlot(armorItem.getSlot(), stack);
+			if (i instanceof ArmorItem armorItem && !player.hasItemInSlot(armorItem.getType().getSlot())) {
+				player.setItemSlot(armorItem.getType().getSlot(), stack);
 			} else if (stack.is(Items.ELYTRA) && !player.hasItemInSlot(EquipmentSlot.CHEST)) {
 				player.setItemSlot(EquipmentSlot.CHEST, stack);
 			} else if (i instanceof ShieldItem && !player.hasItemInSlot(EquipmentSlot.OFFHAND)) {

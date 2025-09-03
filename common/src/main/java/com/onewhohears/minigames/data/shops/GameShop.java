@@ -152,8 +152,8 @@ public class GameShop extends JsonPresetStats {
 		}
 		private boolean isCostItem(ItemStack cost, ItemStack stack) {
 			if (stack.isEmpty() || stack.isDamaged()) return false;
-			if (costNbt != null && !ItemStack.tagMatches(cost, stack)) return false;
-			else if (costNbt == null && !ItemStack.isSame(cost, stack)) return false;
+			if (costNbt != null && !ItemStack.isSameItemSameTags(cost, stack)) return false;
+			else if (costNbt == null && !ItemStack.isSameItem(cost, stack)) return false;
 			return true;
 		}
 		@Override
