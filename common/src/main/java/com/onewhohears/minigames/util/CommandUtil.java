@@ -58,7 +58,7 @@ public class CommandUtil {
 	}
 
     public static void sendSuccess(CommandContext<CommandSourceStack> context, Component message, boolean chat) {
-        context.getSource().sendSuccess(() -> message, chat);
+        context.getSource().sendSuccess(message, chat);
     }
 	
 }
