@@ -8,6 +8,28 @@ loom {
             sourceSet project(":forge").sourceSets.main
         }
     }
+    runs {
+        data {
+            data()
+
+            runDir("build/datagen")
+
+            property("forge.logging.markers", "REGISTRIES")
+            property("forge.logging.console.level", "debug")
+
+            programArgs "--mod", "${mod_id}", "--all"
+            programArgs '--output', project(':common').file('src/generated/resources').getAbsolutePath()
+            programArgs "--existing", project(":common").file("src/main/resources").absolutePath
+        }
+    }
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/generated/resources'
+        }
+    }
 }
 
 architectury {

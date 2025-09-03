@@ -2,9 +2,12 @@ package com.onewhohears.minigames.forge;
 
 import com.onewhohears.minigames.MiniGamesMod;
 import dev.architectury.platform.forge.EventBuses;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(MiniGamesMod.MOD_ID)
@@ -32,7 +35,17 @@ public class MiniGamesModForge {
     }
 
     private void onGatherData(GatherDataEvent event) {
-        MiniGamesMod.registerDataGens(event.getGenerator());
+        if (event.includeServer()) {
+            MiniGamesMod.registerServerDataGens(event.getGenerator());
+        }
+    }
+
+    @Mod.EventBusSubscriber(modid = MiniGamesMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ClientModEvents {
+        @SubscribeEvent
+        public static void clientSetup(FMLClientSetupEvent event) {
+            MiniGamesMod.clientInit();
+        }
     }
 
 }

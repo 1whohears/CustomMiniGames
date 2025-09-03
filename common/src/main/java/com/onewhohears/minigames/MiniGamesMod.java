@@ -41,12 +41,13 @@ public class MiniGamesMod {
         MiniGameManager.registerItemEvents();
         MiniGameManager.registerPOIGens();
         MiniGameManager.registerGameAgentGens();
-        if (Platform.getEnvironment() == Env.CLIENT) {
-            MGClientEventHandlers.init();
-        }
     }
 
-    public static void registerDataGens(DataGenerator generator) {
+    public static void clientInit() {
+        MGClientEventHandlers.init();
+    }
+
+    public static void registerServerDataGens(DataGenerator generator) {
         MiniGameKitsGenerator.register(generator);
         MiniGameShopsGenerator.register(generator);
     }
