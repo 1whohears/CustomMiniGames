@@ -1,15 +1,12 @@
 package com.onewhohears.minigames.common.network.toclient;
 
 import com.onewhohears.minigames.util.UtilClientPacket;
+import dev.architectury.networking.NetworkManager;
+import dev.architectury.networking.simple.BaseS2CMessage;
+import dev.architectury.networking.simple.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
-
-public class ToClientOpenKitGUI {
+public class ToClientOpenKitGUI extends BaseS2CMessage {
     private final String selected;
     private final String[] kits;
     public ToClientOpenKitGUI(String selected, String... kits) {
@@ -24,24 +21,20 @@ public class ToClientOpenKitGUI {
             kits[i] = buffer.readUtf();
         }
     }
-    public void encode(FriendlyByteBuf buffer) {
+    @Override
+    public MessageType getType() {
+        return null;
+    }
+    @Override
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeUtf(selected);
         buffer.writeInt(kits.length);
         for (String kit : kits) {
             buffer.writeUtf(kit);
         }
     }
-    public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-        final var success = new AtomicBoolean(false);
-        ctx.get().enqueueWork(() -> {
-            ctx.get().enqueueWork(() -> {
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                    success.set(true);
-                    UtilClientPacket.handleOpenKitGui(selected, kits);
-                });
-            });
-        });
-        ctx.get().setPacketHandled(true);
-        return success.get();
+    @Override
+    public void handle(NetworkManager.PacketContext context) {
+        context.queue(() -> UtilClientPacket.handleOpenKitGui(selected, kits));
     }
 }

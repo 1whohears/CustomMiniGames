@@ -2,16 +2,16 @@ package com.onewhohears.minigames.common.network.toserver;
 
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
+import dev.architectury.networking.NetworkManager;
+import dev.architectury.networking.simple.BaseC2SMessage;
+import dev.architectury.networking.simple.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 
-public class ToServerKitSelect {
+public class ToServerKitSelect extends BaseC2SMessage {
     private final String kit;
     public ToServerKitSelect(String kit) {
         this.kit = kit;
@@ -19,15 +19,18 @@ public class ToServerKitSelect {
     public ToServerKitSelect(FriendlyByteBuf buffer){
         kit = buffer.readUtf();
     }
-    public void encode(FriendlyByteBuf buffer) {
+    @Override
+    public MessageType getType() {
+        return null;
+    }
+    @Override
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeUtf(kit);
     }
-    public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-        final var success = new AtomicBoolean(false);
-        ctx.get().enqueueWork(() -> {
-            success.set(true);
-            ServerPlayer player = ctx.get().getSender();
-            if (player == null) return;
+    @Override
+    public void handle(NetworkManager.PacketContext context) {
+        context.queue(() -> {
+            if (!(context.getPlayer() instanceof ServerPlayer player)) return;
             List<PlayerAgent> agents = MiniGameManager.get().getActiveGamePlayerAgents(player);
             for (PlayerAgent agent : agents) {
                 if (!agent.canUseKit(kit)) {
@@ -40,7 +43,5 @@ public class ToServerKitSelect {
                 player.displayClientMessage(message, true);
             }
         });
-        ctx.get().setPacketHandled(true);
-        return success.get();
     }
 }

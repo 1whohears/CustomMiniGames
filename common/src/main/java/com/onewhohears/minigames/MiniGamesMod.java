@@ -2,7 +2,7 @@ package com.onewhohears.minigames;
 
 import com.onewhohears.minigames.client.event.MGClientEventHandlers;
 import com.onewhohears.minigames.common.event.MGCommonEventHandlers;
-import com.onewhohears.minigames.common.network.PacketHandler;
+import com.onewhohears.minigames.common.network.CMGPacketHandler;
 import com.onewhohears.minigames.data.kits.MiniGameKitsGenerator;
 import com.onewhohears.minigames.data.shops.MiniGameShopsGenerator;
 import com.onewhohears.minigames.init.CMGTags;
@@ -35,7 +35,7 @@ public class MiniGamesMod {
         MiniGameEntities.register();
         MiniGameItems.register();
         MGCommonEventHandlers.init();
-        PacketHandler.register();
+        CMGPacketHandler.register();
         MiniGameParamTypes.registerGameParamTypes();
         MiniGameManager.registerGames();
         MiniGameManager.registerItemEvents();

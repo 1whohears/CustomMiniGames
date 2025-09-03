@@ -1,6 +1,5 @@
 package com.onewhohears.minigames.client.screen;
 
-import com.onewhohears.minigames.common.network.PacketHandler;
 import com.onewhohears.minigames.common.network.toserver.ToServerShopSelect;
 import com.onewhohears.minigames.data.shops.GameShop;
 import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
@@ -34,6 +33,6 @@ public class ShopSelectionScreen extends BackgroundScreen {
     }
 
     private Button.OnPress getSelectOnPress(String shop) {
-        return button -> PacketHandler.INSTANCE.sendToServer(new ToServerShopSelect(shop));
+        return button -> new ToServerShopSelect(shop).sendToServer();
     }
 }

@@ -4,16 +4,15 @@ import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 import com.onewhohears.onewholibs.util.UtilMCText;
+import dev.architectury.networking.NetworkManager;
+import dev.architectury.networking.simple.BaseC2SMessage;
+import dev.architectury.networking.simple.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
-
-public class ToServerGameSelect {
+public class ToServerGameSelect extends BaseC2SMessage {
     private final String game, team;
     public ToServerGameSelect(@NotNull String game, @NotNull String team) {
         this.game = game;
@@ -23,16 +22,19 @@ public class ToServerGameSelect {
         game = buffer.readUtf();
         team = buffer.readUtf();
     }
-    public void encode(FriendlyByteBuf buffer) {
+    @Override
+    public MessageType getType() {
+        return null;
+    }
+    @Override
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeUtf(game);
         buffer.writeUtf(team);
     }
-    public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-        final var success = new AtomicBoolean(false);
-        ctx.get().enqueueWork(() -> {
-            success.set(true);
-            ServerPlayer player = ctx.get().getSender();
-            if (player == null) return;
+    @Override
+    public void handle(NetworkManager.PacketContext context) {
+        context.queue(() -> {
+            if (!(context.getPlayer() instanceof ServerPlayer player)) return;
             MiniGameData data = MiniGameManager.get().getRunningGame(game);
             if (data == null) return;
             if (team.isEmpty() && data.canAddIndividualPlayers()) {
@@ -55,7 +57,5 @@ public class ToServerGameSelect {
             Component message = UtilMCText.literal("You could not be added to the game "+game);
             player.sendSystemMessage(message);
         });
-        ctx.get().setPacketHandled(true);
-        return success.get();
     }
 }

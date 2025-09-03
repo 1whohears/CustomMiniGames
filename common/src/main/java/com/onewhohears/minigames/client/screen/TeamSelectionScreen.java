@@ -1,7 +1,6 @@
 package com.onewhohears.minigames.client.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.onewhohears.minigames.common.network.PacketHandler;
 import com.onewhohears.minigames.common.network.toserver.ToServerGameSelect;
 import com.onewhohears.onewholibs.client.screen.BackgroundScreen;
 import com.onewhohears.onewholibs.util.UtilMCText;
@@ -89,7 +88,7 @@ public class TeamSelectionScreen extends BackgroundScreen {
 
     private Button.OnPress getSelectTeamOnPress(String team) {
         return button -> {
-            PacketHandler.INSTANCE.sendToServer(new ToServerGameSelect(selectedGame, team));
+            new ToServerGameSelect(selectedGame, team).sendToServer();
         };
     }
 

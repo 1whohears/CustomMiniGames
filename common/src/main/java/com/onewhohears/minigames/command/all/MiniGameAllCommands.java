@@ -5,7 +5,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.onewhohears.minigames.command.GameComArgs;
 import com.onewhohears.minigames.command.admin.SubComShop;
-import com.onewhohears.minigames.common.network.PacketHandler;
 import com.onewhohears.minigames.common.network.toclient.ToClientOpenKitGUI;
 import com.onewhohears.minigames.common.network.toclient.ToClientOpenShopGUI;
 import com.onewhohears.minigames.common.network.toclient.ToClientGameJoinGUI;
@@ -19,7 +18,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,8 +60,7 @@ public class MiniGameAllCommands {
 				else continue;
 				if (data.canPlayersPickTeams()) teamMap.put(id, data.getTeamIds());
             }
-			PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> context.getSource().getPlayer()),
-					new ToClientGameJoinGUI(joinAbleGames.toArray(new String[0]), teamMap));
+            new ToClientGameJoinGUI(joinAbleGames.toArray(new String[0]), teamMap).sendTo(player);
 			return 1;
 		};
 	}
@@ -82,8 +79,9 @@ public class MiniGameAllCommands {
 				context.getSource().sendFailure(message);
 				return 0;
 			}
-			PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> context.getSource().getPlayer()),
-					new ToClientOpenShopGUI(shops.toArray(new String[0])));
+            ServerPlayer player = context.getSource().getPlayer();
+            if (player != null)
+                new ToClientOpenShopGUI(shops.toArray(new String[0])).sendTo(player);
 			return 1;
 		};
 	}
@@ -140,8 +138,9 @@ public class MiniGameAllCommands {
 				context.getSource().sendFailure(message);
 				return 0;
 			}
-			PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> context.getSource().getPlayer()),
-					new ToClientOpenKitGUI(selected, kits.toArray(new String[0])));
+            ServerPlayer player = context.getSource().getPlayer();
+            if (player != null)
+                new ToClientOpenKitGUI(selected, kits.toArray(new String[0])).sendTo(player);
 			return 1;
 		};
 	}

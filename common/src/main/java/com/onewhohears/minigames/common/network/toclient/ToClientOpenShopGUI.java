@@ -1,15 +1,12 @@
 package com.onewhohears.minigames.common.network.toclient;
 
 import com.onewhohears.minigames.util.UtilClientPacket;
+import dev.architectury.networking.NetworkManager;
+import dev.architectury.networking.simple.BaseS2CMessage;
+import dev.architectury.networking.simple.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
-
-public class ToClientOpenShopGUI {
+public class ToClientOpenShopGUI extends BaseS2CMessage {
     private final String[] shops;
     public ToClientOpenShopGUI(String... shops) {
         this.shops = shops;
@@ -21,23 +18,19 @@ public class ToClientOpenShopGUI {
             shops[i] = buffer.readUtf();
         }
     }
-    public void encode(FriendlyByteBuf buffer) {
+    @Override
+    public MessageType getType() {
+        return null;
+    }
+    @Override
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeInt(shops.length);
         for (String kit : shops) {
             buffer.writeUtf(kit);
         }
     }
-    public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-        final var success = new AtomicBoolean(false);
-        ctx.get().enqueueWork(() -> {
-            ctx.get().enqueueWork(() -> {
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                    success.set(true);
-                    UtilClientPacket.handleOpenShopGui(shops);
-                });
-            });
-        });
-        ctx.get().setPacketHandled(true);
-        return success.get();
+    @Override
+    public void handle(NetworkManager.PacketContext context) {
+        context.queue(() -> UtilClientPacket.handleOpenShopGui(shops));
     }
 }

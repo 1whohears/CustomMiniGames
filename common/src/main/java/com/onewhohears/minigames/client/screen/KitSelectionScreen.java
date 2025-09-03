@@ -1,7 +1,6 @@
 package com.onewhohears.minigames.client.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.onewhohears.minigames.common.network.PacketHandler;
 import com.onewhohears.minigames.common.network.toserver.ToServerKitSelect;
 import com.onewhohears.minigames.data.kits.GameKit;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
@@ -72,7 +71,7 @@ public class KitSelectionScreen extends BackgroundScreen {
 
     private Button.OnPress getSelectOnPress(String kit) {
         return button -> {
-            PacketHandler.INSTANCE.sendToServer(new ToServerKitSelect(kit));
+            new ToServerKitSelect(kit).sendToServer();
             selected = kit;
         };
     }

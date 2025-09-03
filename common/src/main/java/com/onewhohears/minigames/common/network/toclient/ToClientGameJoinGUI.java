@@ -1,17 +1,15 @@
 package com.onewhohears.minigames.common.network.toclient;
 
 import com.onewhohears.minigames.util.UtilClientPacket;
+import dev.architectury.networking.NetworkManager;
+import dev.architectury.networking.simple.BaseS2CMessage;
+import dev.architectury.networking.simple.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 
-public class ToClientGameJoinGUI {
+public class ToClientGameJoinGUI extends BaseS2CMessage {
     private final String[] ids;
     private final Map<String, String[]> teamMap;
     public ToClientGameJoinGUI(String[] ids, Map<String, String[]> teamMap) {
@@ -32,7 +30,12 @@ public class ToClientGameJoinGUI {
             teamMap.put(id, teams);
         }
     }
-    public void encode(FriendlyByteBuf buffer) {
+    @Override
+    public MessageType getType() {
+        return null;
+    }
+    @Override
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeInt(ids.length);
         for (String kit : ids) buffer.writeUtf(kit);
         buffer.writeInt(teamMap.size());
@@ -42,17 +45,8 @@ public class ToClientGameJoinGUI {
             for (String team : teams) buffer.writeUtf(team);
         });
     }
-    public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-        final var success = new AtomicBoolean(false);
-        ctx.get().enqueueWork(() -> {
-            ctx.get().enqueueWork(() -> {
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                    success.set(true);
-                    UtilClientPacket.handleGameSelectGui(ids, teamMap);
-                });
-            });
-        });
-        ctx.get().setPacketHandled(true);
-        return success.get();
+    @Override
+    public void handle(NetworkManager.PacketContext context) {
+        context.queue(() -> UtilClientPacket.handleGameSelectGui(ids, teamMap));
     }
 }

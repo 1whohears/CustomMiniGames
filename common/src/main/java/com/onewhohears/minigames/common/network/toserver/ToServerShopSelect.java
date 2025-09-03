@@ -5,16 +5,16 @@ import com.onewhohears.minigames.data.shops.GameShop;
 import com.onewhohears.minigames.data.shops.MiniGameShopsManager;
 import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
+import dev.architectury.networking.NetworkManager;
+import dev.architectury.networking.simple.BaseC2SMessage;
+import dev.architectury.networking.simple.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 
-public class ToServerShopSelect {
+public class ToServerShopSelect extends BaseC2SMessage {
     private final String shop;
     public ToServerShopSelect(String shop) {
         this.shop = shop;
@@ -22,15 +22,18 @@ public class ToServerShopSelect {
     public ToServerShopSelect(FriendlyByteBuf buffer){
         shop = buffer.readUtf();
     }
-    public void encode(FriendlyByteBuf buffer) {
+    @Override
+    public MessageType getType() {
+        return null;
+    }
+    @Override
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeUtf(shop);
     }
-    public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-        final var success = new AtomicBoolean(false);
-        ctx.get().enqueueWork(() -> {
-            success.set(true);
-            ServerPlayer player = ctx.get().getSender();
-            if (player == null) return;
+    @Override
+    public void handle(NetworkManager.PacketContext context) {
+        context.queue(() -> {
+            if (!(context.getPlayer() instanceof ServerPlayer player)) return;
             List<PlayerAgent> agents = MiniGameManager.get().getActiveGamePlayerAgents(player);
             for (PlayerAgent agent : agents) {
                 if (!agent.canOpenShop(player.getServer(), shop)) {
@@ -47,7 +50,5 @@ public class ToServerShopSelect {
                 ShopMenu.openScreen(player, gs);
             }
         });
-        ctx.get().setPacketHandled(true);
-        return success.get();
     }
 }
