@@ -4,6 +4,7 @@ import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.condition.NeverExitCondition;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
+import com.onewhohears.onewholibs.util.math.UtilGeometry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -43,7 +44,7 @@ public abstract class SetupPhase<T extends MiniGameData> extends GamePhase<T> {
 	public void onStart(MinecraftServer server) {
 		super.onStart(server);
 		if (smallWorldBorderStartArea) {
-			BlockPos pos = new BlockPos(getGameData().getGameCenter());
+			BlockPos pos = UtilGeometry.toBlockPos(getGameData().getGameCenter());
 			server.overworld().setDefaultSpawnPos(pos, 0);
 		}
 	}
