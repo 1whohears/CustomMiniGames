@@ -86,7 +86,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 		if (minutes != -1) message = UtilMCText.literal(minutes+" minutes left!").setStyle(MiniGameData.AQUA);
 		else if (seconds != -1) message = UtilMCText.literal(seconds+" seconds left!").setStyle(MiniGameData.AQUA);
 		else return;
-		getGameData().chatToAllPlayers(server, message, SoundEvents.UI_BUTTON_CLICK);
+		getGameData().chatToAllPlayers(server, message, SoundEvents.UI_BUTTON_CLICK.value());
 	}
 	
 	public void tickPlayerAgent(MinecraftServer server, PlayerAgent agent) {
