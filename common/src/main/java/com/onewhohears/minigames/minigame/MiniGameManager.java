@@ -44,7 +44,7 @@ public class MiniGameManager extends SavedData {
 	}
 	
 	/**
-	 * called in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
+	 * called in the mod's init function
 	 * register all games here
 	 */
 	public static void registerGames() {
@@ -82,7 +82,7 @@ public class MiniGameManager extends SavedData {
 	}
 
 	/**
-	 * called in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
+	 * called in the mod's init function
 	 * register item event types here
 	 */
 	public static void registerItemEvents() {
@@ -263,7 +263,7 @@ public class MiniGameManager extends SavedData {
 	}
 
 	/**
-	 * call this in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
+	 * call this in the mod's init function
 	 * @return false if a poi with that typeId was already registered
 	 */
 	public static boolean registerPOIGen(String typeId, GamePOIGenerator<?> gen) {
@@ -295,7 +295,7 @@ public class MiniGameManager extends SavedData {
 	}
 
 	/**
-	 * call this in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
+	 * call this in the mod's init function
 	 * @return false if a poi with that typeId was already registered
 	 */
 	public static boolean registerGameAgentGen(String typeId, GameAgentGenerator gen) {

@@ -161,7 +161,7 @@ public final class MiniGameParamTypes {
     public static final IntParamType AREA_RADIUS = new IntParamType("areaRadius", 10, 1, 1000000, "blocks");
     public static final FloatParamType POINTS_PER_PLAYER_PER_SECOND = new FloatParamType("areaControlPointsPerPlayerPerSecond", 4f, 0, 1000000);
     /**
-     * called in {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
+     * called in the mod's init function
      * register all built in games param types here
      */
     public static void registerGameParamTypes() {
