@@ -9,6 +9,7 @@ import com.onewhohears.minigames.init.MiniGameItems;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
 
 import com.onewhohears.onewholibs.util.UtilMCText;
+import com.onewhohears.onewholibs.util.math.UtilGeometry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -204,8 +205,8 @@ public class PlayerAgent extends GameAgent {
 		if (!hasRespawnPoint()) return;
 		ServerPlayer player = getPlayer(server);
 		if (player == null) return;
-		player.setRespawnPosition(server.overworld().dimension(), 
-				new BlockPos(getRespawnPoint()), 
+		player.setRespawnPosition(server.overworld().dimension(),
+                UtilGeometry.toBlockPos(getRespawnPoint()),
 				0, true, true);
 	}
 
