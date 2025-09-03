@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import net.minecraft.core.Registry;
+import net.minecraft.world.item.*;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonArray;
@@ -23,12 +25,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class GameKit extends JsonPresetStats {
 
@@ -124,7 +120,7 @@ public class GameKit extends JsonPresetStats {
 			String itemKey = UtilParse.getStringSafe(json, "item", "");
 			if (itemKey.isEmpty()) return false;
 			ResourceLocation rl = new ResourceLocation(itemKey);
-            return ForgeRegistries.ITEMS.containsKey(rl);
+            return UtilItem.getItem(itemKey, null) != null;
         }
 		private final Item item;
 		private final int num;
@@ -223,7 +219,7 @@ public class GameKit extends JsonPresetStats {
 				player.setItemSlot(armorItem.getSlot(), stack);
 			} else if (stack.is(Items.ELYTRA) && !player.hasItemInSlot(EquipmentSlot.CHEST)) {
 				player.setItemSlot(EquipmentSlot.CHEST, stack);
-			} else if (stack.canPerformAction(ToolActions.SHIELD_BLOCK) && !player.hasItemInSlot(EquipmentSlot.OFFHAND)) {
+			} else if (i instanceof ShieldItem && !player.hasItemInSlot(EquipmentSlot.OFFHAND)) {
 				player.setItemSlot(EquipmentSlot.OFFHAND, stack);
 			} else {
 				player.addItem(stack);

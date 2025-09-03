@@ -3,6 +3,7 @@ package com.onewhohears.minigames.data.shops;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.onewhohears.onewholibs.util.UtilItem;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonArray;
@@ -21,7 +22,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class GameShop extends JsonPresetStats {
 
@@ -75,15 +75,12 @@ public class GameShop extends JsonPresetStats {
 			JsonObject productJson = json.get("product").getAsJsonObject();
 			String productItemKey = UtilParse.getStringSafe(productJson, "item", "");
 			if (productItemKey.isEmpty()) return false;
-			ResourceLocation prl = new ResourceLocation(productItemKey);
-			if (!ForgeRegistries.ITEMS.containsKey(prl)) return false;
+			if (UtilItem.getItem(productItemKey, null) == null) return false;
 			JsonObject costJson = json.get("cost").getAsJsonObject();
 			String costItemKey = UtilParse.getStringSafe(costJson, "item", "");
 			if (costItemKey.isEmpty()) return false;
-			ResourceLocation crl = new ResourceLocation(costItemKey);
-			if (!ForgeRegistries.ITEMS.containsKey(crl)) return false;
-			return true;
-		}
+            return UtilItem.getItem(costItemKey, null) != null;
+        }
 		private final Item productItem, costItem;
 		private final int productNum, costNum;
 		private final CompoundTag productNbt, costNbt;
@@ -99,8 +96,7 @@ public class GameShop extends JsonPresetStats {
 		protected Product(JsonObject json) {
 			JsonObject productJson = json.get("product").getAsJsonObject();
 			String productItemKey = UtilParse.getStringSafe(productJson, "item", "");
-			ResourceLocation prl = new ResourceLocation(productItemKey);
-			productItem = ForgeRegistries.ITEMS.getDelegate(prl).get().get();
+			productItem = UtilItem.getItem(productItemKey);
 			productNum = UtilParse.getIntSafe(productJson, "num", 1);
 			if (productJson.has("nbt")) {
 				JsonObject nbtJson = productJson.get("nbt").getAsJsonObject();
@@ -108,8 +104,7 @@ public class GameShop extends JsonPresetStats {
 			} else productNbt = null;
 			JsonObject costJson = json.get("cost").getAsJsonObject();
 			String costItemKey = UtilParse.getStringSafe(costJson, "item", "");
-			ResourceLocation crl = new ResourceLocation(costItemKey);
-			costItem = ForgeRegistries.ITEMS.getDelegate(crl).get().get();
+			costItem = UtilItem.getItem(costItemKey);
 			costNum = UtilParse.getIntSafe(costJson, "num", 1);
 			if (costJson.has("nbt")) {
 				JsonObject nbtJson = costJson.get("nbt").getAsJsonObject();
