@@ -68,6 +68,11 @@ public class PlayerAgent extends GameAgent {
 	
 	@Override
 	public void onDeath(MinecraftServer server, @Nullable DamageSource source) {
+        ServerPlayer p = getPlayer(server);
+        if (p != null) {
+            setDeathPosition(p.position());
+            setDeathLookDirection(p.getXRot(), p.getYRot());
+        }
 		super.onDeath(server, source);
 		getGameData().onPlayerDeath(this, server, source);
 	}
