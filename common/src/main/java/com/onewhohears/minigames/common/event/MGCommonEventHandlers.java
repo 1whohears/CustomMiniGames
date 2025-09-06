@@ -147,8 +147,6 @@ public class MGCommonEventHandlers {
         if (!(entity instanceof ServerPlayer player)) return EventResult.pass();
         for (PlayerAgent agent : MiniGameManager.get().getActiveGamePlayerAgents(player)) {
             if (agent.shouldRunOnDeath()) {
-                agent.setDeathPosition(player.position());
-                agent.setDeathLookDirection(player.getXRot(), player.getYRot());
                 agent.onDeath(player.getServer(), source);
             }
         }
