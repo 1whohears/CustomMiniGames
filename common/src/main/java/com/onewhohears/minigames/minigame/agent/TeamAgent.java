@@ -221,4 +221,19 @@ public abstract class TeamAgent extends GameAgent {
 	public Vec3 getCurrentPos(MinecraftServer server) {
 		return getRespawnPoint() != null ? getRespawnPoint() : Vec3.ZERO;
 	}
+
+    @Override
+    public void sendMessage(MinecraftServer server, Component message) {
+        getPlayerAgents().forEach(player -> player.sendMessage(server, message));
+    }
+
+    public Set<String> getMemberIds() {
+        return playerAgents.keySet();
+    }
+
+    @Override
+    public void onForfeit(MinecraftServer server) {
+        setLives(1);
+        getPlayerAgents().forEach(player -> player.onForfeit(server));
+    }
 }

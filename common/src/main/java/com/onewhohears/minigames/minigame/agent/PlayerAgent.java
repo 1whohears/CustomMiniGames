@@ -321,4 +321,23 @@ public class PlayerAgent extends GameAgent {
 		if (player == null) return Vec3.ZERO;
 		return player.position();
 	}
+
+    @Override
+    public void sendMessage(MinecraftServer server, Component message) {
+        ServerPlayer player = getPlayer(server);
+        if (player == null) return;
+        player.displayClientMessage(message, false);
+    }
+
+    @Override
+    public void onForfeit(MinecraftServer server) {
+        ServerPlayer player = getPlayer(server);
+        if (player == null) return;
+        setLives(1);
+        player.kill();
+    }
+
+    public void forfeitRound(MinecraftServer server) {
+        getGameData().onPlayerForfeit(server, this);
+    }
 }

@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 
+import static com.onewhohears.minigames.minigame.data.MiniGameData.RED;
+
 public abstract class GamePhase<T extends MiniGameData> {
 
 	private static final Logger LOGGER = LogUtils.getLogger();
@@ -113,6 +115,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 	public void onStart(MinecraftServer server) {
         LOGGER.debug("PHASE START {}", id);
 		updateWorldBorder(server);
+        getGameData().resetForfeiters();
 	}
 	
 	public void onStop(MinecraftServer server) {
@@ -252,4 +255,38 @@ public abstract class GamePhase<T extends MiniGameData> {
 	public boolean isAttackPhase() {
 		return false;
 	}
+
+    public boolean canPlayerForfeit(PlayerAgent agent) {
+        return isAttackPhase();
+    }
+
+    public void onPlayerForfeit(MinecraftServer server, PlayerAgent agent) {
+        if (!canPlayerForfeit(agent)) {
+            agent.sendMessage(server, "You can only forfeit during an attack phase.");
+            return;
+        }
+        if (getGameData().isPlayerForfeit(agent)) {
+            agent.sendMessage(server, "You already forfeited! Please wait for your team to agree.");
+            return;
+        }
+        getGameData().setPlayerForfeit(agent);
+        TeamAgent team = agent.getTeamAgent();
+        if (team == null) {
+            Component message = UtilMCText.empty().append(agent.getDisplayName(server))
+                    .append(" has voted to forfeit this round.").setStyle(RED);
+            getGameData().chatToAllPlayers(server, message);
+            agent.onForfeit(server);
+            return;
+        }
+        if (getGameData().isTeamForfeit(team)) {
+            Component message = UtilMCText.literal("All members of team ").append(team.getDisplayName(server))
+                            .append(" have voted to forfeit this round.").setStyle(RED);
+            getGameData().chatToAllPlayers(server, message);
+            team.onForfeit(server);
+            return;
+        }
+        Component message = UtilMCText.empty().append(agent.getDisplayName(server))
+                .append(" has voted to forfeit this round.").setStyle(RED);
+        team.sendMessage(server, message);
+    }
 }

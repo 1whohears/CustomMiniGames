@@ -41,9 +41,20 @@ public class MiniGameAllCommands {
 		d.register(Commands.literal("joingame").requires((stack) -> stack.hasPermission(0))
 				.executes(openJoinGameGUICommand())
 		);
+        d.register(Commands.literal("forfeitround").requires((stack) -> stack.hasPermission(0))
+                .executes(forfeitRoundCommand())
+        );
 	}
 
-	private Command<CommandSourceStack> openJoinGameGUICommand() {
+    private PlayerAgentsCommand forfeitRoundCommand() {
+        return (context, agents) -> {
+            for (PlayerAgent agent : agents)
+                agent.forfeitRound(context.getSource().getServer());
+            return 1;
+        };
+    }
+
+    private Command<CommandSourceStack> openJoinGameGUICommand() {
 		return context -> {
 			ServerPlayer player = context.getSource().getPlayer();
 			if (player == null) {

@@ -71,6 +71,7 @@ public abstract class MiniGameData {
 	private final Map<String, GamePhase<?>> phases = new HashMap<>();
 	private final Map<String, GamePOI<?>> pois = new HashMap<>();
 	private final Set<FlagEntity> flags = new HashSet<>();
+    private final Set<String> forfeiters = new HashSet<>();
 	private SetupPhase<?> setupPhase;
 	private GamePhase<?> nextPhase;
 	private GamePhase<?> currentPhase;
@@ -1133,4 +1134,24 @@ public abstract class MiniGameData {
 		Set<String> functionIds = getParam(type);
 		for (String id : functionIds) CommandUtil.runFunction(server, id);
 	}
+
+    public void onPlayerForfeit(MinecraftServer server, PlayerAgent agent) {
+        getCurrentPhase().onPlayerForfeit(server, agent);
+    }
+
+    public void resetForfeiters() {
+        forfeiters.clear();
+    }
+
+    public void setPlayerForfeit(PlayerAgent agent) {
+        forfeiters.add(agent.getId());
+    }
+
+    public boolean isPlayerForfeit(PlayerAgent agent) {
+        return forfeiters.contains(agent.getId());
+    }
+
+    public boolean isTeamForfeit(TeamAgent team) {
+        return forfeiters.containsAll(team.getMemberIds());
+    }
 }

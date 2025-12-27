@@ -297,4 +297,12 @@ public abstract class GameAgent {
 	}
 
 	public abstract Vec3 getCurrentPos(MinecraftServer server);
+
+    public abstract void sendMessage(MinecraftServer server, Component message);
+
+    public void sendMessage(MinecraftServer server, String message) {
+        sendMessage(server, UtilMCText.literal(message));
+    }
+
+    public abstract void onForfeit(MinecraftServer server);
 }
