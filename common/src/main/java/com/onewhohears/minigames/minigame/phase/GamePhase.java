@@ -6,7 +6,6 @@ import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.agent.TeamAgent;
 import com.onewhohears.minigames.minigame.condition.PhaseExitCondition;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
-
 import com.onewhohears.onewholibs.util.UtilMCText;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -19,9 +18,9 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 
 import static com.onewhohears.minigames.minigame.data.MiniGameData.RED;
@@ -274,19 +273,19 @@ public abstract class GamePhase<T extends MiniGameData> {
         if (team == null) {
             Component message = UtilMCText.empty().append(agent.getDisplayName(server))
                     .append(" has voted to forfeit this round.").setStyle(RED);
-            getGameData().chatToAllPlayers(server, message);
+            getGameData().chatToAllPlayers(server, message, SoundEvents.VILLAGER_HURT);
             agent.onForfeit(server);
             return;
         }
         if (getGameData().isTeamForfeit(team)) {
             Component message = UtilMCText.literal("All members of team ").append(team.getDisplayName(server))
                             .append(" have voted to forfeit this round.").setStyle(RED);
-            getGameData().chatToAllPlayers(server, message);
+            getGameData().chatToAllPlayers(server, message, SoundEvents.VILLAGER_HURT);
             team.onForfeit(server);
             return;
         }
         Component message = UtilMCText.empty().append(agent.getDisplayName(server))
                 .append(" has voted to forfeit this round.").setStyle(RED);
-        team.sendMessage(server, message);
+        team.sendMessage(server, message, SoundEvents.VILLAGER_NO);
     }
 }

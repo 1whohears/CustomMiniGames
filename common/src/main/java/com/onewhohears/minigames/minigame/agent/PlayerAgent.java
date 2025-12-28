@@ -20,7 +20,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -323,10 +325,11 @@ public class PlayerAgent extends GameAgent {
 	}
 
     @Override
-    public void sendMessage(MinecraftServer server, Component message) {
+    public void sendMessage(MinecraftServer server, Component message, @Nullable SoundEvent sound) {
         ServerPlayer player = getPlayer(server);
         if (player == null) return;
         player.displayClientMessage(message, false);
+        if (sound != null) player.playNotifySound(sound, SoundSource.NEUTRAL, 1, 1);
     }
 
     @Override

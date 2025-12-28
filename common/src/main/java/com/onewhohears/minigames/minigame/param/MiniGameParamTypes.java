@@ -154,6 +154,10 @@ public final class MiniGameParamTypes {
     public static final IntParamType BAN_ALL_BLOCKS_RADIUS = new IntParamType("banAllBlocksRadius", 2, 0, 1000000, "blocks");
     public static final IntParamType BLACK_LIST_BLOCKS_RADIUS = new IntParamType("blockBlackListRadius", 0, 0, 1000000, "blocks");
     public static final IntParamType WHITE_LIST_BLOCKS_RADIUS = new IntParamType("blockWhiteListRadius", 0, 0, 1000000, "blocks");
+    public static final IntParamType FORCE_FF_RADIUS_START = new IntParamType("forceForfeitRadiusStart", 0, 0, 1000000, "blocks");
+    public static final IntParamType FORCE_FF_RADIUS_END = new IntParamType("forceForfeitRadiusEnd", 0, 0, 1000000, "blocks");
+    public static final IntParamType FORCE_FF_WARN_TIME = new IntParamType("forceForfeitWarningTime", 200, 0, 1000000, "ticks");
+    public static final IntParamType FORCE_FF_RADIUS_SHRINK_TIME = new IntParamType("forceForfeitRadiusShrinkTime", 0, 0, 1000000, "ticks");
     // Last Stand Data
     public static final IntParamType INIT_ATTACKER_LIVES = new IntParamType("initialAttackerLives", 50, 1, 1000000, "lives");
     // Area Control Data
@@ -206,6 +210,10 @@ public final class MiniGameParamTypes {
         MiniGameManager.registerGameParamType(BAN_ALL_BLOCKS_RADIUS);
         MiniGameManager.registerGameParamType(BLACK_LIST_BLOCKS_RADIUS);
         MiniGameManager.registerGameParamType(WHITE_LIST_BLOCKS_RADIUS);
+        MiniGameManager.registerGameParamType(FORCE_FF_RADIUS_START);
+        MiniGameManager.registerGameParamType(FORCE_FF_RADIUS_END);
+        MiniGameManager.registerGameParamType(FORCE_FF_WARN_TIME);
+        MiniGameManager.registerGameParamType(FORCE_FF_RADIUS_SHRINK_TIME);
         MiniGameManager.registerGameParamType(INIT_ATTACKER_LIVES);
         MiniGameManager.registerGameParamType(AREA_CONTROL_POINTS_MAX);
         MiniGameManager.registerGameParamType(RESPAWN_TICKS);

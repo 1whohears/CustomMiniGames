@@ -2,6 +2,7 @@ package com.onewhohears.minigames.minigame.data;
 
 import com.onewhohears.minigames.entity.FlagEntity;
 import com.onewhohears.minigames.init.CMGTags;
+import com.onewhohears.minigames.minigame.MiniGameManager;
 import com.onewhohears.minigames.minigame.agent.GameAgent;
 import com.onewhohears.minigames.minigame.agent.PlayerAgent;
 import com.onewhohears.minigames.minigame.phase.buyattackrounds.*;
@@ -104,5 +105,9 @@ public class KillFlagData extends AttackDefendData {
         registerParam(BAN_ALL_BLOCKS_RADIUS);
         registerParam(BLACK_LIST_BLOCKS_RADIUS);
         registerParam(WHITE_LIST_BLOCKS_RADIUS);
+        registerParam(FORCE_FF_RADIUS_START);
+        registerParam(FORCE_FF_RADIUS_END);
+        registerParam(FORCE_FF_WARN_TIME);
+        registerParam(FORCE_FF_RADIUS_SHRINK_TIME);
     }
 }

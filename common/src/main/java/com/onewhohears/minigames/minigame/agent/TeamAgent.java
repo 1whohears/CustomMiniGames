@@ -3,6 +3,7 @@ package com.onewhohears.minigames.minigame.agent;
 import java.util.*;
 import java.util.function.Consumer;
 
+import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.Nullable;
 
 import com.onewhohears.minigames.minigame.data.MiniGameData;
@@ -223,8 +224,8 @@ public abstract class TeamAgent extends GameAgent {
 	}
 
     @Override
-    public void sendMessage(MinecraftServer server, Component message) {
-        getPlayerAgents().forEach(player -> player.sendMessage(server, message));
+    public void sendMessage(MinecraftServer server, Component message, @Nullable SoundEvent sound) {
+        getPlayerAgents().forEach(player -> player.sendMessage(server, message, sound));
     }
 
     public Set<String> getMemberIds() {

@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.phys.Vec3;
@@ -298,10 +299,18 @@ public abstract class GameAgent {
 
 	public abstract Vec3 getCurrentPos(MinecraftServer server);
 
-    public abstract void sendMessage(MinecraftServer server, Component message);
+    public abstract void sendMessage(MinecraftServer server, Component message, @Nullable SoundEvent sound);
+
+    public void sendMessage(MinecraftServer server, String message, @Nullable SoundEvent sound) {
+        sendMessage(server, UtilMCText.literal(message), sound);
+    }
+
+    public void sendMessage(MinecraftServer server, Component message) {
+        sendMessage(server, message, null);
+    }
 
     public void sendMessage(MinecraftServer server, String message) {
-        sendMessage(server, UtilMCText.literal(message));
+        sendMessage(server, UtilMCText.literal(message), null);
     }
 
     public abstract void onForfeit(MinecraftServer server);
