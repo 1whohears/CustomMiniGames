@@ -18,6 +18,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.onewhohears.minigames.minigame.param.MiniGameParamTypes.*;
@@ -43,6 +46,8 @@ public class KillFlagData extends AttackDefendData {
         game.getParam(DEFENDER_SHOPS).add("survival");
         return game;
     }
+
+    private final Map<String, Integer> forceFFSafeTime = new HashMap<>();
 
     public KillFlagData(String instanceId, String gameTypeId) {
         super(instanceId, gameTypeId);
@@ -109,5 +114,9 @@ public class KillFlagData extends AttackDefendData {
         registerParam(FORCE_FF_RADIUS_END);
         registerParam(FORCE_FF_WARN_TIME);
         registerParam(FORCE_FF_RADIUS_SHRINK_TIME);
+    }
+
+    public Map<String, Integer> getForceFFSafeTimeMap() {
+        return forceFFSafeTime;
     }
 }

@@ -332,6 +332,9 @@ public class PlayerAgent extends GameAgent {
         if (sound != null) player.playNotifySound(sound, SoundSource.NEUTRAL, 1, 1);
     }
 
+    /**
+     * THIS IS USED INTERNALLY CALL {@link #forfeitRound(MinecraftServer)} INSTEAD
+     */
     @Override
     public void onForfeit(MinecraftServer server) {
         ServerPlayer player = getPlayer(server);
