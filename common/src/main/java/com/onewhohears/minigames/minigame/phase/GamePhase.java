@@ -18,9 +18,12 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.phys.Vec3;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 import static com.onewhohears.minigames.minigame.data.MiniGameData.RED;
@@ -287,5 +290,16 @@ public abstract class GamePhase<T extends MiniGameData> {
         Component message = UtilMCText.empty().append(agent.getDisplayName(server))
                 .append(" has voted to forfeit this round.").setStyle(RED);
         team.sendMessage(server, message, SoundEvents.VILLAGER_NO);
+    }
+
+    public void forEachPlayer(MinecraftServer server, BiPredicate<T,PlayerAgent> predicate,
+                              TriConsumer<T,PlayerAgent,ServerPlayer> consumer) {
+        List<PlayerAgent> players = getGameData().getAllPlayerAgents();
+        for (PlayerAgent agent : players) {
+            ServerPlayer player = agent.getPlayer(server);
+            if (player == null) continue;
+            if (!predicate.test(getGameData(), agent)) continue;
+            consumer.accept(getGameData(), agent, player);
+        }
     }
 }
