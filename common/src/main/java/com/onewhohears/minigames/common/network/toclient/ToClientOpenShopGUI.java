@@ -6,6 +6,8 @@ import dev.architectury.networking.simple.BaseS2CMessage;
 import dev.architectury.networking.simple.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
 
+import static com.onewhohears.minigames.common.network.CMGPacketHandler.S2C_SHOP_GUI;
+
 public class ToClientOpenShopGUI extends BaseS2CMessage {
     private final String[] shops;
     public ToClientOpenShopGUI(String... shops) {
@@ -20,7 +22,7 @@ public class ToClientOpenShopGUI extends BaseS2CMessage {
     }
     @Override
     public MessageType getType() {
-        return null;
+        return S2C_SHOP_GUI;
     }
     @Override
     public void write(FriendlyByteBuf buffer) {

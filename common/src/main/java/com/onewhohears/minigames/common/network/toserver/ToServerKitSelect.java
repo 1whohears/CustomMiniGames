@@ -11,6 +11,8 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
 
+import static com.onewhohears.minigames.common.network.CMGPacketHandler.C2S_KIT;
+
 public class ToServerKitSelect extends BaseC2SMessage {
     private final String kit;
     public ToServerKitSelect(String kit) {
@@ -21,7 +23,7 @@ public class ToServerKitSelect extends BaseC2SMessage {
     }
     @Override
     public MessageType getType() {
-        return null;
+        return C2S_KIT;
     }
     @Override
     public void write(FriendlyByteBuf buffer) {

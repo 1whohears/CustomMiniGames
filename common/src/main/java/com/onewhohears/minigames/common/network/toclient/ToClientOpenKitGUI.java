@@ -6,6 +6,8 @@ import dev.architectury.networking.simple.BaseS2CMessage;
 import dev.architectury.networking.simple.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
 
+import static com.onewhohears.minigames.common.network.CMGPacketHandler.S2C_KIT_GUI;
+
 public class ToClientOpenKitGUI extends BaseS2CMessage {
     private final String selected;
     private final String[] kits;
@@ -23,7 +25,7 @@ public class ToClientOpenKitGUI extends BaseS2CMessage {
     }
     @Override
     public MessageType getType() {
-        return null;
+        return S2C_KIT_GUI;
     }
     @Override
     public void write(FriendlyByteBuf buffer) {

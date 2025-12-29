@@ -14,6 +14,8 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
 
+import static com.onewhohears.minigames.common.network.CMGPacketHandler.C2S_SHOP;
+
 public class ToServerShopSelect extends BaseC2SMessage {
     private final String shop;
     public ToServerShopSelect(String shop) {
@@ -24,7 +26,7 @@ public class ToServerShopSelect extends BaseC2SMessage {
     }
     @Override
     public MessageType getType() {
-        return null;
+        return C2S_SHOP;
     }
     @Override
     public void write(FriendlyByteBuf buffer) {

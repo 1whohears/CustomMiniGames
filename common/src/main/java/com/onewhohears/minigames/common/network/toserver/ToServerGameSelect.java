@@ -12,6 +12,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
+import static com.onewhohears.minigames.common.network.CMGPacketHandler.C2S_SHOP_GUI;
+
 public class ToServerGameSelect extends BaseC2SMessage {
     private final String game, team;
     public ToServerGameSelect(@NotNull String game, @NotNull String team) {
@@ -24,7 +26,7 @@ public class ToServerGameSelect extends BaseC2SMessage {
     }
     @Override
     public MessageType getType() {
-        return null;
+        return C2S_SHOP_GUI;
     }
     @Override
     public void write(FriendlyByteBuf buffer) {

@@ -9,6 +9,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.onewhohears.minigames.common.network.CMGPacketHandler.S2C_GAME_JOIN_GUI;
+
 public class ToClientGameJoinGUI extends BaseS2CMessage {
     private final String[] ids;
     private final Map<String, String[]> teamMap;
@@ -32,7 +34,7 @@ public class ToClientGameJoinGUI extends BaseS2CMessage {
     }
     @Override
     public MessageType getType() {
-        return null;
+        return S2C_GAME_JOIN_GUI;
     }
     @Override
     public void write(FriendlyByteBuf buffer) {
