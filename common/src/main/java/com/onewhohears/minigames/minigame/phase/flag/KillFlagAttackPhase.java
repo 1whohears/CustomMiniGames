@@ -42,7 +42,7 @@ public class KillFlagAttackPhase<T extends KillFlagData> extends AttackDefendAtt
     @Override
     public void tickPhase(MinecraftServer server) {
         super.tickPhase(server);
-        if (getAge() % 10 == 0) tickForceForfeit(server);
+        if (getAge() % 20 == 0) tickForceForfeit(server);
     }
 
     protected void tickForceForfeit(MinecraftServer server) {
@@ -82,6 +82,7 @@ public class KillFlagAttackPhase<T extends KillFlagData> extends AttackDefendAtt
     }
 
     protected void ffRadiusPlayerCheck(MinecraftServer server, PlayerAgent agent, int ffRadiusSqr, Vec3 center, int ffWarnTime) {
+        if (getGameData().isPlayerForfeit(agent)) return;
         if (!isPlayerOutsideFFRadius(server, agent, ffRadiusSqr, center)) {
             getGameData().getForceFFSafeTimeMap().put(agent.getId(), getAge());
             return;
@@ -95,9 +96,10 @@ public class KillFlagAttackPhase<T extends KillFlagData> extends AttackDefendAtt
             agent.sendMessage(server, message);
             agent.forfeitRound(server);
         } else {
-            Component message = UtilMCText.literal("WARNING: You are outside the Forfeit Radius!" +
-                    " If you don't get inside in " + ((ffWarnTime - timeDiff) / 20) + " seconds" +
-                    " you will automatically forfeit!").setStyle(RED);
+            Component message = UtilMCText.literal("WARNING: You are outside the Forfeit Radius! " +
+                    "If you don't get inside in " + ((ffWarnTime - timeDiff) / 20) + " seconds " +
+                    "you will automatically forfeit! Go to ["+(int)center.x+","+(int)center.y+","+(int)center.z+"]")
+                    .setStyle(RED);
             agent.sendMessage(server, message);
         }
     }

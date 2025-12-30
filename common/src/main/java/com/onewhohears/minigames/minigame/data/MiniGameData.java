@@ -1152,6 +1152,8 @@ public abstract class MiniGameData {
     }
 
     public boolean isTeamForfeit(TeamAgent team) {
-        return forfeiters.containsAll(team.getMemberIds());
+        List<PlayerAgent> members = team.getLivingPlayerAgents();
+        for (PlayerAgent member : members) if (!isPlayerForfeit(member)) return false;
+        return true;
     }
 }
