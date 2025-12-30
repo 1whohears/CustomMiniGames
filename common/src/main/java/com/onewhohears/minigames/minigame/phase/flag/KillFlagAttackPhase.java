@@ -59,7 +59,9 @@ public class KillFlagAttackPhase<T extends KillFlagData> extends AttackDefendAtt
         int ffShrinkTime = getGameData().getIntParam(FORCE_FF_RADIUS_SHRINK_TIME);
         int ffRadius;
         if (ffShrinkTime != 0) {
-            ffRadius = (int) ((ffRadiusEnd - ffRadiusStart) * Math.min((double) getAge() / (double) ffShrinkTime, 1d));
+            ffRadius = (int) ((ffRadiusEnd - ffRadiusStart)
+                    * Math.min((double) getAge() / (double) ffShrinkTime, 1d))
+                    + ffRadiusStart;
         } else if (ffRadiusStart != 0) {
             ffRadius = ffRadiusStart;
         } else {
