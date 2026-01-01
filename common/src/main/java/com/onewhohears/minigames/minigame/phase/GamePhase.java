@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.util.TriConsumer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -96,14 +97,22 @@ public abstract class GamePhase<T extends MiniGameData> {
 	public void tickPlayerAgent(MinecraftServer server, PlayerAgent agent) {
 		ServerPlayer player = agent.getPlayer(server);
 		if (player == null) return;
-		if (player.gameMode.isCreative()) return;
-		if (!isSetupPhase() && agent.isDead()) player.setGameMode(GameType.SPECTATOR);
-		else if (isForceAdventureMode()) player.setGameMode(GameType.ADVENTURE);
-		else if (isForceSurvivalMode()) player.setGameMode(GameType.SURVIVAL);
-		if (getGameData().getWaterFoodExhaustionRate() > 0 && player.isInWater() && hungerPlayersInWater()) {
-			player.causeFoodExhaustion(getGameData().getWaterFoodExhaustionRate());
-		}
+		setGameMode(agent, player);
+        tickFoodExhaustion(agent, player);
 	}
+
+    public void setGameMode(@NotNull PlayerAgent agent, @NotNull ServerPlayer player) {
+        if (player.gameMode.isCreative()) return;
+        if (!isSetupPhase() && agent.isDead()) player.setGameMode(GameType.SPECTATOR);
+        else if (isForceAdventureMode()) player.setGameMode(GameType.ADVENTURE);
+        else if (isForceSurvivalMode()) player.setGameMode(GameType.SURVIVAL);
+    }
+
+    protected void tickFoodExhaustion(@NotNull PlayerAgent agent, @NotNull ServerPlayer player) {
+        if (getGameData().getWaterFoodExhaustionRate() > 0 && player.isInWater() && hungerPlayersInWater()) {
+            player.causeFoodExhaustion(getGameData().getWaterFoodExhaustionRate());
+        }
+    }
 
 	public void tickTeamAgent(MinecraftServer server, TeamAgent agent) {
 		
