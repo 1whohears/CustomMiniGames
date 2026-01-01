@@ -110,11 +110,7 @@ public abstract class GamePhase<T extends MiniGameData> {
 
     public void setGameMode(@NotNull ServerPlayer player, GameType gameMode) {
         if (player.gameMode.getGameModeForPlayer() == gameMode) return;
-        System.out.println(getId()+" force adventure "+isForceAdventureMode()+" survival "+isForceSurvivalMode());
-        System.out.println("GAMEMODE PRE "+player.gameMode.getGameModeForPlayer()+" -> "+gameMode);
-        boolean success = player.setGameMode(gameMode);
-        System.out.println("GAMEMODE POST "+player.gameMode.getGameModeForPlayer()+" "+success);
-        //new Exception().printStackTrace();
+        player.setGameMode(gameMode);
     }
 
     protected void tickFoodExhaustion(@NotNull PlayerAgent agent, @NotNull ServerPlayer player) {

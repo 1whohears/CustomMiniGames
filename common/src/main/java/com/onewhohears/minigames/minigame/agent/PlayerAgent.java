@@ -1,13 +1,10 @@
 package com.onewhohears.minigames.minigame.agent;
 
-import java.util.UUID;
-import java.util.function.Consumer;
-
 import com.onewhohears.minigames.data.kits.GameKit;
 import com.onewhohears.minigames.data.kits.MiniGameKitsManager;
 import com.onewhohears.minigames.init.MiniGameItems;
 import com.onewhohears.minigames.minigame.data.MiniGameData;
-
+import com.onewhohears.onewholibs.util.UtilEntity;
 import com.onewhohears.onewholibs.util.UtilMCText;
 import com.onewhohears.onewholibs.util.math.UtilGeometry;
 import net.minecraft.ChatFormatting;
@@ -32,13 +29,16 @@ import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
+import java.util.function.Consumer;
+
 public class PlayerAgent extends GameAgent {
 	
 	private UUID playerId;
-	private ServerPlayer player;
 	private TeamAgent teamAgent;
 	@Nullable private Vec3 deathPosition = null;
 	private float deathLookX, deathLookY;
+    @Nullable private ResourceKey<Level> deathDim = null;
 	private String scoreboardName = "";
 
 	public PlayerAgent(String type, String uuid, MiniGameData gameData) {
@@ -59,22 +59,9 @@ public class PlayerAgent extends GameAgent {
 	}
 	
 	@Override
-	public void tickAgent(MinecraftServer server) {
-		super.tickAgent(server);
-	}
-	
-	@Override
-	protected void tickDead(MinecraftServer server) {
-		super.tickDead(server);
-	}
-	
-	@Override
 	public void onDeath(MinecraftServer server, @Nullable DamageSource source) {
         ServerPlayer p = getPlayer(server);
-        if (p != null) {
-            setDeathPosition(p.position());
-            setDeathLookDirection(p.getXRot(), p.getYRot());
-        }
+        if (p != null) setDeathInfo(p);
 		super.onDeath(server, source);
 		getGameData().onPlayerDeath(this, server, source);
 	}
@@ -87,32 +74,34 @@ public class PlayerAgent extends GameAgent {
 		}
 	}
 
-	public void setDeathPosition(@Nullable Vec3 pos) {
-		deathPosition = pos;
-	}
-
 	@Nullable
 	public Vec3 getDeathPosition() {
 		return deathPosition;
 	}
 
-	public void setDeathLookDirection(float deathLookX, float deathLookY) {
-		this.deathLookX = deathLookX;
-		this.deathLookY = deathLookY;
-	}
+    public void setDeathInfo(@NotNull ServerPlayer p) {
+        deathPosition = p.position();
+        deathLookX = p.getXRot();
+        deathLookY = p.getYRot();
+        deathDim = UtilEntity.getLevel(p).dimension();
+    }
 
 	@Override
 	public void onRespawn(MinecraftServer server) {
 		super.onRespawn(server);
 		getGameData().onPlayerRespawn(this, server);
-		if (isDead()) {
-			Vec3 pos = getDeathPosition();
-			if (pos == null) return;
-			ServerPlayer sp = getPlayer(server);
-			if (sp == null) return;
-			sp.connection.teleport(pos.x(), pos.y(), pos.z(), deathLookY, deathLookX);
-		}
+		if (isDead()) teleportToDeathPos(server);
 	}
+
+    protected void teleportToDeathPos(MinecraftServer server) {
+        if (deathDim == null) return;
+        ServerLevel level = server.getLevel(deathDim);
+        Vec3 pos = getDeathPosition();
+        if (pos == null) return;
+        ServerPlayer sp = getPlayer(server);
+        if (sp == null) return;
+        sp.teleportTo(level, pos.x(), pos.y(), pos.z(), deathLookY, deathLookX);
+    }
 
 	@Override
 	public void onLogIn(MinecraftServer server) {
@@ -142,22 +131,18 @@ public class PlayerAgent extends GameAgent {
 
 	@Override
 	public boolean canTickAgent(MinecraftServer server) {
-		return getPlayer(server) != null && isAddedToWorld(server, player);
+		return getPlayer(server) != null;
 	}
 	
 	@Nullable
 	public ServerPlayer getPlayer(MinecraftServer server) {
-		if (player != null && isAddedToWorld(server, player)) return player;
-		UUID uuid = getPlayerId();
-		if (uuid == null) return null;
-		player = server.getPlayerList().getPlayer(uuid);
-		if (player != null) scoreboardName = player.getScoreboardName();
+        UUID uuid = getPlayerId();
+        if (uuid == null) return null;
+        ServerPlayer player = server.getPlayerList().getPlayer(uuid);
+		if (player == null) return null;
+		scoreboardName = player.getScoreboardName();
 		return player;
 	}
-
-    private static boolean isAddedToWorld(MinecraftServer server, @NotNull ServerPlayer player) {
-        return server.getPlayerList().getPlayer(player.getUUID()) != null;
-    }
 	
 	@Nullable
 	public UUID getPlayerId() {
