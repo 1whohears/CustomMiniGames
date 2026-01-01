@@ -103,9 +103,18 @@ public abstract class GamePhase<T extends MiniGameData> {
 
     public void setGameMode(@NotNull PlayerAgent agent, @NotNull ServerPlayer player) {
         if (player.gameMode.isCreative()) return;
-        if (!isSetupPhase() && agent.isDead()) player.setGameMode(GameType.SPECTATOR);
-        else if (isForceAdventureMode()) player.setGameMode(GameType.ADVENTURE);
-        else if (isForceSurvivalMode()) player.setGameMode(GameType.SURVIVAL);
+        if (!isSetupPhase() && agent.isDead()) setGameMode(player, GameType.SPECTATOR);
+        else if (isForceSurvivalMode()) setGameMode(player, GameType.SURVIVAL);
+        else if (isForceAdventureMode()) setGameMode(player, GameType.ADVENTURE);
+    }
+
+    public void setGameMode(@NotNull ServerPlayer player, GameType gameMode) {
+        if (player.gameMode.getGameModeForPlayer() == gameMode) return;
+        System.out.println(getId()+" force adventure "+isForceAdventureMode()+" survival "+isForceSurvivalMode());
+        System.out.println("GAMEMODE PRE "+player.gameMode.getGameModeForPlayer()+" -> "+gameMode);
+        boolean success = player.setGameMode(gameMode);
+        System.out.println("GAMEMODE POST "+player.gameMode.getGameModeForPlayer()+" "+success);
+        //new Exception().printStackTrace();
     }
 
     protected void tickFoodExhaustion(@NotNull PlayerAgent agent, @NotNull ServerPlayer player) {

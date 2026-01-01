@@ -226,7 +226,6 @@ public class PlayerAgent extends GameAgent {
 		ResourceKey<Level> dim = player.getRespawnDimension();
 		ServerLevel level = server.getLevel(dim);
 		float yaw = getGameData().getSpawnYaw(this);
-        getGameData().getCurrentPhase().setGameMode(this, player);
 		player.teleportTo(level, pos.getX(), pos.getY(), pos.getZ(), yaw, 0);
 	}
 

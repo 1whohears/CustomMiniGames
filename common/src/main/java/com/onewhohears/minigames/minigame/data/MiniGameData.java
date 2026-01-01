@@ -1078,7 +1078,7 @@ public abstract class MiniGameData {
 	}
 
 	public boolean forceAdventureDuringGame() {
-		return getBooleanParam(ADVENTURE_DURING_SETUP);
+		return getBooleanParam(ADVENTURE_DURING_GAME);
 	}
 
 	protected void registerParams() {
